@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rock Your Opinion - Etch Your Opinion, It Rocks!</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Rock+Salt&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Rock+Salt:wght@400&display=swap');
         
         * {
             margin: 0;
@@ -15,20 +15,47 @@
 
         body {
             font-family: 'Rock Salt', cursive;
-            background: linear-gradient(135deg, #8B4513 0%, #A0522D 50%, #CD853F 100%);
+            background: linear-gradient(to bottom, 
+                #F4E4BC 0%,     /* Light desert sand */
+                #E6D3A3 20%,    /* Medium sand */
+                #D4B896 40%,    /* Darker sand */
+                #C19A6B 60%,    /* Desert brown */
+                #A0522D 100%    /* Dark earth */
+            );
             min-height: 100vh;
             color: #2F1B14;
+            position: relative;
+        }
+
+        /* Desert landscape background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'%3E%3C!-- Mesa formations --%3E%3Cpath d='M0,600 Q200,580 400,600 T800,590 Q1000,585 1200,600 L1200,800 L0,800 Z' fill='%23A0522D' opacity='0.3'/%3E%3Cpath d='M0,650 Q300,630 600,640 Q900,650 1200,635 L1200,800 L0,800 Z' fill='%23654321' opacity='0.2'/%3E%3C!-- Scattered rocks --%3E%3Cellipse cx='100' cy='680' rx='12' ry='8' fill='%238B4513' opacity='0.4'/%3E%3Cellipse cx='250' cy='690' rx='8' ry='6' fill='%23A0522D' opacity='0.4'/%3E%3Cellipse cx='400' cy='675' rx='15' ry='10' fill='%23654321' opacity='0.4'/%3E%3Cellipse cx='600' cy='685' rx='10' ry='7' fill='%238B4513' opacity='0.4'/%3E%3Cellipse cx='800' cy='695' rx='12' ry='8' fill='%23A0522D' opacity='0.4'/%3E%3Cellipse cx='950' cy='680' rx='9' ry='6' fill='%23654321' opacity='0.4'/%3E%3Cellipse cx='1100' cy='690' rx='11' ry='8' fill='%238B4513' opacity='0.4'/%3E%3C/svg%3E") bottom/cover no-repeat;
+            pointer-events: none;
+            z-index: -1;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            position: relative;
+            z-index: 1;
         }
 
         header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+            background: rgba(244, 228, 188, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            border: 4px solid #8B4513;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
         }
 
         .logo {
@@ -37,50 +64,91 @@
             color: #654321;
             text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .logo::before {
+            content: '🪨';
+            font-size: 2.5rem;
         }
 
         .tagline {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             color: #8B4513;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            font-weight: bold;
         }
 
         .daily-theme {
-            background: rgba(139, 69, 19, 0.2);
+            background: rgba(196, 154, 108, 0.8);
             padding: 20px;
             border-radius: 15px;
             border: 3px solid #654321;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .theme-title {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             color: #654321;
             margin-bottom: 10px;
         }
 
         .theme-text {
             font-size: 1.1rem;
-            color: #8B4513;
+            color: #2F1B14;
+            font-weight: bold;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            background: rgba(212, 184, 150, 0.8);
+            border: 3px solid #8B4513;
+            border-radius: 15px 15px 0 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            color: #2F1B14;
+        }
+
+        .tab.active {
+            background: rgba(244, 228, 188, 0.95);
+            border-bottom: 3px solid rgba(244, 228, 188, 0.95);
+            transform: translateY(-5px);
+        }
+
+        .tab:hover {
+            background: rgba(230, 211, 163, 0.9);
         }
 
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 40px;
+            gap: 30px;
             margin-bottom: 50px;
         }
 
         .etching-section {
-            background: rgba(205, 133, 63, 0.3);
-            padding: 30px;
+            background: rgba(244, 228, 188, 0.9);
+            padding: 25px;
             border-radius: 20px;
-            border: 3px solid #8B4513;
+            border: 4px solid #8B4513;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
 
         .section-title {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             color: #654321;
             margin-bottom: 20px;
             text-align: center;
@@ -88,27 +156,45 @@
 
         .rock-canvas {
             width: 100%;
-            height: 300px;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><filter id="roughPaper"><feTurbulence baseFrequency="0.04" numOctaves="5" result="noise"/><feColorMatrix in="noise" type="saturate" values="0"/><feComponentTransfer><feFuncA type="discrete" tableValues="0.88 0.90 0.92 0.85"/></feComponentTransfer><feComposite operator="multiply" in2="SourceGraphic" result="composition"/></filter></defs><rect width="400" height="300" fill="%23A0522D"/><rect width="400" height="300" fill="%23888" opacity="0.1" filter="url(%23roughPaper)"/></svg>') center/cover;
+            height: 280px;
+            background: #C19A6B;
             border: 4px solid #654321;
-            border-radius: 15px;
+            border-radius: 20px;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 20px;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(160, 82, 45, 0.3) 15%, transparent 16%),
+                radial-gradient(circle at 80% 70%, rgba(101, 67, 33, 0.2) 10%, transparent 11%),
+                radial-gradient(circle at 60% 20%, rgba(139, 69, 19, 0.2) 12%, transparent 13%);
+        }
+
+        .rock-canvas::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 280'%3E%3Cpath d='M20,40 Q80,35 140,45 T260,40 Q320,38 380,45 Q390,50 385,60 L380,240 Q340,250 280,245 Q200,248 120,245 Q60,248 20,240 Q10,45 20,40 Z' fill='none' stroke='%23654321' stroke-width='2' opacity='0.4'/%3E%3Cpath d='M40,80 Q100,75 160,85 Q220,80 280,85 Q340,80 360,90' fill='none' stroke='%238B4513' stroke-width='1.5' opacity='0.3'/%3E%3Cpath d='M60,120 Q120,115 180,125 Q240,120 300,125' fill='none' stroke='%23A0522D' stroke-width='1' opacity='0.3'/%3E%3C/svg%3E") center/cover;
+            border-radius: 16px;
+            pointer-events: none;
         }
 
         .etched-text {
             font-family: 'Creepster', cursive;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             color: #2F1B14;
             text-align: center;
             padding: 20px;
-            text-shadow: 2px 2px 4px rgba(255,255,255,0.3);
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.3);
             word-wrap: break-word;
             max-width: 90%;
+            z-index: 2;
+            position: relative;
         }
 
         .input-area {
@@ -119,12 +205,13 @@
             width: 100%;
             padding: 15px;
             border: 3px solid #8B4513;
-            border-radius: 10px;
+            border-radius: 12px;
             font-family: 'Rock Salt', cursive;
             font-size: 1rem;
-            background: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.95);
             resize: vertical;
             min-height: 80px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .char-counter {
@@ -132,138 +219,153 @@
             margin-top: 10px;
             font-size: 0.9rem;
             color: #8B4513;
+            font-weight: bold;
         }
 
         .char-counter.warning {
             color: #CD853F;
-            font-weight: bold;
         }
 
         .char-counter.over-limit {
             color: #B22222;
-            font-weight: bold;
         }
 
         .upgrade-prompt {
-            background: rgba(255, 215, 0, 0.2);
-            border: 2px solid #DAA520;
-            border-radius: 10px;
-            padding: 15px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(218, 165, 32, 0.3));
+            border: 3px solid #DAA520;
+            border-radius: 15px;
+            padding: 20px;
             margin: 15px 0;
             text-align: center;
             display: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .upgrade-prompt.show {
             display: block;
         }
 
+        .upgrade-prompt h3 {
+            color: #B8860B;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
         .buttons {
             display: flex;
             gap: 15px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .btn {
             padding: 12px 24px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-family: 'Rock Salt', cursive;
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .btn-primary {
-            background: #8B4513;
+            background: linear-gradient(135deg, #8B4513, #A0522D);
             color: white;
             border: 2px solid #654321;
         }
 
         .btn-primary:hover {
-            background: #A0522D;
+            background: linear-gradient(135deg, #A0522D, #CD853F);
             transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
         }
 
         .btn-secondary {
-            background: #DAA520;
+            background: linear-gradient(135deg, #DAA520, #FFD700);
             color: #2F1B14;
             border: 2px solid #B8860B;
         }
 
         .btn-secondary:hover {
-            background: #FFD700;
+            background: linear-gradient(135deg, #FFD700, #FFFF99);
             transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
         }
 
         .valley-section {
-            background: rgba(160, 82, 45, 0.3);
-            padding: 30px;
+            background: rgba(230, 211, 163, 0.9);
+            padding: 25px;
             border-radius: 20px;
-            border: 3px solid #8B4513;
+            border: 4px solid #8B4513;
             max-height: 500px;
             overflow-y: auto;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
 
         .valley-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
         }
 
         .opinion-rock {
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 150"><rect width="200" height="150" fill="%23A0522D"/><rect width="200" height="150" fill="%23888" opacity="0.1"/></svg>') center/cover;
-            border: 2px solid #654321;
-            border-radius: 10px;
+            background: linear-gradient(135deg, #D4B896, #C19A6B);
+            border: 3px solid #654321;
+            border-radius: 25px;
             padding: 15px;
             text-align: center;
             cursor: pointer;
-            transition: transform 0.3s ease;
-            min-height: 120px;
+            transition: all 0.3s ease;
+            min-height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .opinion-rock::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 100'%3E%3Cpath d='M15,20 Q40,15 70,25 Q100,20 130,25 Q155,20 165,30 Q170,40 160,50 L165,80 Q140,85 100,80 Q60,85 35,80 Q15,75 10,50 Q5,30 15,20 Z' fill='none' stroke='%23654321' stroke-width='1.5' opacity='0.3'/%3E%3C/svg%3E") center/cover;
+            border-radius: 22px;
+            pointer-events: none;
         }
 
         .opinion-rock:hover {
-            transform: scale(1.05);
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
         }
 
         .opinion-rock .text {
             font-family: 'Creepster', cursive;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #2F1B14;
             text-shadow: 1px 1px 2px rgba(255,255,255,0.3);
+            z-index: 2;
+            position: relative;
         }
 
         .shirt-prompt {
-            background: rgba(255, 255, 255, 0.9);
-            border: 3px solid #8B4513;
-            border-radius: 15px;
-            padding: 20px;
+            background: rgba(244, 228, 188, 0.95);
+            border: 4px solid #8B4513;
+            border-radius: 20px;
+            padding: 25px;
             margin-top: 30px;
             text-align: center;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
         }
 
-        .nav-tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 30px;
-            gap: 20px;
-        }
-
-        .tab {
-            padding: 12px 24px;
-            background: rgba(160, 82, 45, 0.3);
-            border: 2px solid #8B4513;
-            border-radius: 10px 10px 0 0;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .tab.active {
-            background: rgba(205, 133, 63, 0.5);
-            border-bottom: 2px solid rgba(205, 133, 63, 0.5);
+        .shirt-prompt h3 {
+            color: #654321;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
         }
 
         .tab-content {
@@ -274,32 +376,75 @@
             display: block;
         }
 
+        /* Full width valley view */
+        .valley-full {
+            background: rgba(230, 211, 163, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            border: 4px solid #8B4513;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .valley-full .valley-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
         @media (max-width: 768px) {
             .main-content {
                 grid-template-columns: 1fr;
-                gap: 30px;
+                gap: 20px;
             }
             
             .logo {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
             
             .buttons {
                 flex-direction: column;
                 align-items: center;
             }
+
+            .nav-tabs {
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+            }
+
+            .tab {
+                border-radius: 12px;
+            }
+        }
+
+        /* Scroll styling for valley */
+        .valley-section::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .valley-section::-webkit-scrollbar-track {
+            background: rgba(139, 69, 19, 0.2);
+            border-radius: 4px;
+        }
+
+        .valley-section::-webkit-scrollbar-thumb {
+            background: #8B4513;
+            border-radius: 4px;
+        }
+
+        .valley-section::-webkit-scrollbar-thumb:hover {
+            background: #654321;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1 class="logo">🪨 Rock Your Opinion</h1>
+            <h1 class="logo">ROCK YOUR OPINION</h1>
             <p class="tagline">Etch Your Opinion, It Rocks!</p>
         </header>
 
         <div class="daily-theme">
-            <h2 class="theme-title">Today's Theme:</h2>
+            <h2 class="theme-title">🌅 Today's Desert Discussion:</h2>
             <p class="theme-text" id="dailyTheme">What's the most overrated food everyone pretends to love?</p>
         </div>
 
@@ -311,7 +456,7 @@
         <div id="etch-tab" class="tab-content active">
             <div class="main-content">
                 <div class="etching-section">
-                    <h2 class="section-title">Etch Your Opinion</h2>
+                    <h2 class="section-title">🔨 Etch Your Opinion</h2>
                     
                     <div class="rock-canvas">
                         <div class="etched-text" id="etchedText">Your opinion will appear here...</div>
@@ -328,21 +473,21 @@
                     </div>
 
                     <div class="upgrade-prompt" id="upgradePrompt">
-                        <h3>🏔️ Want a Bigger Rock?</h3>
-                        <p>Upgrade to Big Rock for just $1 and get 250 characters!</p>
+                        <h3>⛰️ Want a Bigger Rock?</h3>
+                        <p>Upgrade to Big Rock for just $1 and get 250 characters to really express yourself!</p>
                         <div class="buttons" style="margin-top: 15px;">
-                            <button class="btn btn-secondary" onclick="upgradeToBigRock()">Upgrade for $1</button>
+                            <button class="btn btn-secondary" onclick="upgradeToBigRock()">Upgrade for $1 💰</button>
                             <button class="btn btn-primary" onclick="hideUpgrade()">Keep Small Rock</button>
                         </div>
                     </div>
 
                     <div class="buttons">
-                        <button class="btn btn-primary" onclick="etchOpinion()" id="etchBtn">Etch This Rock!</button>
+                        <button class="btn btn-primary" onclick="etchOpinion()" id="etchBtn">🔨 Etch This Rock!</button>
                     </div>
                 </div>
 
                 <div class="valley-section">
-                    <h2 class="section-title">Recent Opinions</h2>
+                    <h2 class="section-title">🏜️ Recent Desert Wisdom</h2>
                     <div class="valley-grid" id="recentOpinions">
                         <!-- Recent opinions will appear here -->
                     </div>
@@ -351,8 +496,11 @@
         </div>
 
         <div id="valley-tab" class="tab-content">
-            <div class="valley-section" style="max-height: none;">
-                <h2 class="section-title">🏔️ Valley of Opinions</h2>
+            <div class="valley-full">
+                <h2 class="section-title">🏔️ The Great Valley of Opinions</h2>
+                <p style="text-align: center; margin-bottom: 25px; color: #8B4513; font-size: 1.1rem;">
+                    Explore the ancient wisdom etched in stone by fellow travelers
+                </p>
                 <div class="valley-grid" id="allOpinions">
                     <!-- All opinions will appear here -->
                 </div>
@@ -360,9 +508,9 @@
         </div>
 
         <div class="shirt-prompt">
-            <h3>Love a Rock Opinion?</h3>
-            <p>Get it printed on a t-shirt! Click any rock in the valley to customize your shirt.</p>
-            <button class="btn btn-secondary" onclick="showShirtDesign()">Design Your Shirt</button>
+            <h3>👕 Love a Rocky Opinion?</h3>
+            <p style="margin-bottom: 15px; font-size: 1.1rem;">Get it printed on premium apparel! Click any rock in the valley to customize your gear.</p>
+            <button class="btn btn-secondary" onclick="showShirtDesign()">🎨 Design Your Shirt</button>
         </div>
     </div>
 
@@ -378,7 +526,10 @@
             "What movie do you pretend to understand but actually don't?",
             "What's the worst advice that's commonly given?",
             "What would be the worst name for a pet rock?",
-            "What's something everyone does but won't admit to?"
+            "What's something everyone does but won't admit to?",
+            "What's your most unpopular food opinion?",
+            "What conspiracy do you think might actually be true?",
+            "What's the most useless talent you have?"
         ];
 
         function getDailyTheme() {
@@ -395,11 +546,13 @@
         function loadSampleOpinions() {
             if (opinions.length === 0) {
                 opinions = [
-                    { text: "Pineapple on pizza is actually genius", type: 'small', timestamp: Date.now() - 1000000 },
-                    { text: "Everyone knows avocado toast is just millennial propaganda but we're too proud to admit it now", type: 'big', timestamp: Date.now() - 800000 },
-                    { text: "Socks with sandals should be illegal", type: 'small', timestamp: Date.now() - 600000 },
-                    { text: "The moon landing was real but they filmed a backup version just in case and that's the version we all saw which is why it looks so weird", type: 'big', timestamp: Date.now() - 400000 },
-                    { text: "Cats are plotting against humanity", type: 'small', timestamp: Date.now() - 200000 }
+                    { text: "Pineapple on pizza is actually genius and I'm tired of pretending it's not", type: 'small', timestamp: Date.now() - 1000000 },
+                    { text: "Everyone knows avocado toast is just millennial propaganda but we're all too proud to admit we got scammed into paying $15 for bread and fruit", type: 'big', timestamp: Date.now() - 800000 },
+                    { text: "Socks with sandals should be illegal in all 50 states", type: 'small', timestamp: Date.now() - 600000 },
+                    { text: "The moon landing was real but they filmed a backup version just in case something went wrong and that's the footage we all saw which explains why it looks weird", type: 'big', timestamp: Date.now() - 400000 },
+                    { text: "Cats are definitely plotting against humanity", type: 'small', timestamp: Date.now() - 200000 },
+                    { text: "Cereal is just cold soup and nobody can convince me otherwise", type: 'small', timestamp: Date.now() - 100000 },
+                    { text: "Hot dogs are sandwiches", type: 'small', timestamp: Date.now() - 50000 }
                 ];
                 localStorage.setItem('rockOpinions', JSON.stringify(opinions));
             }
@@ -438,9 +591,15 @@
 
         function upgradeToBigRock() {
             // Mock payment process
-            alert('🎉 Payment successful! You now have a Big Rock with 250 characters!');
+            const responses = [
+                '🎉 Payment successful! You now have a Big Rock with 250 characters!',
+                '⛰️ Upgrade complete! Your rock-solid opinion deserves a bigger canvas!',
+                '💎 Welcome to Big Rock status! Now you can really carve out your thoughts!'
+            ];
+            alert(responses[Math.floor(Math.random() * responses.length)]);
             currentRockType = 'big';
             document.getElementById('upgradePrompt').classList.remove('show');
+            document.getElementById('charCounter').textContent = `${document.getElementById('opinionInput').value.length} / 250 characters`;
             updateCharCounter();
         }
 
@@ -457,12 +616,12 @@
             const maxChars = currentRockType === 'small' ? 80 : 250;
 
             if (!text) {
-                alert('Please enter your opinion first!');
+                alert('🪨 Please chisel out your opinion first!');
                 return;
             }
 
             if (text.length > maxChars) {
-                alert(`Opinion too long! ${currentRockType === 'small' ? 'Upgrade to Big Rock or ' : ''}Keep it under ${maxChars} characters.`);
+                alert(`🔨 Opinion too long! ${currentRockType === 'small' ? 'Upgrade to Big Rock or ' : ''}Keep it under ${maxChars} characters.`);
                 return;
             }
 
@@ -482,11 +641,18 @@
             updateCharCounter();
 
             // Show success and refresh display
-            alert('🪨 Your opinion has been etched in stone!');
+            const successMessages = [
+                '🪨 Your opinion has been etched in stone for eternity!',
+                '⛰️ Another piece of wisdom added to the valley!',
+                '🔨 Your rocky take is now part of desert lore!',
+                '🏜️ The sands of time will remember your words!'
+            ];
+            alert(successMessages[Math.floor(Math.random() * successMessages.length)]);
             displayOpinions();
 
             // Reset to small rock for next opinion
             currentRockType = 'small';
+            document.getElementById('charCounter').textContent = '0 / 80 characters';
         }
 
         function displayOpinions() {
@@ -520,11 +686,16 @@
         }
 
         function selectForShirt(opinionText) {
-            alert(`🎽 Great choice! "${opinionText}" would look awesome on a shirt!\n\n(This will connect to Printful for custom printing)`);
+            const shirtMessages = [
+                `👕 Perfect choice! "${opinionText}" would look amazing on a shirt!\n\n🎨 (This will connect to Printful for custom printing)`,
+                `🎽 Great taste! That rocky wisdom deserves to be worn with pride!\n\n📦 (Print-on-demand integration coming soon)`,
+                `👔 Excellent selection! Your opinion will make a statement piece!\n\n🛒 (Custom apparel feature in development)`
+            ];
+            alert(shirtMessages[Math.floor(Math.random() * shirtMessages.length)]);
         }
 
         function showShirtDesign() {
-            alert('👕 Shirt designer coming soon! Pick any rock opinion to get it printed on premium quality tees, hoodies, and more!');
+            alert('👕 Shirt designer launching soon! Pick any rock opinion to get it printed on premium quality tees, hoodies, tank tops, and more!\n\n🎨 Custom designs • 📦 Fast shipping • ⭐ Premium quality');
         }
 
         // Event listeners
