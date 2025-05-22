@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Your Opinion - Etch Your Opinion, It Rocks!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Rock+Salt&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rock Salt', cursive;
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 50%, #CD853F 100%);
+            min-height: 100vh;
+            color: #2F1B14;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-family: 'Creepster', cursive;
+            font-size: 3rem;
+            color: #654321;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: #8B4513;
+            margin-bottom: 20px;
+        }
+
+        .daily-theme {
+            background: rgba(139, 69, 19, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px solid #654321;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .theme-title {
+            font-size: 1.5rem;
+            color: #654321;
+            margin-bottom: 10px;
+        }
+
+        .theme-text {
+            font-size: 1.1rem;
+            color: #8B4513;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .etching-section {
+            background: rgba(205, 133, 63, 0.3);
+            padding: 30px;
+            border-radius: 20px;
+            border: 3px solid #8B4513;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #654321;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .rock-canvas {
+            width: 100%;
+            height: 300px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><filter id="roughPaper"><feTurbulence baseFrequency="0.04" numOctaves="5" result="noise"/><feColorMatrix in="noise" type="saturate" values="0"/><feComponentTransfer><feFuncA type="discrete" tableValues="0.88 0.90 0.92 0.85"/></feComponentTransfer><feComposite operator="multiply" in2="SourceGraphic" result="composition"/></filter></defs><rect width="400" height="300" fill="%23A0522D"/><rect width="400" height="300" fill="%23888" opacity="0.1" filter="url(%23roughPaper)"/></svg>') center/cover;
+            border: 4px solid #654321;
+            border-radius: 15px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        .etched-text {
+            font-family: 'Creepster', cursive;
+            font-size: 1.2rem;
+            color: #2F1B14;
+            text-align: center;
+            padding: 20px;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.3);
+            word-wrap: break-word;
+            max-width: 90%;
+        }
+
+        .input-area {
+            margin-bottom: 20px;
+        }
+
+        .opinion-input {
+            width: 100%;
+            padding: 15px;
+            border: 3px solid #8B4513;
+            border-radius: 10px;
+            font-family: 'Rock Salt', cursive;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.9);
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .char-counter {
+            text-align: right;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #8B4513;
+        }
+
+        .char-counter.warning {
+            color: #CD853F;
+            font-weight: bold;
+        }
+
+        .char-counter.over-limit {
+            color: #B22222;
+            font-weight: bold;
+        }
+
+        .upgrade-prompt {
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #DAA520;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+            display: none;
+        }
+
+        .upgrade-prompt.show {
+            display: block;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Rock Salt', cursive;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #8B4513;
+            color: white;
+            border: 2px solid #654321;
+        }
+
+        .btn-primary:hover {
+            background: #A0522D;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #DAA520;
+            color: #2F1B14;
+            border: 2px solid #B8860B;
+        }
+
+        .btn-secondary:hover {
+            background: #FFD700;
+            transform: translateY(-2px);
+        }
+
+        .valley-section {
+            background: rgba(160, 82, 45, 0.3);
+            padding: 30px;
+            border-radius: 20px;
+            border: 3px solid #8B4513;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .valley-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .opinion-rock {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 150"><rect width="200" height="150" fill="%23A0522D"/><rect width="200" height="150" fill="%23888" opacity="0.1"/></svg>') center/cover;
+            border: 2px solid #654321;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .opinion-rock:hover {
+            transform: scale(1.05);
+        }
+
+        .opinion-rock .text {
+            font-family: 'Creepster', cursive;
+            font-size: 0.9rem;
+            color: #2F1B14;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.3);
+        }
+
+        .shirt-prompt {
+            background: rgba(255, 255, 255, 0.9);
+            border: 3px solid #8B4513;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: rgba(160, 82, 45, 0.3);
+            border: 2px solid #8B4513;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: rgba(205, 133, 63, 0.5);
+            border-bottom: 2px solid rgba(205, 133, 63, 0.5);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="logo">🪨 Rock Your Opinion</h1>
+            <p class="tagline">Etch Your Opinion, It Rocks!</p>
+        </header>
+
+        <div class="daily-theme">
+            <h2 class="theme-title">Today's Theme:</h2>
+            <p class="theme-text" id="dailyTheme">What's the most overrated food everyone pretends to love?</p>
+        </div>
+
+        <div class="nav-tabs">
+            <div class="tab active" onclick="switchTab('etch')">Etch Your Rock</div>
+            <div class="tab" onclick="switchTab('valley')">Valley of Opinions</div>
+        </div>
+
+        <div id="etch-tab" class="tab-content active">
+            <div class="main-content">
+                <div class="etching-section">
+                    <h2 class="section-title">Etch Your Opinion</h2>
+                    
+                    <div class="rock-canvas">
+                        <div class="etched-text" id="etchedText">Your opinion will appear here...</div>
+                    </div>
+
+                    <div class="input-area">
+                        <textarea 
+                            class="opinion-input" 
+                            id="opinionInput" 
+                            placeholder="What's your rocky opinion? (80 chars for small rock)"
+                            maxlength="250"
+                        ></textarea>
+                        <div class="char-counter" id="charCounter">0 / 80 characters</div>
+                    </div>
+
+                    <div class="upgrade-prompt" id="upgradePrompt">
+                        <h3>🏔️ Want a Bigger Rock?</h3>
+                        <p>Upgrade to Big Rock for just $1 and get 250 characters!</p>
+                        <div class="buttons" style="margin-top: 15px;">
+                            <button class="btn btn-secondary" onclick="upgradeToBigRock()">Upgrade for $1</button>
+                            <button class="btn btn-primary" onclick="hideUpgrade()">Keep Small Rock</button>
+                        </div>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn btn-primary" onclick="etchOpinion()" id="etchBtn">Etch This Rock!</button>
+                    </div>
+                </div>
+
+                <div class="valley-section">
+                    <h2 class="section-title">Recent Opinions</h2>
+                    <div class="valley-grid" id="recentOpinions">
+                        <!-- Recent opinions will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="valley-tab" class="tab-content">
+            <div class="valley-section" style="max-height: none;">
+                <h2 class="section-title">🏔️ Valley of Opinions</h2>
+                <div class="valley-grid" id="allOpinions">
+                    <!-- All opinions will appear here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="shirt-prompt">
+            <h3>Love a Rock Opinion?</h3>
+            <p>Get it printed on a t-shirt! Click any rock in the valley to customize your shirt.</p>
+            <button class="btn btn-secondary" onclick="showShirtDesign()">Design Your Shirt</button>
+        </div>
+    </div>
+
+    <script>
+        let currentRockType = 'small'; // 'small' or 'big'
+        let opinions = JSON.parse(localStorage.getItem('rockOpinions') || '[]');
+        
+        // Daily themes rotation
+        const themes = [
+            "What's the most overrated food everyone pretends to love?",
+            "What everyday object would be most terrifying if it was giant?",
+            "What's a conspiracy theory you actually believe?",
+            "What movie do you pretend to understand but actually don't?",
+            "What's the worst advice that's commonly given?",
+            "What would be the worst name for a pet rock?",
+            "What's something everyone does but won't admit to?"
+        ];
+
+        function getDailyTheme() {
+            const today = new Date().getDate();
+            return themes[today % themes.length];
+        }
+
+        function initializePage() {
+            document.getElementById('dailyTheme').textContent = getDailyTheme();
+            loadSampleOpinions();
+            displayOpinions();
+        }
+
+        function loadSampleOpinions() {
+            if (opinions.length === 0) {
+                opinions = [
+                    { text: "Pineapple on pizza is actually genius", type: 'small', timestamp: Date.now() - 1000000 },
+                    { text: "Everyone knows avocado toast is just millennial propaganda but we're too proud to admit it now", type: 'big', timestamp: Date.now() - 800000 },
+                    { text: "Socks with sandals should be illegal", type: 'small', timestamp: Date.now() - 600000 },
+                    { text: "The moon landing was real but they filmed a backup version just in case and that's the version we all saw which is why it looks so weird", type: 'big', timestamp: Date.now() - 400000 },
+                    { text: "Cats are plotting against humanity", type: 'small', timestamp: Date.now() - 200000 }
+                ];
+                localStorage.setItem('rockOpinions', JSON.stringify(opinions));
+            }
+        }
+
+        function updateCharCounter() {
+            const input = document.getElementById('opinionInput');
+            const counter = document.getElementById('charCounter');
+            const upgrade = document.getElementById('upgradePrompt');
+            const maxChars = currentRockType === 'small' ? 80 : 250;
+            const currentLength = input.value.length;
+
+            counter.textContent = `${currentLength} / ${maxChars} characters`;
+            
+            if (currentLength > maxChars) {
+                counter.className = 'char-counter over-limit';
+                if (currentRockType === 'small') {
+                    upgrade.classList.add('show');
+                }
+            } else if (currentLength > maxChars * 0.8) {
+                counter.className = 'char-counter warning';
+                upgrade.classList.remove('show');
+            } else {
+                counter.className = 'char-counter';
+                upgrade.classList.remove('show');
+            }
+
+            // Update etched text preview
+            const etchedText = document.getElementById('etchedText');
+            if (input.value.trim()) {
+                etchedText.textContent = input.value;
+            } else {
+                etchedText.textContent = "Your opinion will appear here...";
+            }
+        }
+
+        function upgradeToBigRock() {
+            // Mock payment process
+            alert('🎉 Payment successful! You now have a Big Rock with 250 characters!');
+            currentRockType = 'big';
+            document.getElementById('upgradePrompt').classList.remove('show');
+            updateCharCounter();
+        }
+
+        function hideUpgrade() {
+            document.getElementById('upgradePrompt').classList.remove('show');
+            const input = document.getElementById('opinionInput');
+            input.value = input.value.substring(0, 80);
+            updateCharCounter();
+        }
+
+        function etchOpinion() {
+            const input = document.getElementById('opinionInput');
+            const text = input.value.trim();
+            const maxChars = currentRockType === 'small' ? 80 : 250;
+
+            if (!text) {
+                alert('Please enter your opinion first!');
+                return;
+            }
+
+            if (text.length > maxChars) {
+                alert(`Opinion too long! ${currentRockType === 'small' ? 'Upgrade to Big Rock or ' : ''}Keep it under ${maxChars} characters.`);
+                return;
+            }
+
+            // Add to opinions
+            opinions.unshift({
+                text: text,
+                type: currentRockType,
+                timestamp: Date.now()
+            });
+
+            // Save to localStorage
+            localStorage.setItem('rockOpinions', JSON.stringify(opinions));
+
+            // Clear input
+            input.value = '';
+            document.getElementById('etchedText').textContent = "Your opinion will appear here...";
+            updateCharCounter();
+
+            // Show success and refresh display
+            alert('🪨 Your opinion has been etched in stone!');
+            displayOpinions();
+
+            // Reset to small rock for next opinion
+            currentRockType = 'small';
+        }
+
+        function displayOpinions() {
+            const recentContainer = document.getElementById('recentOpinions');
+            const allContainer = document.getElementById('allOpinions');
+            
+            // Show recent 6 opinions
+            const recentOpinions = opinions.slice(0, 6);
+            recentContainer.innerHTML = recentOpinions.map(opinion => 
+                `<div class="opinion-rock" onclick="selectForShirt('${opinion.text.replace(/'/g, "\\'")}')">
+                    <div class="text">${opinion.text}</div>
+                </div>`
+            ).join('');
+
+            // Show all opinions
+            allContainer.innerHTML = opinions.map(opinion => 
+                `<div class="opinion-rock" onclick="selectForShirt('${opinion.text.replace(/'/g, "\\'")}')">
+                    <div class="text">${opinion.text}</div>
+                </div>`
+            ).join('');
+        }
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        function selectForShirt(opinionText) {
+            alert(`🎽 Great choice! "${opinionText}" would look awesome on a shirt!\n\n(This will connect to Printful for custom printing)`);
+        }
+
+        function showShirtDesign() {
+            alert('👕 Shirt designer coming soon! Pick any rock opinion to get it printed on premium quality tees, hoodies, and more!');
+        }
+
+        // Event listeners
+        document.getElementById('opinionInput').addEventListener('input', updateCharCounter);
+
+        // Initialize page
+        initializePage();
+    </script>
+</body>
+</html>
