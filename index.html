@@ -26,6 +26,9 @@
       padding: 20px;
     }
 
+body.shake {
+  animation: screenShake 0.4s ease;
+}
 
   .phase {
     display: none;
@@ -47,7 +50,7 @@
     }
 
     .rock {
-  margin-top: 90px;
+  margin-top: 30px;
   margin-bottom: 10px;
   background: url('art/rock_01.png') center/contain no-repeat;
   background-size: contain;
@@ -108,16 +111,87 @@
       padding: 20px;
       max-width: 100vw;
     }
+    
+@keyframes dropIn {
+  0%   { transform: translateY(-150vh); opacity: 0; }
+  80%  { transform: translateY(5px); opacity: 1; }
+  90%  { transform: translateY(-3px); }
+  100% { transform: translateY(0); }
+}
+
+.rock.animate-in {
+  animation: dropIn 1s ease-out forwards;
+}
+
+@keyframes screenShake {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-4px, 2px); }
+  40% { transform: translate(4px, -2px); }
+  60% { transform: translate(-3px, 3px); }
+  80% { transform: translate(3px, -3px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.rock-text.animate-in {
+  animation: fadeIn 1s ease-in forwards;
+  animation-delay: 1.7s;
+  opacity: 0;
+}
+
+@keyframes dustPuff {
+  0% {
+    transform: translateX(-50%) scale(0.3);
+    opacity: 0;
+  }
+  30% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateX(-50%) scale(1.4);
+    opacity: 0;
+  }
+}
+
+.rock-wrapper {
+  position: relative;
+  width: 240px;
+  height: 200px;
+}
+
+.dust {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 80px;
+  height: 30px;
+  background: radial-gradient(ellipse at center, rgba(139, 69, 19, 0.3), transparent);
+  border-radius: 50%;
+  transform: translateX(-50%) scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+
   </style>
 </head>
 <body>
   <div id="phase1" class="phase active">
-    <div class="prompt">What's the most overrated food everyone pretends to love?</div>
+  <div class="prompt">What's the most overrated food everyone pretends to love?</div>
+  <div class="rock-wrapper">
     <div class="rock" id="preview">
       <div class="rock-text" id="previewText"></div>
     </div>
-    <textarea id="input" maxlength="80" placeholder="Type your opinion here..."></textarea>
-    <button onclick="submitOpinion()">SUBMIT</button>
+    <div class="dust" id="dustEffect"></div>
+  </div>
+  <textarea id="input" maxlength="80" placeholder="Type your opinion here..."></textarea>
+  <button onclick="submitOpinion()">SUBMIT</button>
+</div>
   </div>
 
   <div id="phase2" class="phase">
@@ -180,6 +254,25 @@
   if (length <= 60) return { width: '200px', height: '140px', fontSize: '0.9rem' };
   return { width: '240px', height: '160px', fontSize: '0.8rem' };
 }
+
+window.addEventListener('DOMContentLoaded', () => {
+  const preview = document.getElementById('preview');
+  const previewText = document.getElementById('previewText');
+  const dust = document.getElementById('dustEffect');
+  
+  preview.classList.add('animate-in');
+  previewText.classList.add('animate-in');
+  
+  setTimeout(() => {
+    document.body.classList.add('shake');
+    dust.style.animation = 'dustPuff 0.6s ease-out forwards';
+    
+    setTimeout(() => {
+      document.body.classList.remove('shake');
+      dust.style.animation = ''; // reset so it can play again if needed
+    }, 600);
+  }, 1000); // matches dropIn duration
+});
 
     function restart() {
       document.getElementById('phase2').classList.remove('active');
