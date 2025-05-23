@@ -15,7 +15,7 @@
 
     body {
       font-family: 'Fredoka', sans-serif;
-      background: url('art/banner.png') top/cover no-repeat;
+      background: url('art/cave.png') top/cover no-repeat;
       color: #2F1B14;
       min-height: 100vh;
       display: flex;
@@ -26,13 +26,15 @@
       padding: 20px;
     }
 
-    .phase {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-    }
+
+  .phase {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+    margin-top: 10vh; /* moves the entire phase content down */
+  }
 
     .active {
       display: flex;
@@ -45,6 +47,8 @@
     }
 
     .rock {
+      margin-top: 90px;
+    margin-bottom: 10px; /* buffer between rock and input */
       background: url('art/rock_01.png') center/contain no-repeat;
       background-size: contain;
       width: 240px;
@@ -72,6 +76,7 @@
     }
 
     textarea {
+      margin-bottom: 10px;
       width: 80vw;
       max-width: 400px;
       padding: 15px;
