@@ -47,33 +47,36 @@
     }
 
     .rock {
-      margin-top: 90px;
-    margin-bottom: 10px; /* buffer between rock and input */
-      background: url('art/rock_01.png') center/contain no-repeat;
-      background-size: contain;
-      width: 240px;
-      height: 180px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
+  margin-top: 90px;
+  margin-bottom: 10px;
+  background: url('art/rock_01.png') center/contain no-repeat;
+  background-size: contain;
+  width: 240px;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
 
-    .rock-text {
-      font-family: 'Fredoka', sans-serif;
-      font-size: 1rem;
-      line-height: 1.2;
-      color: #2F1B14;
-      text-align: center;
-      padding: 10% 5%;
-      max-width: 65%;
-      max-height: 70%;
-      word-break: break-word;
-      overflow-wrap: break-word;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
+.rock-text {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1rem;
+  line-height: 1.2;
+  color: #2F1B14;
+  text-align: center;
+  padding: 5% 10%;
+  width: 70%;
+  max-height: 70%;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-shrink: 1;
+}
+
 
     textarea {
       margin-bottom: 10px;
