@@ -54,8 +54,8 @@
       margin-bottom: 10px;
       background: url('art/rock_sprite.png') 0 0 no-repeat;
       background-size: 300% 300%;
-      width: 240px;
-      height: 180px;
+      width: 200px;
+      height: 200px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -114,12 +114,66 @@
       cursor: not-allowed;
     }
 
+    .valley-container {
+      position: relative;
+      width: 90vw;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
     .valley {
       display: flex;
-      overflow-x: auto;
-      gap: 15px;
-      padding: 20px;
-      max-width: 100vw;
+      gap: 20px;
+      padding: 20px 60px;
+      overflow: hidden;
+      justify-content: center;
+      align-items: center;
+      min-height: 250px;
+    }
+
+    .nav-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(160, 82, 45, 0.8);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease;
+    }
+
+    .nav-arrow:hover {
+      background-color: rgba(139, 69, 19, 0.9);
+    }
+
+    .nav-arrow:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .nav-arrow.prev {
+      left: 0;
+    }
+
+    .nav-arrow.next {
+      right: 0;
+    }
+
+    .rock-item {
+      flex: 0 0 auto;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .rock-item.hidden {
+      display: none;
     }
 
     .loading {
@@ -185,8 +239,8 @@
 
     .rock-wrapper {
       position: relative;
-      width: 240px;
-      height: 200px;
+      width: 200px;
+      height: 220px;
     }
 
     .dust {
@@ -289,7 +343,11 @@
     <div class="prompt">Explore the Valley of Opinions<br><small style="font-size: 0.9rem; opacity: 0.8;">(Click rocks to break them!)</small></div>
     <div id="loadingMessage" class="loading" style="display: none;">Loading opinions...</div>
     <div id="errorMessage" class="error" style="display: none;"></div>
-    <div class="valley" id="opinionValley"></div>
+    <div class="valley-container">
+      <button class="nav-arrow prev" onclick="navigateRocks(-1)" id="prevBtn">‹</button>
+      <div class="valley" id="opinionValley"></div>
+      <button class="nav-arrow next" onclick="navigateRocks(1)" id="nextBtn">›</button>
+    </div>
     <button onclick="restart()">ADD ANOTHER OPINION</button>
   </div>
 
@@ -308,9 +366,12 @@
     const submitBtn = document.getElementById('submitBtn');
     const loadingMessage = document.getElementById('loadingMessage');
     const errorMessage = document.getElementById('errorMessage');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
     
     let opinions = [];
     let brokenOpinionIds = new Set(); // Track which opinions have been broken
+    let currentIndex = 0; // Track current position in carousel
 
     input.addEventListener('input', () => {
       const text = input.value.trim();
@@ -370,6 +431,7 @@
         if (error) throw error;
 
         opinions = data || [];
+        currentIndex = 0; // Reset to beginning when loading new opinions
         renderValley();
       } catch (error) {
         console.error('Error loading opinions:', error);
@@ -426,11 +488,32 @@
       }, 1800);
     }
 
+    function navigateRocks(direction) {
+      const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
+      const maxIndex = Math.max(0, visibleOpinions.length - 3);
+      
+      currentIndex = Math.max(0, Math.min(maxIndex, currentIndex + direction));
+      renderValley();
+    }
+
+    function updateNavigationButtons() {
+      const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
+      const maxIndex = Math.max(0, visibleOpinions.length - 3);
+      
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex >= maxIndex || visibleOpinions.length <= 3;
+    }
+
     function renderValley() {
       valley.innerHTML = '';
-      opinions.forEach((opinion) => {
-        // Skip if this opinion has been broken
-        if (brokenOpinionIds.has(opinion.id)) return;
+      const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
+      
+      // Show only 3 rocks at a time
+      const rocksToShow = visibleOpinions.slice(currentIndex, currentIndex + 3);
+      
+      rocksToShow.forEach((opinion) => {
+        const rockItem = document.createElement('div');
+        rockItem.className = 'rock-item';
         
         const rock = document.createElement('div');
         rock.className = 'rock';
@@ -444,20 +527,33 @@
         textDiv.style.fontSize = fontSize;
 
         // Add click event for breaking
-        rock.addEventListener('click', () => breakRock(rock, opinion.id));
+        rock.addEventListener('click', () => {
+          breakRock(rock, opinion.id);
+          // After breaking, check if we need to adjust the view
+          setTimeout(() => {
+            const newVisibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
+            if (currentIndex > 0 && currentIndex + 3 > newVisibleOpinions.length) {
+              currentIndex = Math.max(0, newVisibleOpinions.length - 3);
+            }
+            renderValley();
+          }, 1800);
+        });
 
         rock.appendChild(textDiv);
-        valley.appendChild(rock);
+        rockItem.appendChild(rock);
+        valley.appendChild(rockItem);
       });
+      
+      updateNavigationButtons();
     }
 
     function getRockSize(length) {
-      if (length <= 10) return { width: '120px', height: '90px', fontSize: '1.1rem' };
-      if (length <= 20) return { width: '160px', height: '120px', fontSize: '1rem' };
-      if (length <= 35) return { width: '200px', height: '150px', fontSize: '0.95rem' };
-      if (length <= 50) return { width: '240px', height: '180px', fontSize: '0.9rem' };
-      if (length <= 65) return { width: '280px', height: '210px', fontSize: '0.85rem' };
-      return { width: '320px', height: '240px', fontSize: '0.8rem' };
+      // Square rocks with slight variations based on text length
+      if (length <= 15) return { width: '160px', height: '160px', fontSize: '1rem' };
+      if (length <= 30) return { width: '180px', height: '180px', fontSize: '0.95rem' };
+      if (length <= 45) return { width: '200px', height: '200px', fontSize: '0.9rem' };
+      if (length <= 60) return { width: '220px', height: '220px', fontSize: '0.85rem' };
+      return { width: '240px', height: '240px', fontSize: '0.8rem' };
     }
 
     window.addEventListener('DOMContentLoaded', () => {
