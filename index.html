@@ -52,14 +52,20 @@ body.shake {
     .rock {
   margin-top: 30px;
   margin-bottom: 10px;
-  background: url('art/rock_01.png') center/contain no-repeat;
-  background-size: contain;
+  background: url('art/rock_sprite.png') 0 0 no-repeat;
+  background-size: 300% 300%;
   width: 240px;
-  min-height: 180px;
+  height: 180px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.rock:hover {
+  transform: scale(1.05);
 }
 
 .rock-text {
@@ -79,7 +85,6 @@ body.shake {
   justify-content: center;
   flex-shrink: 1;
 }
-
 
     textarea {
       margin-bottom: 10px;
@@ -177,6 +182,73 @@ body.shake {
   pointer-events: none;
 }
 
+/* Rock breaking animations using sprite sheet */
+@keyframes rockShake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  10% { transform: translate(-3px, -2px) rotate(-1deg); }
+  20% { transform: translate(3px, 2px) rotate(1deg); }
+  30% { transform: translate(-2px, 3px) rotate(-0.5deg); }
+  40% { transform: translate(2px, -3px) rotate(0.5deg); }
+  50% { transform: translate(-3px, 1px) rotate(-1deg); }
+  60% { transform: translate(3px, -1px) rotate(1deg); }
+  70% { transform: translate(-1px, 2px) rotate(-0.5deg); }
+  80% { transform: translate(1px, -2px) rotate(0.5deg); }
+  90% { transform: translate(-2px, -1px) rotate(-0.5deg); }
+}
+
+@keyframes textDestroy {
+  0% { 
+    opacity: 1; 
+    transform: scale(1);
+    filter: blur(0px);
+  }
+  20% { 
+    opacity: 0.9; 
+    transform: scale(1.1);
+    filter: blur(0.5px);
+  }
+  50% { 
+    opacity: 0.6; 
+    transform: scale(0.8) rotateX(30deg);
+    filter: blur(1px);
+  }
+  80% { 
+    opacity: 0.2; 
+    transform: scale(0.4) rotateX(60deg);
+    filter: blur(2px);
+  }
+  100% { 
+    opacity: 0; 
+    transform: scale(0.1) rotateX(90deg);
+    filter: blur(3px);
+  }
+}
+
+.rock.breaking {
+  animation: rockShake 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.rock-text.destroying {
+  animation: textDestroy 1.2s ease-out 0.3s forwards;
+}
+
+.breaking-dust {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  width: 120px;
+  height: 40px;
+  background: radial-gradient(ellipse at center, rgba(139, 69, 19, 0.4), rgba(160, 82, 45, 0.2), transparent);
+  border-radius: 50%;
+  transform: translateX(-50%) scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rock.breaking .breaking-dust {
+  animation: dustPuff 0.8s ease-out 0.4s forwards;
+}
 
   </style>
 </head>
@@ -195,7 +267,7 @@ body.shake {
   </div>
 
   <div id="phase2" class="phase">
-    <div class="prompt">Explore the Valley of Opinions</div>
+    <div class="prompt">Explore the Valley of Opinions<br><small style="font-size: 0.9rem; opacity: 0.8;">(Click rocks to break them!)</small></div>
     <div class="valley" id="opinionValley"></div>
     <button onclick="restart()">ADD ANOTHER OPINION</button>
   </div>
@@ -229,9 +301,57 @@ body.shake {
       renderValley();
     }
 
+    function breakRock(rockElement, index) {
+      if (rockElement.classList.contains('breaking')) return; // Prevent multiple clicks
+      
+      const textElement = rockElement.querySelector('.rock-text');
+      
+      // Add breaking dust
+      const breakingDust = document.createElement('div');
+      breakingDust.className = 'breaking-dust';
+      rockElement.appendChild(breakingDust);
+      
+      // Start breaking animations
+      rockElement.classList.add('breaking');
+      textElement.classList.add('destroying');
+      
+      // Animate through sprite frames for a 3x3 grid
+      const frames = [
+        '0% 0%',      // Frame 1: Intact (top-left)
+        '50% 0%',     // Frame 2: Small crack (top-middle)
+        '100% 0%',    // Frame 3: Medium crack (top-right)
+        '0% 50%',     // Frame 4: Large cracks (middle-left)
+        '50% 50%',    // Frame 5: Breaking apart (middle-middle)
+        '100% 50%',   // Frame 6: Large pieces (middle-right)
+        '0% 100%',    // Frame 7: Small pieces (bottom-left)
+        '50% 100%',   // Frame 8: Very small pieces (bottom-middle)
+        '100% 100%'   // Frame 9: Dust (bottom-right)
+      ];
+      
+      let currentFrame = 0;
+      const frameInterval = setInterval(() => {
+        if (currentFrame < frames.length) {
+          rockElement.style.backgroundPosition = frames[currentFrame];
+          currentFrame++;
+        } else {
+          clearInterval(frameInterval);
+        }
+      }, 150); // 150ms per frame for smooth but not too fast animation
+      
+      // Remove from opinions array after a delay
+      setTimeout(() => {
+        opinions.splice(index, 1);
+      }, 500);
+      
+      // Remove the rock element after animation completes
+      setTimeout(() => {
+        rockElement.remove();
+      }, 1800); // Slightly longer to let all animations finish
+    }
+
     function renderValley() {
       valley.innerHTML = '';
-      opinions.forEach(text => {
+      opinions.forEach((text, index) => {
         const rock = document.createElement('div');
         rock.className = 'rock';
 
@@ -243,16 +363,23 @@ body.shake {
         Object.assign(rock.style, { width, height });
         textDiv.style.fontSize = fontSize;
 
+        // Add click event for breaking
+        rock.addEventListener('click', () => breakRock(rock, index));
+
         rock.appendChild(textDiv);
         valley.appendChild(rock);
       });
     }
 
     function getRockSize(length) {
-  if (length <= 15) return { width: '120px', height: '100px', fontSize: '1.1rem' };
-  if (length <= 40) return { width: '160px', height: '120px', fontSize: '1rem' };
-  if (length <= 60) return { width: '200px', height: '140px', fontSize: '0.9rem' };
-  return { width: '240px', height: '160px', fontSize: '0.8rem' };
+  // Maintain aspect ratio - rocks are wider than tall (approximately 4:3 ratio)
+  // But scale appropriately for text content
+  if (length <= 10) return { width: '120px', height: '90px', fontSize: '1.1rem' };
+  if (length <= 20) return { width: '160px', height: '120px', fontSize: '1rem' };
+  if (length <= 35) return { width: '200px', height: '150px', fontSize: '0.95rem' };
+  if (length <= 50) return { width: '240px', height: '180px', fontSize: '0.9rem' };
+  if (length <= 65) return { width: '280px', height: '210px', fontSize: '0.85rem' };
+  return { width: '320px', height: '240px', fontSize: '0.8rem' };
 }
 
 window.addEventListener('DOMContentLoaded', () => {
