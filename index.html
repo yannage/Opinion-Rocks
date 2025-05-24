@@ -26,18 +26,18 @@
       padding: 20px;
     }
 
-body.shake {
-  animation: screenShake 0.4s ease;
-}
+    body.shake {
+      animation: screenShake 0.4s ease;
+    }
 
-  .phase {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 20px;
-    margin-top: 10vh; /* moves the entire phase content down */
-  }
+    .phase {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 20px;
+      margin-top: 10vh;
+    }
 
     .active {
       display: flex;
@@ -50,41 +50,41 @@ body.shake {
     }
 
     .rock {
-  margin-top: 30px;
-  margin-bottom: 10px;
-  background: url('art/rock_sprite.png') 0 0 no-repeat;
-  background-size: 300% 300%;
-  width: 240px;
-  height: 180px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  cursor: pointer;
-  transition: transform 0.1s ease;
-}
+      margin-top: 30px;
+      margin-bottom: 10px;
+      background: url('art/rock_sprite.png') 0 0 no-repeat;
+      background-size: 300% 300%;
+      width: 240px;
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
 
-.rock:hover {
-  transform: scale(1.05);
-}
+    .rock:hover {
+      transform: scale(1.05);
+    }
 
-.rock-text {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1rem;
-  line-height: 1.2;
-  color: #2F1B14;
-  text-align: center;
-  padding: 5% 10%;
-  width: 70%;
-  max-height: 70%;
-  word-break: break-word;
-  overflow-wrap: break-word;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  flex-shrink: 1;
-}
+    .rock-text {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1rem;
+      line-height: 1.2;
+      color: #2F1B14;
+      text-align: center;
+      padding: 5% 10%;
+      width: 70%;
+      max-height: 70%;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex-shrink: 1;
+    }
 
     textarea {
       margin-bottom: 10px;
@@ -109,6 +109,11 @@ body.shake {
       cursor: pointer;
     }
 
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     .valley {
       display: flex;
       overflow-x: auto;
@@ -116,168 +121,196 @@ body.shake {
       padding: 20px;
       max-width: 100vw;
     }
+
+    .loading {
+      font-size: 1rem;
+      color: #8B4513;
+      margin: 20px 0;
+    }
+
+    .error {
+      font-size: 0.9rem;
+      color: #D2691E;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 10px;
+      margin: 10px 0;
+    }
     
-@keyframes dropIn {
-  0%   { transform: translateY(-150vh); opacity: 0; }
-  80%  { transform: translateY(5px); opacity: 1; }
-  90%  { transform: translateY(-3px); }
-  100% { transform: translateY(0); }
-}
+    @keyframes dropIn {
+      0%   { transform: translateY(-150vh); opacity: 0; }
+      80%  { transform: translateY(5px); opacity: 1; }
+      90%  { transform: translateY(-3px); }
+      100% { transform: translateY(0); }
+    }
 
-.rock.animate-in {
-  animation: dropIn 1s ease-out forwards;
-}
+    .rock.animate-in {
+      animation: dropIn 1s ease-out forwards;
+    }
 
-@keyframes screenShake {
-  0% { transform: translate(0, 0); }
-  20% { transform: translate(-4px, 2px); }
-  40% { transform: translate(4px, -2px); }
-  60% { transform: translate(-3px, 3px); }
-  80% { transform: translate(3px, -3px); }
-  100% { transform: translate(0, 0); }
-}
+    @keyframes screenShake {
+      0% { transform: translate(0, 0); }
+      20% { transform: translate(-4px, 2px); }
+      40% { transform: translate(4px, -2px); }
+      60% { transform: translate(-3px, 3px); }
+      80% { transform: translate(3px, -3px); }
+      100% { transform: translate(0, 0); }
+    }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
 
-.rock-text.animate-in {
-  animation: fadeIn 1s ease-in forwards;
-  animation-delay: 1.7s;
-  opacity: 0;
-}
+    .rock-text.animate-in {
+      animation: fadeIn 1s ease-in forwards;
+      animation-delay: 1.7s;
+      opacity: 0;
+    }
 
-@keyframes dustPuff {
-  0% {
-    transform: translateX(-50%) scale(0.3);
-    opacity: 0;
-  }
-  30% {
-    transform: translateX(-50%) scale(1);
-    opacity: 0.6;
-  }
-  100% {
-    transform: translateX(-50%) scale(1.4);
-    opacity: 0;
-  }
-}
+    @keyframes dustPuff {
+      0% {
+        transform: translateX(-50%) scale(0.3);
+        opacity: 0;
+      }
+      30% {
+        transform: translateX(-50%) scale(1);
+        opacity: 0.6;
+      }
+      100% {
+        transform: translateX(-50%) scale(1.4);
+        opacity: 0;
+      }
+    }
 
-.rock-wrapper {
-  position: relative;
-  width: 240px;
-  height: 200px;
-}
+    .rock-wrapper {
+      position: relative;
+      width: 240px;
+      height: 200px;
+    }
 
-.dust {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 80px;
-  height: 30px;
-  background: radial-gradient(ellipse at center, rgba(139, 69, 19, 0.3), transparent);
-  border-radius: 50%;
-  transform: translateX(-50%) scale(0);
-  opacity: 0;
-  pointer-events: none;
-}
+    .dust {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 80px;
+      height: 30px;
+      background: radial-gradient(ellipse at center, rgba(139, 69, 19, 0.3), transparent);
+      border-radius: 50%;
+      transform: translateX(-50%) scale(0);
+      opacity: 0;
+      pointer-events: none;
+    }
 
-/* Rock breaking animations using sprite sheet */
-@keyframes rockShake {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  10% { transform: translate(-3px, -2px) rotate(-1deg); }
-  20% { transform: translate(3px, 2px) rotate(1deg); }
-  30% { transform: translate(-2px, 3px) rotate(-0.5deg); }
-  40% { transform: translate(2px, -3px) rotate(0.5deg); }
-  50% { transform: translate(-3px, 1px) rotate(-1deg); }
-  60% { transform: translate(3px, -1px) rotate(1deg); }
-  70% { transform: translate(-1px, 2px) rotate(-0.5deg); }
-  80% { transform: translate(1px, -2px) rotate(0.5deg); }
-  90% { transform: translate(-2px, -1px) rotate(-0.5deg); }
-}
+    @keyframes rockShake {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      10% { transform: translate(-3px, -2px) rotate(-1deg); }
+      20% { transform: translate(3px, 2px) rotate(1deg); }
+      30% { transform: translate(-2px, 3px) rotate(-0.5deg); }
+      40% { transform: translate(2px, -3px) rotate(0.5deg); }
+      50% { transform: translate(-3px, 1px) rotate(-1deg); }
+      60% { transform: translate(3px, -1px) rotate(1deg); }
+      70% { transform: translate(-1px, 2px) rotate(-0.5deg); }
+      80% { transform: translate(1px, -2px) rotate(0.5deg); }
+      90% { transform: translate(-2px, -1px) rotate(-0.5deg); }
+    }
 
-@keyframes textDestroy {
-  0% { 
-    opacity: 1; 
-    transform: scale(1);
-    filter: blur(0px);
-  }
-  20% { 
-    opacity: 0.9; 
-    transform: scale(1.1);
-    filter: blur(0.5px);
-  }
-  50% { 
-    opacity: 0.6; 
-    transform: scale(0.8) rotateX(30deg);
-    filter: blur(1px);
-  }
-  80% { 
-    opacity: 0.2; 
-    transform: scale(0.4) rotateX(60deg);
-    filter: blur(2px);
-  }
-  100% { 
-    opacity: 0; 
-    transform: scale(0.1) rotateX(90deg);
-    filter: blur(3px);
-  }
-}
+    @keyframes textDestroy {
+      0% { 
+        opacity: 1; 
+        transform: scale(1);
+        filter: blur(0px);
+      }
+      20% { 
+        opacity: 0.9; 
+        transform: scale(1.1);
+        filter: blur(0.5px);
+      }
+      50% { 
+        opacity: 0.6; 
+        transform: scale(0.8) rotateX(30deg);
+        filter: blur(1px);
+      }
+      80% { 
+        opacity: 0.2; 
+        transform: scale(0.4) rotateX(60deg);
+        filter: blur(2px);
+      }
+      100% { 
+        opacity: 0; 
+        transform: scale(0.1) rotateX(90deg);
+        filter: blur(3px);
+      }
+    }
 
-.rock.breaking {
-  animation: rockShake 0.3s ease-in-out;
-  pointer-events: none;
-}
+    .rock.breaking {
+      animation: rockShake 0.3s ease-in-out;
+      pointer-events: none;
+    }
 
-.rock-text.destroying {
-  animation: textDestroy 1.2s ease-out 0.3s forwards;
-}
+    .rock-text.destroying {
+      animation: textDestroy 1.2s ease-out 0.3s forwards;
+    }
 
-.breaking-dust {
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  width: 120px;
-  height: 40px;
-  background: radial-gradient(ellipse at center, rgba(139, 69, 19, 0.4), rgba(160, 82, 45, 0.2), transparent);
-  border-radius: 50%;
-  transform: translateX(-50%) scale(0);
-  opacity: 0;
-  pointer-events: none;
-}
+    .breaking-dust {
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      width: 120px;
+      height: 40px;
+      background: radial-gradient(ellipse at center, rgba(139, 69, 19, 0.4), rgba(160, 82, 45, 0.2), transparent);
+      border-radius: 50%;
+      transform: translateX(-50%) scale(0);
+      opacity: 0;
+      pointer-events: none;
+    }
 
-.rock.breaking .breaking-dust {
-  animation: dustPuff 0.8s ease-out 0.4s forwards;
-}
-
+    .rock.breaking .breaking-dust {
+      animation: dustPuff 0.8s ease-out 0.4s forwards;
+    }
   </style>
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <div id="phase1" class="phase active">
-  <div class="prompt">What's the most overrated food everyone pretends to love?</div>
-  <div class="rock-wrapper">
-    <div class="rock" id="preview">
-      <div class="rock-text" id="previewText"></div>
+    <div class="prompt">What's the most overrated food everyone pretends to love?</div>
+    <div class="rock-wrapper">
+      <div class="rock" id="preview">
+        <div class="rock-text" id="previewText"></div>
+      </div>
+      <div class="dust" id="dustEffect"></div>
     </div>
-    <div class="dust" id="dustEffect"></div>
-  </div>
-  <textarea id="input" maxlength="80" placeholder="Type your opinion here..."></textarea>
-  <button onclick="submitOpinion()">SUBMIT</button>
-</div>
+    <textarea id="input" maxlength="80" placeholder="Type your opinion here..."></textarea>
+    <button id="submitBtn" onclick="submitOpinion()">SUBMIT</button>
   </div>
 
   <div id="phase2" class="phase">
     <div class="prompt">Explore the Valley of Opinions<br><small style="font-size: 0.9rem; opacity: 0.8;">(Click rocks to break them!)</small></div>
+    <div id="loadingMessage" class="loading" style="display: none;">Loading opinions...</div>
+    <div id="errorMessage" class="error" style="display: none;"></div>
     <div class="valley" id="opinionValley"></div>
     <button onclick="restart()">ADD ANOTHER OPINION</button>
   </div>
 
   <script>
+    // IMPORTANT: Replace these with your actual Supabase credentials
+    const SUPABASE_URL = 'https://vqtmoptfigcwjuxszzat.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxdG1vcHRmaWdjd2p1eHN6emF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwOTcwOTgsImV4cCI6MjA2MzY3MzA5OH0.Z8To5RhckorBkoUp9mnIaAaZDuBGLpjYo38t5TbYhIg';
+    
+    // Initialize Supabase client
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     const input = document.getElementById('input');
     const previewText = document.getElementById('previewText');
     const preview = document.getElementById('preview');
     const valley = document.getElementById('opinionValley');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingMessage = document.getElementById('loadingMessage');
+    const errorMessage = document.getElementById('errorMessage');
+    
     let opinions = [];
+    let brokenOpinionIds = new Set(); // Track which opinions have been broken
 
     input.addEventListener('input', () => {
       const text = input.value.trim();
@@ -288,21 +321,67 @@ body.shake {
       previewText.style.fontSize = fontSize;
     });
 
-    function submitOpinion() {
+    async function submitOpinion() {
       const text = input.value.trim();
       if (!text) return;
 
-      opinions.unshift(text);
-      input.value = '';
-      previewText.textContent = '';
-      Object.assign(preview.style, getRockSize(0));
-      document.getElementById('phase1').classList.remove('active');
-      document.getElementById('phase2').classList.add('active');
-      renderValley();
+      // Disable button during submission
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'SUBMITTING...';
+
+      try {
+        // Insert opinion into Supabase
+        const { data, error } = await supabase
+          .from('opinions')
+          .insert([{ text }])
+          .select();
+
+        if (error) throw error;
+
+        // Clear input and transition to phase 2
+        input.value = '';
+        previewText.textContent = '';
+        Object.assign(preview.style, getRockSize(0));
+        document.getElementById('phase1').classList.remove('active');
+        document.getElementById('phase2').classList.add('active');
+        
+        // Load all opinions
+        await loadOpinions();
+      } catch (error) {
+        console.error('Error submitting opinion:', error);
+        alert('Failed to submit opinion. Please try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'SUBMIT';
+      }
     }
 
-    function breakRock(rockElement, index) {
-      if (rockElement.classList.contains('breaking')) return; // Prevent multiple clicks
+    async function loadOpinions() {
+      loadingMessage.style.display = 'block';
+      errorMessage.style.display = 'none';
+      
+      try {
+        // Fetch all opinions from Supabase, ordered by newest first
+        const { data, error } = await supabase
+          .from('opinions')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        opinions = data || [];
+        renderValley();
+      } catch (error) {
+        console.error('Error loading opinions:', error);
+        errorMessage.textContent = 'Failed to load opinions. Please refresh the page.';
+        errorMessage.style.display = 'block';
+      } finally {
+        loadingMessage.style.display = 'none';
+      }
+    }
+
+    function breakRock(rockElement, opinionId) {
+      if (rockElement.classList.contains('breaking')) return;
       
       const textElement = rockElement.querySelector('.rock-text');
       
@@ -315,17 +394,17 @@ body.shake {
       rockElement.classList.add('breaking');
       textElement.classList.add('destroying');
       
-      // Animate through sprite frames for a 3x3 grid
+      // Animate through sprite frames
       const frames = [
-        '0% 0%',      // Frame 1: Intact (top-left)
-        '50% 0%',     // Frame 2: Small crack (top-middle)
-        '100% 0%',    // Frame 3: Medium crack (top-right)
-        '0% 50%',     // Frame 4: Large cracks (middle-left)
-        '50% 50%',    // Frame 5: Breaking apart (middle-middle)
-        '100% 50%',   // Frame 6: Large pieces (middle-right)
-        '0% 100%',    // Frame 7: Small pieces (bottom-left)
-        '50% 100%',   // Frame 8: Very small pieces (bottom-middle)
-        '100% 100%'   // Frame 9: Dust (bottom-right)
+        '0% 0%',      // Frame 1: Intact
+        '50% 0%',     // Frame 2: Small crack
+        '100% 0%',    // Frame 3: Medium crack
+        '0% 50%',     // Frame 4: Large cracks
+        '50% 50%',    // Frame 5: Breaking apart
+        '100% 50%',   // Frame 6: Large pieces
+        '0% 100%',    // Frame 7: Small pieces
+        '50% 100%',   // Frame 8: Very small pieces
+        '100% 100%'   // Frame 9: Dust
       ];
       
       let currentFrame = 0;
@@ -336,35 +415,36 @@ body.shake {
         } else {
           clearInterval(frameInterval);
         }
-      }, 150); // 150ms per frame for smooth but not too fast animation
+      }, 150);
       
-      // Remove from opinions array after a delay
-      setTimeout(() => {
-        opinions.splice(index, 1);
-      }, 500);
+      // Mark opinion as broken
+      brokenOpinionIds.add(opinionId);
       
       // Remove the rock element after animation completes
       setTimeout(() => {
         rockElement.remove();
-      }, 1800); // Slightly longer to let all animations finish
+      }, 1800);
     }
 
     function renderValley() {
       valley.innerHTML = '';
-      opinions.forEach((text, index) => {
+      opinions.forEach((opinion) => {
+        // Skip if this opinion has been broken
+        if (brokenOpinionIds.has(opinion.id)) return;
+        
         const rock = document.createElement('div');
         rock.className = 'rock';
 
         const textDiv = document.createElement('div');
         textDiv.className = 'rock-text';
-        textDiv.textContent = text;
+        textDiv.textContent = opinion.text;
 
-        const { width, height, fontSize } = getRockSize(text.length);
+        const { width, height, fontSize } = getRockSize(opinion.text.length);
         Object.assign(rock.style, { width, height });
         textDiv.style.fontSize = fontSize;
 
         // Add click event for breaking
-        rock.addEventListener('click', () => breakRock(rock, index));
+        rock.addEventListener('click', () => breakRock(rock, opinion.id));
 
         rock.appendChild(textDiv);
         valley.appendChild(rock);
@@ -372,39 +452,42 @@ body.shake {
     }
 
     function getRockSize(length) {
-  // Maintain aspect ratio - rocks are wider than tall (approximately 4:3 ratio)
-  // But scale appropriately for text content
-  if (length <= 10) return { width: '120px', height: '90px', fontSize: '1.1rem' };
-  if (length <= 20) return { width: '160px', height: '120px', fontSize: '1rem' };
-  if (length <= 35) return { width: '200px', height: '150px', fontSize: '0.95rem' };
-  if (length <= 50) return { width: '240px', height: '180px', fontSize: '0.9rem' };
-  if (length <= 65) return { width: '280px', height: '210px', fontSize: '0.85rem' };
-  return { width: '320px', height: '240px', fontSize: '0.8rem' };
-}
+      if (length <= 10) return { width: '120px', height: '90px', fontSize: '1.1rem' };
+      if (length <= 20) return { width: '160px', height: '120px', fontSize: '1rem' };
+      if (length <= 35) return { width: '200px', height: '150px', fontSize: '0.95rem' };
+      if (length <= 50) return { width: '240px', height: '180px', fontSize: '0.9rem' };
+      if (length <= 65) return { width: '280px', height: '210px', fontSize: '0.85rem' };
+      return { width: '320px', height: '240px', fontSize: '0.8rem' };
+    }
 
-window.addEventListener('DOMContentLoaded', () => {
-  const preview = document.getElementById('preview');
-  const previewText = document.getElementById('previewText');
-  const dust = document.getElementById('dustEffect');
-  
-  preview.classList.add('animate-in');
-  previewText.classList.add('animate-in');
-  
-  setTimeout(() => {
-    document.body.classList.add('shake');
-    dust.style.animation = 'dustPuff 0.6s ease-out forwards';
-    
-    setTimeout(() => {
-      document.body.classList.remove('shake');
-      dust.style.animation = ''; // reset so it can play again if needed
-    }, 600);
-  }, 1000); // matches dropIn duration
-});
+    window.addEventListener('DOMContentLoaded', () => {
+      const preview = document.getElementById('preview');
+      const previewText = document.getElementById('previewText');
+      const dust = document.getElementById('dustEffect');
+      
+      preview.classList.add('animate-in');
+      previewText.classList.add('animate-in');
+      
+      setTimeout(() => {
+        document.body.classList.add('shake');
+        dust.style.animation = 'dustPuff 0.6s ease-out forwards';
+        
+        setTimeout(() => {
+          document.body.classList.remove('shake');
+          dust.style.animation = '';
+        }, 600);
+      }, 1000);
+    });
 
     function restart() {
       document.getElementById('phase2').classList.remove('active');
       document.getElementById('phase1').classList.add('active');
       input.focus();
+    }
+
+    // Load opinions when page loads (in case user navigates directly to phase 2)
+    if (document.getElementById('phase2').classList.contains('active')) {
+      loadOpinions();
     }
   </script>
 </body>
