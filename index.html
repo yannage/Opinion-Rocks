@@ -211,6 +211,17 @@
       transform: scale(1.05);
     }
 
+    .success-message {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      animation: slideIn 0.3s ease-out;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
     button {
       font-family: 'Fredoka', sans-serif;
       font-size: 1rem;
@@ -501,6 +512,9 @@
 </head>
 <body>
   <div id="phase1" class="phase active">
+    <div id="successMessage" class="success-message" style="display: none;">
+      🎉 Upgrade successful! You can now write up to 80 characters!
+    </div>
     <div class="prompt">What's the most overrated food everyone pretends to love?</div>
     <div class="rock-wrapper">
       <div class="rock" id="preview">
@@ -539,8 +553,6 @@
     // Initialize Supabase client
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-
-    
     // Initialize Stripe (replace with your publishable key)
     const stripe = Stripe('pk_test_51RSSG7A46eCcIv5C0N5hOGioWReufmFsKBM3idJtpn83Zqk34QjKFRBVi6ZtPCCOF4Rqyhh36cJTUbZPPw9i59UJ00Xbn810Vo');
 
@@ -555,6 +567,7 @@
     const nextBtn = document.getElementById('nextBtn');
     const charCounter = document.getElementById('charCounter');
     const upgradePrompt = document.getElementById('upgradePrompt');
+    const successMessage = document.getElementById('successMessage');
     
     let opinions = [];
     let brokenOpinionIds = new Set();
@@ -562,12 +575,75 @@
     let charLimit = 40;
     let isUpgraded = false;
 
-    // Character counter and limit enforcement
-    input.addEventListener('input', () => {
-      const text = input.value;
-      const length = text.length;
+    // Function to save state to URL
+    function saveStateToUrl() {
+      const state = {
+        text: input.value,
+        upgraded: isUpgraded,
+        limit: charLimit
+      };
+      const stateString = btoa(JSON.stringify(state));
+      const url = new URL(window.location);
+      url.searchParams.set('state', stateString);
+      window.history.replaceState(null, '', url);
+    }
+
+    // Function to load state from URL
+    function loadStateFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const stateString = urlParams.get('state');
+      const success = urlParams.get('success');
       
-      // Update character counter
+      if (stateString) {
+        try {
+          const state = JSON.parse(atob(stateString));
+          input.value = state.text || '';
+          isUpgraded = state.upgraded || false;
+          charLimit = state.limit || 40;
+          
+          // Update UI based on loaded state
+          updateCharCounter();
+          previewText.textContent = input.value.trim();
+          const { width, height, fontSize } = getRockSize(input.value.trim().length);
+          Object.assign(preview.style, { width, height });
+          previewText.style.fontSize = fontSize;
+          
+          // If upgraded, add badge
+          if (isUpgraded) {
+            const badge = document.createElement('div');
+            badge.className = 'upgraded-badge';
+            badge.textContent = 'XL';
+            preview.appendChild(badge);
+          }
+          
+          // Clear the state from URL after loading
+          const url = new URL(window.location);
+          url.searchParams.delete('state');
+          window.history.replaceState(null, '', url);
+        } catch (e) {
+          console.error('Failed to load state:', e);
+        }
+      }
+      
+      // Check if returning from successful payment
+      if (success === 'true') {
+        isUpgraded = true;
+        charLimit = 80;
+        successMessage.style.display = 'block';
+        setTimeout(() => {
+          successMessage.style.display = 'none';
+        }, 5000);
+        
+        // Clear success param from URL
+        const url = new URL(window.location);
+        url.searchParams.delete('success');
+        window.history.replaceState(null, '', url);
+      }
+    }
+
+    // Update character counter function
+    function updateCharCounter() {
+      const length = input.value.length;
       charCounter.textContent = `${length}/${charLimit}`;
       
       // Update counter styling
@@ -580,12 +656,6 @@
         if (!isUpgraded && length >= charLimit) {
           upgradePrompt.classList.add('show');
         }
-        
-        // Prevent further input if at limit
-        if (length > charLimit) {
-          input.value = text.substring(0, charLimit);
-          return;
-        }
       } else if (length >= charLimit * 0.9) {
         charCounter.classList.add('warning');
         charCounter.classList.remove('limit');
@@ -596,6 +666,20 @@
         input.classList.remove('limit-reached');
         upgradePrompt.classList.remove('show');
       }
+    }
+
+    // Character counter and limit enforcement
+    input.addEventListener('input', () => {
+      const text = input.value;
+      const length = text.length;
+      
+      // Prevent further input if at limit
+      if (length > charLimit) {
+        input.value = text.substring(0, charLimit);
+        return;
+      }
+      
+      updateCharCounter();
       
       // Update preview
       previewText.textContent = input.value.trim();
@@ -606,36 +690,48 @@
 
     // Upgrade rock function
     async function upgradeRock() {
-  const upgradeBtn = upgradePrompt.querySelector('.upgrade-btn');
-  upgradeBtn.textContent = 'Processing...';
-  upgradeBtn.disabled = true;
-  
-  try {
-    const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-      body: { product: 'big_rock' }
-    });
-    
-    if (error) {
-      console.error(error);
-      alert('Failed to create Stripe session.');
-    } else if (data.sessionId) {
-      const { error: stripeError } = await stripe.redirectToCheckout({ sessionId: data.sessionId });
-      if (stripeError) {
-        console.error(stripeError);
-        alert('Stripe checkout failed. Please try again.');
+      const upgradeBtn = upgradePrompt.querySelector('.upgrade-btn');
+      upgradeBtn.textContent = 'Processing...';
+      upgradeBtn.disabled = true;
+      
+      // Save current state before redirecting
+      saveStateToUrl();
+      
+      try {
+        // Get current URL for success/cancel redirects
+        const currentUrl = window.location.origin + window.location.pathname;
+        const successUrl = `${currentUrl}?success=true&state=${btoa(JSON.stringify({ text: input.value, upgraded: true, limit: 80 }))}`;
+        const cancelUrl = `${currentUrl}?state=${btoa(JSON.stringify({ text: input.value, upgraded: false, limit: 40 }))}`;
+        
+        const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+          body: { 
+            product: 'big_rock',
+            success_url: successUrl,
+            cancel_url: cancelUrl
+          }
+        });
+        
+        if (error) {
+          console.error(error);
+          alert('Failed to create Stripe session.');
+        } else if (data.sessionId) {
+          const { error: stripeError } = await stripe.redirectToCheckout({ sessionId: data.sessionId });
+          if (stripeError) {
+            console.error(stripeError);
+            alert('Stripe checkout failed. Please try again.');
+          }
+        } else {
+          console.error('No sessionId returned:', data);
+          alert('Failed to create Stripe session.');
+        }
+      } catch (err) {
+        console.error('Upgrade error:', err);
+        alert('Upgrade error. Please try again.');
+      } finally {
+        upgradeBtn.textContent = 'Upgrade for $1';
+        upgradeBtn.disabled = false;
       }
-    } else {
-      console.error('No sessionId returned:', data);
-      alert('Failed to create Stripe session.');
     }
-  } catch (err) {
-    console.error('Upgrade error:', err);
-    alert('Upgrade error. Please try again.');
-  } finally {
-    upgradeBtn.textContent = 'Upgrade for $1';
-    upgradeBtn.disabled = false;
-  }
-}
 
     async function submitOpinion() {
       const text = input.value.trim();
@@ -667,6 +763,11 @@
         // Remove any badges
         const badge = preview.querySelector('.upgraded-badge');
         if (badge) badge.remove();
+        
+        // Clear any saved state
+        const url = new URL(window.location);
+        url.searchParams.delete('state');
+        window.history.replaceState(null, '', url);
         
         document.getElementById('phase1').classList.remove('active');
         document.getElementById('phase2').classList.add('active');
@@ -865,22 +966,29 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      // Load state from URL first
+      loadStateFromUrl();
+      
       const preview = document.getElementById('preview');
       const previewText = document.getElementById('previewText');
       const dust = document.getElementById('dustEffect');
       
-      preview.classList.add('animate-in');
-      previewText.classList.add('animate-in');
-      
-      setTimeout(() => {
-        document.body.classList.add('shake');
-        dust.style.animation = 'dustPuff 0.6s ease-out forwards';
+      // Only animate if we're not returning from checkout
+      const urlParams = new URLSearchParams(window.location.search);
+      if (!urlParams.get('state') && !urlParams.get('success')) {
+        preview.classList.add('animate-in');
+        previewText.classList.add('animate-in');
         
         setTimeout(() => {
-          document.body.classList.remove('shake');
-          dust.style.animation = '';
-        }, 600);
-      }, 1000);
+          document.body.classList.add('shake');
+          dust.style.animation = 'dustPuff 0.6s ease-out forwards';
+          
+          setTimeout(() => {
+            document.body.classList.remove('shake');
+            dust.style.animation = '';
+          }, 600);
+        }, 1000);
+      }
     });
 
     function restart() {
