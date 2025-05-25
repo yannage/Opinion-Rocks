@@ -548,20 +548,25 @@
   </div>
   
 <div id="shareSection" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 9999;">
-  <div style="position: relative; background: url('art/cave.png') top/cover no-repeat, #D2B48C; border-radius: 20px; padding: 20px; width: 320px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center;">
-    <button id="closeShareCard" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer;">✖</button>
-    <div style="font-weight: bold; margin-bottom: 10px;" id="shareTopic">Today's Topic</div>
+  <div id="shareCardWrapper" style="position: relative; background: url('art/cave.png') center/cover no-repeat; padding: 20px; border-radius: 20px; width: 340px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center;">
+    
+    <button id="closeShareCard" style="position: absolute; top: 10px; right: 10px; background: white; color: #2F1B14; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">✖</button>
+    
+    <div id="shareTopic" style="font-weight: bold; margin-bottom: 10px; color: #2F1B14; text-align: center;">Today's Topic</div>
+    
     <div id="shareCard" style="width: 300px; height: 300px; background: url('art/rock_sprite.png') 0 0 no-repeat; background-size: 300% 300%; display: flex; align-items: center; justify-content: center; border-radius: 20px;">
       <div id="shareText" style="font-family: 'Fredoka', sans-serif; color: #2F1B14; text-align: center; font-size: 1rem; word-break: break-word; padding: 10px;"></div>
     </div>
+    
     <button id="downloadBtn" style="margin-top: 10px;">Download Image</button>
+    
     <div style="display: flex; gap: 10px; margin-top: 10px;">
       <button id="shareXBtn">Share to X</button>
       <button id="shareFBBtn">Share to Facebook</button>
     </div>
+    
   </div>
 </div>
-
   <script>
     // IMPORTANT: Replace these with your actual Supabase credentials
     const SUPABASE_URL = 'https://vqtmoptfigcwjuxszzat.supabase.co';
@@ -796,12 +801,13 @@
     };
     
     document.getElementById('downloadBtn').onclick = async () => {
-      const canvas = await html2canvas(document.getElementById('shareCard'));
-      const link = document.createElement('a');
-      link.download = 'opinion-rock.png';
-      link.href = canvas.toDataURL();
-      link.click();
-    };
+  const wrapper = document.getElementById('shareCardWrapper');
+  const canvas = await html2canvas(wrapper, { backgroundColor: null });
+  const link = document.createElement('a');
+  link.download = 'opinion-rock.png';
+  link.href = canvas.toDataURL();
+  link.click();
+};
     
     // Clear input and reset UI
     input.value = '';
