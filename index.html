@@ -93,9 +93,13 @@
       line-height: 1.2;
       color: #2F1B14;
       text-align: center;
-      padding: 5% 10%;
-      width: 70%;
-      max-height: 70%;
+      padding: 5px;
+      padding-left: 15px;
+      padding-right: 5px;
+      padding-top: 40px;
+      width: 55%;
+      max-height: 50%;
+      margin-left: 5%;
       word-break: break-word;
       overflow-wrap: break-word;
       overflow: hidden;
@@ -504,7 +508,7 @@
     </div>
     <div class="input-wrapper">
       <textarea id="input" rows="3" placeholder="Type your opinion here..."></textarea>
-      <div class="char-counter" id="charCounter">0/80</div>
+      <div class="char-counter" id="charCounter">0/40</div>
     </div>
     <div class="upgrade-prompt" id="upgradePrompt">
       <span class="coin">🪙</span> You've reached your rock's limit! 
@@ -548,7 +552,7 @@
     let opinions = [];
     let brokenOpinionIds = new Set();
     let currentIndex = 0;
-    let charLimit = 80;
+    let charLimit = 40;
     let isUpgraded = false;
 
     // Character counter and limit enforcement
@@ -605,7 +609,7 @@
       
       // Simulate payment processing
       setTimeout(() => {
-        charLimit = 160;
+        charLimit = 80;
         isUpgraded = true;
         
         // Update UI
@@ -626,7 +630,7 @@
         // Show success message
         const successMsg = document.createElement('div');
         successMsg.className = 'upgrade-prompt show';
-        successMsg.innerHTML = '<span class="coin">✨</span> Rock upgraded! You now have 160 characters.';
+        successMsg.innerHTML = '<span class="coin">✨</span> Rock upgraded! You now have 80 characters.';
         successMsg.style.background = 'linear-gradient(135deg, #90EE90 0%, #32CD32 100%)';
         upgradePrompt.parentNode.insertBefore(successMsg, upgradePrompt);
         
@@ -652,8 +656,7 @@
         const { data, error } = await supabase
           .from('opinions')
           .insert([{ 
-            text,
-            is_upgraded: isUpgraded 
+            text
           }])
           .select();
 
@@ -663,8 +666,8 @@
         input.value = '';
         previewText.textContent = '';
         Object.assign(preview.style, getRockSize(0));
-        charCounter.textContent = '0/80';
-        charLimit = 80;
+        charCounter.textContent = '0/40';
+        charLimit = 40;
         isUpgraded = false;
         
         // Remove any badges
@@ -795,8 +798,8 @@
         Object.assign(rock.style, { width, height });
         textDiv.style.fontSize = fontSize;
         
-        // Add upgraded badge if applicable
-        if (opinion.is_upgraded) {
+        // Add upgraded badge if applicable (for texts longer than 40 chars)
+        if (opinion.text.length > 40) {
           const badge = document.createElement('div');
           badge.className = 'upgraded-badge';
           badge.textContent = 'XL';
@@ -845,12 +848,12 @@
         height: `${baseSize + increment * 2}px`, 
         fontSize: isMobile ? '0.8rem' : '0.9rem' 
       };
-      if (length <= 80) return { 
+      if (length <= 40) return { 
         width: `${baseSize + increment * 3}px`, 
         height: `${baseSize + increment * 3}px`, 
         fontSize: isMobile ? '0.75rem' : '0.85rem' 
       };
-      // For upgraded rocks (80-160 characters)
+      // For upgraded rocks (40-80 characters)
       return { 
         width: `${baseSize + increment * 4}px`, 
         height: `${baseSize + increment * 4}px`, 
