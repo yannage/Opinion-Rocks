@@ -495,6 +495,7 @@
   </style>
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <!-- Stripe JS -->
   <script src="https://js.stripe.com/v3/"></script>
 </head>
@@ -541,7 +542,7 @@
 
     
     // Initialize Stripe (replace with your publishable key)
-    const stripe = Stripe('pk_test_YOUR_STRIPE_PUBLISHABLE_KEY');
+    const stripe = Stripe('pk_test_51RSSG7A46eCcIv5C0N5hOGioWReufmFsKBM3idJtpn83Zqk34QjKFRBVi6ZtPCCOF4Rqyhh36cJTUbZPPw9i59UJ00Xbn810Vo');
 
     const input = document.getElementById('input');
     const previewText = document.getElementById('previewText');
@@ -604,50 +605,37 @@
     });
 
     // Upgrade rock function
-    function upgradeRock() {
-      // In a real implementation, this would handle payment
-      // For now, we'll just simulate the upgrade
-      
-      // Show loading state
-      const upgradeBtn = upgradePrompt.querySelector('.upgrade-btn');
-      upgradeBtn.textContent = 'Processing...';
-      upgradeBtn.disabled = true;
-      
-      // Simulate payment processing
-      setTimeout(() => {
-        charLimit = 80;
-        isUpgraded = true;
-        
-        // Update UI
-        charCounter.textContent = `${input.value.length}/${charLimit}`;
-        upgradePrompt.classList.remove('show');
-        input.classList.remove('limit-reached');
-        
-        // Add upgraded badge to preview
-        const badge = document.createElement('div');
-        badge.className = 'upgraded-badge';
-        badge.textContent = 'XL';
-        preview.appendChild(badge);
-        
-        // Reset upgrade button for next time
-        upgradeBtn.textContent = 'Upgrade for $1';
-        upgradeBtn.disabled = false;
-        
-        // Show success message
-        const successMsg = document.createElement('div');
-        successMsg.className = 'upgrade-prompt show';
-        successMsg.innerHTML = '<span class="coin">✨</span> Rock upgraded! You now have 80 characters.';
-        successMsg.style.background = 'linear-gradient(135deg, #90EE90 0%, #32CD32 100%)';
-        upgradePrompt.parentNode.insertBefore(successMsg, upgradePrompt);
-        
-        setTimeout(() => {
-          successMsg.remove();
-        }, 3000);
-        
-        // Allow continued typing
-        input.focus();
-      }, 1500);
+    async function upgradeRock() {
+  const upgradeBtn = upgradePrompt.querySelector('.upgrade-btn');
+  upgradeBtn.textContent = 'Processing...';
+  upgradeBtn.disabled = true;
+  
+  try {
+    const response = await fetch('https://vqtmoptfigcwjuxszzat.supabase.co/functions/v1/create-checkout-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product: 'big_rock', userId: 'some-user-id' }) // customize as needed
+    });
+    
+    const result = await response.json();
+    if (result.sessionId) {
+      const { error } = await stripe.redirectToCheckout({ sessionId: result.sessionId });
+      if (error) {
+        console.error(error);
+        alert('Stripe checkout failed. Please try again.');
+      }
+    } else {
+      console.error(result);
+      alert('Failed to create Stripe session.');
     }
+  } catch (err) {
+    console.error(err);
+    alert('Upgrade error. Please try again.');
+  } finally {
+    upgradeBtn.textContent = 'Upgrade for $1';
+    upgradeBtn.disabled = false;
+  }
+}
 
     async function submitOpinion() {
       const text = input.value.trim();
