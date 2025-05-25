@@ -611,25 +611,25 @@
   upgradeBtn.disabled = true;
   
   try {
-    const response = await fetch('https://vqtmoptfigcwjuxszzat.supabase.co/functions/v1/create-checkout-session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product: 'big_rock', userId: 'some-user-id' }) // customize as needed
+    const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+      body: { product: 'big_rock' }
     });
     
-    const result = await response.json();
-    if (result.sessionId) {
-      const { error } = await stripe.redirectToCheckout({ sessionId: result.sessionId });
-      if (error) {
-        console.error(error);
+    if (error) {
+      console.error(error);
+      alert('Failed to create Stripe session.');
+    } else if (data.sessionId) {
+      const { error: stripeError } = await stripe.redirectToCheckout({ sessionId: data.sessionId });
+      if (stripeError) {
+        console.error(stripeError);
         alert('Stripe checkout failed. Please try again.');
       }
     } else {
-      console.error(result);
+      console.error('No sessionId returned:', data);
       alert('Failed to create Stripe session.');
     }
   } catch (err) {
-    console.error(err);
+    console.error('Upgrade error:', err);
     alert('Upgrade error. Please try again.');
   } finally {
     upgradeBtn.textContent = 'Upgrade for $1';
