@@ -791,15 +791,19 @@
     
     // Setup social buttons
     document.getElementById('shareXBtn').onclick = () => {
-      const shareMsg = encodeURIComponent(`Check out my opinion on OpinionRocks! ${permalink}`);
-      window.open(`https://twitter.com/intent/tweet?text=${shareMsg}`, '_blank');
-    };
-    
-    document.getElementById('shareFBBtn').onclick = () => {
-      const shareUrl = encodeURIComponent(permalink);
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank');
-    };
-    
+  const shareMsg = encodeURIComponent(
+    `🪨 OPINION ROCKS 🪨\nEvery day, a new stone.\nEvery day, a new take.\n\nToday’s question:\nWhat’s the worst anime?\n\n> ${savedOpinion.text}\n\nEtch yours:\nhttps://opinion-rocks.netlify.app`
+  );
+  window.open(`https://twitter.com/intent/tweet?text=${shareMsg}`, '_blank');
+};
+
+document.getElementById('shareFBBtn').onclick = () => {
+  const shareUrl = encodeURIComponent('https://opinion-rocks.netlify.app');
+  const shareQuote = encodeURIComponent(
+    `🪨 OPINION ROCKS 🪨\nEvery day, a new stone.\nEvery day, a new take.\n\nToday’s question:\nWhat’s the worst anime?\n\n> ${savedOpinion.text}\n\nEtch yours:`
+  );
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${shareQuote}`, '_blank');
+};
     document.getElementById('downloadBtn').onclick = async () => {
   const wrapper = document.getElementById('shareCardWrapper');
   const canvas = await html2canvas(wrapper, { backgroundColor: null });
