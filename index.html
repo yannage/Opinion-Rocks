@@ -93,12 +93,11 @@
       line-height: 1.2;
       color: #2F1B14;
       text-align: center;
-      padding: 5px;
-      padding-left: 15px;
-      padding-right: 5px;
-      padding-top: 40px;
+      padding: 10px;
+      padding-left: 20px;
+      padding-right: 15px;
       width: 55%;
-      max-height: 50%;
+      max-height: 60%;
       margin-left: 5%;
       word-break: break-word;
       overflow-wrap: break-word;
@@ -496,6 +495,8 @@
   </style>
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Stripe JS -->
+  <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
   <div id="phase1" class="phase active">
@@ -536,6 +537,11 @@
     
     // Initialize Supabase client
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+
+    
+    // Initialize Stripe (replace with your publishable key)
+    const stripe = Stripe('pk_test_YOUR_STRIPE_PUBLISHABLE_KEY');
 
     const input = document.getElementById('input');
     const previewText = document.getElementById('previewText');
@@ -842,11 +848,6 @@
         width: `${baseSize + increment}px`, 
         height: `${baseSize + increment}px`, 
         fontSize: isMobile ? '0.85rem' : '0.95rem' 
-      };
-      if (length <= 45) return { 
-        width: `${baseSize + increment * 2}px`, 
-        height: `${baseSize + increment * 2}px`, 
-        fontSize: isMobile ? '0.8rem' : '0.9rem' 
       };
       if (length <= 40) return { 
         width: `${baseSize + increment * 3}px`, 
