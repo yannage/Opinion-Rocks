@@ -509,6 +509,8 @@
 
   <!-- Stripe JS -->
   <script src="https://js.stripe.com/v3/"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
   <div id="phase1" class="phase active">
@@ -544,6 +546,21 @@
     </div>
     <button onclick="restart()">ADD ANOTHER OPINION</button>
   </div>
+  
+<div id="shareSection" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 9999;">
+  <div style="position: relative; background: url('art/cave.png') top/cover no-repeat, #D2B48C; border-radius: 20px; padding: 20px; width: 320px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center;">
+    <button id="closeShareCard" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer;">✖</button>
+    <div style="font-weight: bold; margin-bottom: 10px;" id="shareTopic">Today's Topic</div>
+    <div id="shareCard" style="width: 300px; height: 300px; background: url('art/rock_sprite.png') 0 0 no-repeat; background-size: 300% 300%; display: flex; align-items: center; justify-content: center; border-radius: 20px;">
+      <div id="shareText" style="font-family: 'Fredoka', sans-serif; color: #2F1B14; text-align: center; font-size: 1rem; word-break: break-word; padding: 10px;"></div>
+    </div>
+    <button id="downloadBtn" style="margin-top: 10px;">Download Image</button>
+    <div style="display: flex; gap: 10px; margin-top: 10px;">
+      <button id="shareXBtn">Share to X</button>
+      <button id="shareFBBtn">Share to Facebook</button>
+    </div>
+  </div>
+</div>
 
   <script>
     // IMPORTANT: Replace these with your actual Supabase credentials
@@ -733,55 +750,82 @@
       }
     }
 
-    async function submitOpinion() {
-      const text = input.value.trim();
-      if (!text) return;
-
-      // Disable button during submission
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'SUBMITTING...';
-
-      try {
-        // Insert opinion into Supabase
-        const { data, error } = await supabase
-          .from('opinions')
-          .insert([{ 
-            text
-          }])
-          .select();
-
-        if (error) throw error;
-
-        // Clear input and transition to phase 2
-        input.value = '';
-        previewText.textContent = '';
-        Object.assign(preview.style, getRockSize(0));
-        charCounter.textContent = '0/40';
-        charLimit = 40;
-        isUpgraded = false;
-        
-        // Remove any badges
-        const badge = preview.querySelector('.upgraded-badge');
-        if (badge) badge.remove();
-        
-        // Clear any saved state
-        const url = new URL(window.location);
-        url.searchParams.delete('state');
-        window.history.replaceState(null, '', url);
-        
-        document.getElementById('phase1').classList.remove('active');
-        document.getElementById('phase2').classList.add('active');
-        
-        // Load all opinions
-        await loadOpinions();
-      } catch (error) {
-        console.error('Error submitting opinion:', error);
-        alert('Failed to submit opinion. Please try again.');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'SUBMIT';
-      }
-    }
+  async function submitOpinion() {
+  const text = input.value.trim();
+  if (!text) return;
+  
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'SUBMITTING...';
+  
+  try {
+    const { data, error } = await supabase
+      .from('opinions')
+      .insert([{ text }])
+      .select();
+    
+    if (error) throw error;
+    
+    const savedOpinion = data[0];
+    const permalink = `${window.location.origin}/?opinion=${savedOpinion.id}`;
+    
+    // Show share card
+    const shareSection = document.getElementById('shareSection');
+    const shareText = document.getElementById('shareText');
+    const shareTopic = document.getElementById('shareTopic');
+    shareText.textContent = savedOpinion.text;
+    
+    // Set first frame of rock sprite
+    const shareCard = document.getElementById('shareCard');
+    shareCard.style.backgroundPosition = '0% 0%';
+    
+    // Get current topic
+    const promptText = document.querySelector('.prompt').textContent;
+    shareTopic.textContent = promptText;
+    
+    shareSection.style.display = 'flex';
+    
+    // Setup social buttons
+    document.getElementById('shareXBtn').onclick = () => {
+      const shareMsg = encodeURIComponent(`Check out my opinion on OpinionRocks! ${permalink}`);
+      window.open(`https://twitter.com/intent/tweet?text=${shareMsg}`, '_blank');
+    };
+    
+    document.getElementById('shareFBBtn').onclick = () => {
+      const shareUrl = encodeURIComponent(permalink);
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank');
+    };
+    
+    document.getElementById('downloadBtn').onclick = async () => {
+      const canvas = await html2canvas(document.getElementById('shareCard'));
+      const link = document.createElement('a');
+      link.download = 'opinion-rock.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    };
+    
+    // Clear input and reset UI
+    input.value = '';
+    previewText.textContent = '';
+    Object.assign(preview.style, getRockSize(0));
+    charCounter.textContent = '0/40';
+    charLimit = 40;
+    isUpgraded = false;
+    
+    const badge = preview.querySelector('.upgraded-badge');
+    if (badge) badge.remove();
+    
+    const url = new URL(window.location);
+    url.searchParams.delete('state');
+    window.history.replaceState(null, '', url);
+    
+  } catch (error) {
+    console.error('Error submitting opinion:', error);
+    alert('Failed to submit opinion. Please try again.');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'SUBMIT';
+  }
+}
 
     async function loadOpinions() {
       loadingMessage.style.display = 'block';
@@ -1033,6 +1077,15 @@ async function loadDailyTopic() {
     if (document.getElementById('phase2').classList.contains('active')) {
       loadOpinions();
     }
+    
+    // This ONLY handles the X button on the share card
+document.getElementById('closeShareCard').addEventListener('click', () => {
+  document.getElementById('shareSection').style.display = 'none';
+  document.getElementById('phase1').classList.remove('active');
+  document.getElementById('phase2').classList.add('active');
+  loadOpinions();
+});
+    
   </script>
 </body>
 </html>
