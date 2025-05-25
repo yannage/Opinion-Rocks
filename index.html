@@ -515,7 +515,7 @@
     <div id="successMessage" class="success-message" style="display: none;">
       🎉 Upgrade successful! You can now write up to 80 characters!
     </div>
-    <div class="prompt">What's the most overrated food everyone pretends to love?</div>
+    <div class="prompt">Loading today's question...</div>
     <div class="rock-wrapper">
       <div class="rock" id="preview">
         <div class="rock-text" id="previewText"></div>
@@ -964,32 +964,64 @@
         }
       });
     }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      // Load state from URL first
-      loadStateFromUrl();
+    
+    // Add this function to load today's topic
+async function loadDailyTopic() {
+  try {
+    const { data, error } = await supabase
+      .from('daily_state')
+      .select('*') // select all columns for debug
+      .order('id', { ascending: false }) // get the most recent row
+      .limit(1);
+    
+    if (error) throw error;
+    
+    console.log('Fetched daily_state data:', JSON.stringify(data, null, 2));
+    
+    if (data && data.length > 0) {
+      const topic = data[0].current_topic;
       
-      const preview = document.getElementById('preview');
-      const previewText = document.getElementById('previewText');
-      const dust = document.getElementById('dustEffect');
-      
-      // Only animate if we're not returning from checkout
-      const urlParams = new URLSearchParams(window.location.search);
-      if (!urlParams.get('state') && !urlParams.get('success')) {
-        preview.classList.add('animate-in');
-        previewText.classList.add('animate-in');
-        
-        setTimeout(() => {
-          document.body.classList.add('shake');
-          dust.style.animation = 'dustPuff 0.6s ease-out forwards';
-          
-          setTimeout(() => {
-            document.body.classList.remove('shake');
-            dust.style.animation = '';
-          }, 600);
-        }, 1000);
+      if (topic && topic.trim() !== '') {
+        document.querySelector('.prompt').textContent = topic;
+      } else {
+        document.querySelector('.prompt').textContent = "No topic text in this row!";
       }
-    });
+    } else {
+      document.querySelector('.prompt').textContent = "No topic rows found!";
+    }
+  } catch (error) {
+    console.error('Error loading topic:', error);
+    document.querySelector('.prompt').textContent =
+      "What's the most overrated hat everyone pretends to love?";
+  }
+}
+
+
+    window.addEventListener('DOMContentLoaded', async () => {
+  await loadDailyTopic(); // Add await here
+  loadStateFromUrl();
+  
+  const preview = document.getElementById('preview');
+  const previewText = document.getElementById('previewText');
+  const dust = document.getElementById('dustEffect');
+  
+  // Only animate if we're not returning from checkout
+  const urlParams = new URLSearchParams(window.location.search);
+  if (!urlParams.get('state') && !urlParams.get('success')) {
+    preview.classList.add('animate-in');
+    previewText.classList.add('animate-in');
+    
+    setTimeout(() => {
+      document.body.classList.add('shake');
+      dust.style.animation = 'dustPuff 0.6s ease-out forwards';
+      
+      setTimeout(() => {
+        document.body.classList.remove('shake');
+        dust.style.animation = '';
+      }, 600);
+    }, 1000);
+  }
+});
 
     function restart() {
       document.getElementById('phase2').classList.remove('active');
