@@ -36,11 +36,11 @@
       display: none;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      gap: 15px;
+      justify-content: center;
+      gap: 25px;
       width: 100%;
       max-width: 500px;
-      padding-bottom: env(safe-area-inset-bottom);
+      padding: 40px 20px; /* more breathing room on top and sides */
     }
 
     @media (max-width: 768px) {
@@ -69,20 +69,19 @@
       }
     }
 
-    .rock {
-      background: url('art/rock_sprite.png') 0 0 no-repeat;
-      background-size: 300% 300%;
-      width: 200px;
-      height: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      cursor: pointer;
-      transition: transform 0.1s ease;
-      margin: 10px 0;
-    }
 
+.rock {
+  background: url('art/rock_sprite.png') 0 0 no-repeat;
+  background-size: 300% 300%;
+  width: 250px;
+  height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
     .rock:hover {
       transform: scale(1.05);
     }
@@ -394,12 +393,45 @@
         opacity: 0;
       }
     }
+.rock-wrapper {
+  margin-top: 20px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-    .rock-wrapper {
-      position: relative;
-      width: 200px;
-      height: 220px;
-    }
+.banner-title {
+  font-weight: bold;
+  background: #A0522D;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.prompt-banner {
+  background: #FFFFFF;
+  color: #2F1B14; /* deep brown */
+  padding: 14px 30px;
+  border-radius: 12px;
+  border: 3px solid #2F1B14;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  margin-bottom: 25px;
+  display: inline-block;
+}
+button#submitBtn {
+  width: 100%;
+  max-width: 300px;
+  padding: 14px 24px;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
 
     .dust {
       position: absolute;
@@ -517,7 +549,12 @@
     <div id="successMessage" class="success-message" style="display: none;">
       🎉 Upgrade successful! You can now write up to 80 characters!
     </div>
+    <div class="banner-title">
+  <h1>OPINION ROCKS</h1>
+</div>
+<div class="prompt-banner">
     <div class="prompt">Loading today's question...</div>
+    </div>
     <div class="rock-wrapper">
       <div class="rock" id="preview">
         <div class="rock-text" id="previewText"></div>
@@ -979,33 +1016,17 @@ document.getElementById('downloadBtn').onclick = async () => {
     }
 
     function getRockSize(length) {
-      // Adjust sizes for mobile
-      const isMobile = window.innerWidth <= 768;
-      const baseSize = isMobile ? 140 : 160;
-      const increment = isMobile ? 15 : 20;
-      
-      if (length <= 15) return { 
-        width: `${baseSize}px`, 
-        height: `${baseSize}px`, 
-        fontSize: isMobile ? '0.9rem' : '1rem' 
-      };
-      if (length <= 30) return { 
-        width: `${baseSize + increment}px`, 
-        height: `${baseSize + increment}px`, 
-        fontSize: isMobile ? '0.85rem' : '0.95rem' 
-      };
-      if (length <= 40) return { 
-        width: `${baseSize + increment * 3}px`, 
-        height: `${baseSize + increment * 3}px`, 
-        fontSize: isMobile ? '0.75rem' : '0.85rem' 
-      };
-      // For upgraded rocks (40-80 characters)
-      return { 
-        width: `${baseSize + increment * 4}px`, 
-        height: `${baseSize + increment * 4}px`, 
-        fontSize: isMobile ? '0.7rem' : '0.8rem' 
-      };
-    }
+  const isMobile = window.innerWidth <= 768;
+  const baseSize = isMobile ? 200 : 250; // larger base size
+  const upgradedSize = isMobile ? 240 : 300;
+  
+  if (length <= 40) {
+    return { width: `${baseSize}px`, height: `${baseSize}px`, fontSize: isMobile ? '0.9rem' : '1rem' };
+  }
+  
+  // For upgraded rocks (40–80 characters)
+  return { width: `${upgradedSize}px`, height: `${upgradedSize}px`, fontSize: isMobile ? '0.85rem' : '0.95rem' };
+}
 
     // Mobile keyboard handling
     if (window.visualViewport) {
