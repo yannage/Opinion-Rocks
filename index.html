@@ -5,76 +5,65 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Rock Your Opinion</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600&display=swap');
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    body {
-      font-family: 'Fredoka', sans-serif;
-      background: url('art/cave.png') top/cover no-repeat;
-      color: #2F1B14;
-      min-height: 100vh;
-      min-height: -webkit-fill-available;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 20px;
-      overflow-x: hidden;
-    }
+html, body {
+  width: 100%;
+  height: 100%;
+}
 
-    body.shake {
-      animation: screenShake 0.4s ease;
-    }
+body {
+  font-family: 'Fredoka', sans-serif;
+  background: url('art/cave.png') top/cover no-repeat;
+  background-size: cover;
+  color: #2F1B14;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow-x: hidden;
+}
 
-    .phase {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 25px;
-      width: 100%;
-      max-width: 500px;
-      padding: 40px 20px; /* more breathing room on top and sides */
-    }
+body.shake {
+  animation: screenShake 0.4s ease;
+}
 
-    @media (max-width: 768px) {
-      .phase {
-        gap: 10px;
-        justify-content: center;
-        min-height: calc(100vh - 40px);
-        min-height: calc(100vh - 40px - env(safe-area-inset-bottom));
-      }
-    }
+.phase {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
 
-    .active {
-      display: flex;
-    }
+.active {
+  display: flex;
+}
 
-    .prompt {
-      font-size: 1.4rem;
-      font-weight: bold;
-      max-width: 90vw;
-      margin-bottom: 10px;
-    }
-
-    @media (max-width: 768px) {
-      .prompt {
-        font-size: 1.2rem;
-      }
-    }
-
+.prompt {
+  font-size: clamp(1.2rem, 2vw + 1rem, 2rem);
+  font-weight: bold;
+  max-width: 90vw;
+  margin-bottom: 10px;
+}
 
 .rock {
   background: url('art/rock_sprite.png') 0 0 no-repeat;
   background-size: 300% 300%;
-  width: 250px;
-  height: 250px;
+  width: clamp(200px, 20vw + 100px, 300px);
+  height: clamp(200px, 20vw + 100px, 300px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -82,48 +71,56 @@
   cursor: pointer;
   transition: transform 0.1s ease;
 }
-    .rock:hover {
-      transform: scale(1.05);
-    }
+.rock:hover {
+  transform: scale(1.05);
+}
 
-    .rock-text {
-      font-family: 'Fredoka', sans-serif;
-      font-size: 1rem;
-      line-height: 1.2;
-      color: #2F1B14;
-      text-align: center;
-      padding: 10px;
-      padding-left: 35px;
-      padding-right: -20px;
-      width: 75%;
-      max-height: 60%;
-      margin-left: 5%;
-      word-break: break-word;
-      overflow-wrap: break-word;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      flex-shrink: 1;
-    }
+.rock-text {
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(0.9rem, 1vw + 0.6rem, 1.2rem);
+  line-height: 1.2;
+  color: #2F1B14;
+  text-align: center;
+  padding: 10px;
+  width: 75%;
+  max-height: 60%;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 
-    .input-wrapper {
-      position: relative;
-      width: 80vw;
-      max-width: 400px;
-    }
+.input-wrapper {
+  position: relative;
+  width: 80vw;
+  max-width: 500px;
+}
 
-    textarea {
-      width: 100%;
-      padding: 15px;
-      padding-bottom: 35px;
-      font-family: 'Fredoka', sans-serif;
-      font-size: 1rem;
-      border-radius: 10px;
-      border: 2px solid #8B4513;
-      resize: none;
-      transition: border-color 0.3s ease;
-    }
+textarea {
+  width: 100%;
+  padding: 15px;
+  padding-bottom: 35px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: 2px solid #8B4513;
+  resize: none;
+  transition: border-color 0.3s ease;
+}
+
+
+
+
+
+@media (min-width: 1200px) {
+  body {
+    background-size: 100% auto;
+    background-position: center top;
+    background-repeat: no-repeat;
+  }
+}
 
     textarea.limit-reached {
       border-color: #FFD700;
@@ -222,20 +219,24 @@
     }
 
     button {
-      font-family: 'Fredoka', sans-serif;
-      font-size: 1rem;
-      padding: 10px 24px;
-      background-color: #A0522D;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.1rem;
+  padding: 14px 24px;
+  background-color: #A0522D;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 100%;
+  max-width: 300px;
+  transition: all 0.3s ease;
+}
 
     button:hover {
-      background-color: #8B4513;
-    }
+  background-color: #8B4513;
+}
+
+
 
     button:disabled {
       opacity: 0.6;
