@@ -1007,56 +1007,32 @@ function renderValley() {
   const rocksToShow = visibleOpinions.slice(currentIndex, currentIndex + rocksPerPage);
   
   let rockIndex = 0;
+
+if (rocksToShow.length <= 2) {
+  // Handle 1–2 rocks: center in a single row
+  const row = document.createElement('div');
+  row.className = 'valley-row';
+  row.style.justifyContent = 'center';
+  row.style.marginTop = '0px';
+  row.style.zIndex = 2;
+  
+  rocksToShow.forEach(opinion => {
+    const rockItem = createRockItem(opinion);
+    row.appendChild(rockItem);
+  });
+  
+  valley.appendChild(row);
+} else {
+  // Standard multi-layer display
   layerPattern.forEach((count, layerIndex) => {
     const row = document.createElement('div');
     row.className = 'valley-row';
     row.style.zIndex = layerIndex + 1;
-    row.style.marginTop = layerIndex === 0 ? '0px' : '-30px'; // overlap rows upward
+    row.style.marginTop = layerIndex === 0 ? '0px' : '-30px';
     
     for (let i = 0; i < count && rockIndex < rocksToShow.length; i++) {
       const opinion = rocksToShow[rockIndex++];
-      const rockItem = document.createElement('div');
-      rockItem.className = 'rock-item';
-      
-      const rock = document.createElement('div');
-      rock.className = 'rock';
-      
-      // Apply random offsets and rotation
-      const offsetX = Math.floor(Math.random() * 20) - 10; // -10px to +10px
-      const offsetY = Math.floor(Math.random() * 10); // 0px to +10px
-      const randomRotation = (Math.random() * 20) - 10; // -10deg to +10deg
-      const scale = layerIndex === 0 ? 0.85 : layerIndex === 1 ? 1 : 1.1;
-      
-      rock.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${randomRotation}deg) scale(${scale})`;
-      
-      const textDiv = document.createElement('div');
-      textDiv.className = 'rock-text';
-      textDiv.textContent = opinion.text;
-      
-      const { width, height, fontSize } = getRockSize(opinion.text.length);
-      Object.assign(rock.style, { width, height });
-      textDiv.style.fontSize = fontSize;
-      
-      if (opinion.text.length > 40) {
-        const badge = document.createElement('div');
-        badge.className = 'upgraded-badge';
-        badge.textContent = 'XL';
-        rock.appendChild(badge);
-      }
-      
-      rock.addEventListener('click', () => {
-        breakRock(rock, opinion.id);
-        setTimeout(() => {
-          const newVisible = opinions.filter(op => !brokenOpinionIds.has(op.id));
-          if (currentIndex > 0 && currentIndex + rocksPerPage > newVisible.length) {
-            currentIndex = Math.max(0, newVisible.length - rocksPerPage);
-          }
-          renderValley();
-        }, 1800);
-      });
-      
-      rock.appendChild(textDiv);
-      rockItem.appendChild(rock);
+      const rockItem = createRockItem(opinion);
       row.appendChild(rockItem);
     }
     
@@ -1064,8 +1040,54 @@ function renderValley() {
       valley.appendChild(row);
     }
   });
+}
   
   updateNavigationButtons();
+}
+
+function createRockItem(opinion) {
+  const rockItem = document.createElement('div');
+  rockItem.className = 'rock-item';
+  
+  const rock = document.createElement('div');
+  rock.className = 'rock';
+  
+  const offsetX = Math.floor(Math.random() * 20) - 10;
+  const offsetY = Math.floor(Math.random() * 10);
+  const randomRotation = (Math.random() * 20) - 10;
+  const scale = 1; // keep uniform for small sets
+  
+  rock.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${randomRotation}deg) scale(${scale})`;
+  
+  const textDiv = document.createElement('div');
+  textDiv.className = 'rock-text';
+  textDiv.textContent = opinion.text;
+  
+  const { width, height, fontSize } = getRockSize(opinion.text.length);
+  Object.assign(rock.style, { width, height });
+  textDiv.style.fontSize = fontSize;
+  
+  if (opinion.text.length > 40) {
+    const badge = document.createElement('div');
+    badge.className = 'upgraded-badge';
+    badge.textContent = 'XL';
+    rock.appendChild(badge);
+  }
+  
+  rock.addEventListener('click', () => {
+    breakRock(rock, opinion.id);
+    setTimeout(() => {
+      const newVisible = opinions.filter(op => !brokenOpinionIds.has(op.id));
+      if (currentIndex > 0 && currentIndex + rocksPerPage > newVisible.length) {
+        currentIndex = Math.max(0, newVisible.length - rocksPerPage);
+      }
+      renderValley();
+    }, 1800);
+  });
+  
+  rock.appendChild(textDiv);
+  rockItem.appendChild(rock);
+  return rockItem;
 }
 
 function getRockSize(length) {
