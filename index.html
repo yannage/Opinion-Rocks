@@ -243,30 +243,71 @@ textarea {
       cursor: not-allowed;
     }
 
-    .valley-container {
-      position: relative;
-      width: 90vw;
-      max-width: 800px;
-      margin: 0 auto;
-    }
 
-    .valley {
-      display: flex;
-      gap: 20px;
-      padding: 20px 60px;
-      overflow: hidden;
-      justify-content: center;
-      align-items: center;
-      min-height: 250px;
-    }
+.valley-container {
+  position: relative;
+  width: 90vw;
+  max-width: 900px;
+  margin: 0 auto;
+}
 
-    @media (max-width: 768px) {
-      .valley {
-        gap: 10px;
-        padding: 20px 50px;
-        min-height: 200px;
-      }
-    }
+.valley {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.valley-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.valley-row:nth-child(2) {
+  margin-left: 0;
+  position: relative;
+  left: 25px;
+}
+
+@media (max-width: 768px) {
+  .valley {
+    gap: 1px;
+    padding: 5px;
+    min-height: 250px;
+  }
+  
+  .valley-row {
+    gap: 2px;
+  }
+  
+  .valley-row:nth-child(2) {
+    left: 0px;
+  }
+}
+
+.rock-item {
+  flex: 0 0 auto;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  position: relative;
+}
+
+.rock-item .rock {  
+  transition: transform 0.2s ease, z-index 0s;
+}
+
+.rock-item .rock:hover {
+  transform: scale(1.05);
+  z-index: 10;
+  position: relative;
+}
+
 
     .nav-arrow {
       position: absolute;
@@ -312,10 +353,6 @@ textarea {
       right: 0;
     }
 
-    .rock-item {
-      flex: 0 0 auto;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-    }
 
     .rock-item.hidden {
       display: none;
@@ -948,101 +985,105 @@ document.getElementById('downloadBtn').onclick = async () => {
       }, 1800);
     }
 
-    function navigateRocks(direction) {
-      const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
-      const maxIndex = Math.max(0, visibleOpinions.length - 3);
-      
-      currentIndex = Math.max(0, Math.min(maxIndex, currentIndex + direction));
-      renderValley();
-    }
+function navigateRocks(direction) {
+  const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
+  const rocksPerPage = window.innerWidth <= 768 ? 4 : 7; // Mobile: 1-2-1, Desktop: 2-3-2
+  const maxIndex = Math.max(0, visibleOpinions.length - rocksPerPage);
+  
+  currentIndex = Math.max(0, Math.min(maxIndex, currentIndex + (direction * rocksPerPage)));
+  renderValley();
+}
 
-    function updateNavigationButtons() {
-      const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
-      const maxIndex = Math.max(0, visibleOpinions.length - 3);
-      
-      prevBtn.disabled = currentIndex === 0;
-      nextBtn.disabled = currentIndex >= maxIndex || visibleOpinions.length <= 3;
-    }
+function updateNavigationButtons() {
+  const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
+  const rocksPerPage = window.innerWidth <= 768 ? 4 : 7;
+  const maxIndex = Math.max(0, visibleOpinions.length - rocksPerPage);
+  
+  prevBtn.disabled = currentIndex === 0;
+  nextBtn.disabled = currentIndex >= maxIndex || visibleOpinions.length <= rocksPerPage;
+}
 
-    function renderValley() {
-      valley.innerHTML = '';
-      const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
-      
-      // Show only 3 rocks at a time (2 on mobile)
-      const rocksPerPage = window.innerWidth <= 768 ? 2 : 3;
-      const rocksToShow = visibleOpinions.slice(currentIndex, currentIndex + rocksPerPage);
-      
-      rocksToShow.forEach((opinion) => {
-        const rockItem = document.createElement('div');
-        rockItem.className = 'rock-item';
-        
-        const rock = document.createElement('div');
-        rock.className = 'rock';
-
-        const textDiv = document.createElement('div');
-        textDiv.className = 'rock-text';
-        textDiv.textContent = opinion.text;
-
-        const { width, height, fontSize } = getRockSize(opinion.text.length);
-        Object.assign(rock.style, { width, height });
-        textDiv.style.fontSize = fontSize;
-        
-        // Add upgraded badge if applicable (for texts longer than 40 chars)
-        if (opinion.text.length > 40) {
-          const badge = document.createElement('div');
-          badge.className = 'upgraded-badge';
-          badge.textContent = 'XL';
-          rock.appendChild(badge);
-        }
-
-        // Add click event for breaking
-        rock.addEventListener('click', () => {
-          breakRock(rock, opinion.id);
-          // After breaking, check if we need to adjust the view
-          setTimeout(() => {
-            const newVisibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
-            if (currentIndex > 0 && currentIndex + rocksPerPage > newVisibleOpinions.length) {
-              currentIndex = Math.max(0, newVisibleOpinions.length - rocksPerPage);
-            }
-            renderValley();
-          }, 1800);
-        });
-
-        rock.appendChild(textDiv);
-        rockItem.appendChild(rock);
-        valley.appendChild(rockItem);
-      });
-      
-      updateNavigationButtons();
-    }
-
-    function getRockSize(length) {
+function renderValley() {
+  valley.innerHTML = '';
+  const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
+  
+  // Create pattern: 2-3-2 for desktop, 1-2-1 for mobile
   const isMobile = window.innerWidth <= 768;
-  const baseSize = isMobile ? 200 : 250; // larger base size
-  const upgradedSize = isMobile ? 240 : 300;
+  const pattern = isMobile ? [1, 2, 1] : [2, 3, 2];
+  const rocksPerPage = pattern.reduce((a, b) => a + b, 0);
+  
+  const rocksToShow = visibleOpinions.slice(currentIndex, currentIndex + rocksPerPage);
+  
+  let rockIndex = 0;
+  pattern.forEach((rowCount, rowIndex) => {
+    const row = document.createElement('div');
+    row.className = 'valley-row';
+    
+    for (let i = 0; i < rowCount && rockIndex < rocksToShow.length; i++) {
+      const opinion = rocksToShow[rockIndex];
+      rockIndex++;
+      
+      const rockItem = document.createElement('div');
+      rockItem.className = 'rock-item';
+      
+      const rock = document.createElement('div');
+      rock.className = 'rock';
+
+      const textDiv = document.createElement('div');
+      textDiv.className = 'rock-text';
+      textDiv.textContent = opinion.text;
+
+      const { width, height, fontSize } = getRockSize(opinion.text.length);
+      Object.assign(rock.style, { width, height });
+      textDiv.style.fontSize = fontSize;
+      
+      // Add upgraded badge if applicable
+      if (opinion.text.length > 40) {
+        const badge = document.createElement('div');
+        badge.className = 'upgraded-badge';
+        badge.textContent = 'XL';
+        rock.appendChild(badge);
+      }
+
+      // Add click event for breaking
+      rock.addEventListener('click', () => {
+        breakRock(rock, opinion.id);
+        // After breaking, check if we need to adjust the view
+        setTimeout(() => {
+          const newVisibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
+          if (currentIndex > 0 && currentIndex + rocksPerPage > newVisibleOpinions.length) {
+            currentIndex = Math.max(0, newVisibleOpinions.length - rocksPerPage);
+          }
+          renderValley();
+        }, 1800);
+      });
+
+      rock.appendChild(textDiv);
+      rockItem.appendChild(rock);
+      row.appendChild(rockItem);
+    }
+    
+    if (row.children.length > 0) {
+      valley.appendChild(row);
+    }
+  });
+  
+  updateNavigationButtons();
+}
+
+function getRockSize(length) {
+  const isMobile = window.innerWidth <= 768;
+  const baseSize = isMobile ? 140 : 180; // Smaller rocks to fit more
+  const upgradedSize = isMobile ? 160 : 200;
   
   if (length <= 40) {
-    return { width: `${baseSize}px`, height: `${baseSize}px`, fontSize: isMobile ? '0.9rem' : '1rem' };
+    return { width: `${baseSize}px`, height: `${baseSize}px`, fontSize: isMobile ? '0.8rem' : '0.9rem' };
   }
   
   // For upgraded rocks (40–80 characters)
-  return { width: `${upgradedSize}px`, height: `${upgradedSize}px`, fontSize: isMobile ? '0.85rem' : '0.95rem' };
+  return { width: `${upgradedSize}px`, height: `${upgradedSize}px`, fontSize: isMobile ? '0.75rem' : '0.85rem' };
 }
 
-    // Mobile keyboard handling
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', () => {
-        const hasKeyboard = window.visualViewport.height < window.innerHeight * 0.75;
-        if (hasKeyboard) {
-          document.body.style.height = `${window.visualViewport.height}px`;
-          // Scroll the input into view
-          input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-          document.body.style.height = '';
-        }
-      });
-    }
-    
     // Add this function to load today's topic
 async function loadDailyTopic() {
   try {
