@@ -256,46 +256,40 @@ textarea {
   flex-direction: column;
   gap: 5px;
   padding: 10px;
-  overflow: hidden;
   justify-content: center;
   align-items: center;
-  min-height: 400px;
+  width: 100%;
+  max-height: 500px; /* or whatever fits your viewport nicely */
+
+  position: relative;
 }
 
 .valley-row {
   display: flex;
-  gap: 10px;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end; /* stack from bottom up */
   width: 100%;
-}
-
-.valley-row:nth-child(2) {
-  margin-left: 0;
   position: relative;
-  left: 25px;
-}
-
-@media (max-width: 768px) {
-  .valley {
-    gap: 1px;
-    padding: 5px;
-    min-height: 250px;
-  }
-  
-  .valley-row {
-    gap: 2px;
-  }
-  
-  .valley-row:nth-child(2) {
-    left: 0px;
-  }
+  margin-top: -30px; /* pulls rows upward to overlap */
 }
 
 .rock-item {
   flex: 0 0 auto;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  margin: -20px; /* allows overlap between rocks */
   position: relative;
+  z-index: inherit; /* inherit from row’s z-index */
+}
+
+.valley-row:nth-child(1) {
+  z-index: 1;
+}
+
+.valley-row:nth-child(2) {
+  z-index: 2;
+}
+
+.valley-row:nth-child(3) {
+  z-index: 3;
 }
 
 .rock-item .rock {  
@@ -1007,57 +1001,60 @@ function renderValley() {
   valley.innerHTML = '';
   const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
   
-  // Create pattern: 2-3-2 for desktop, 1-2-1 for mobile
-  const isMobile = window.innerWidth <= 768;
-  const pattern = isMobile ? [1, 2, 1] : [2, 3, 2];
-  const rocksPerPage = pattern.reduce((a, b) => a + b, 0);
-  
+  // Arrange into 3 layers: back, middle, front
+  const layerPattern = [0, 2, 3]; // total 10 per page
+  const rocksPerPage = layerPattern.reduce((a, b) => a + b, 0);
   const rocksToShow = visibleOpinions.slice(currentIndex, currentIndex + rocksPerPage);
   
   let rockIndex = 0;
-  pattern.forEach((rowCount, rowIndex) => {
+  layerPattern.forEach((count, layerIndex) => {
     const row = document.createElement('div');
     row.className = 'valley-row';
+    row.style.zIndex = layerIndex + 1;
+    row.style.marginTop = layerIndex === 0 ? '0px' : '-30px'; // overlap rows upward
     
-    for (let i = 0; i < rowCount && rockIndex < rocksToShow.length; i++) {
-      const opinion = rocksToShow[rockIndex];
-      rockIndex++;
-      
+    for (let i = 0; i < count && rockIndex < rocksToShow.length; i++) {
+      const opinion = rocksToShow[rockIndex++];
       const rockItem = document.createElement('div');
       rockItem.className = 'rock-item';
       
       const rock = document.createElement('div');
       rock.className = 'rock';
-
+      
+      // Apply random offsets and rotation
+      const offsetX = Math.floor(Math.random() * 20) - 10; // -10px to +10px
+      const offsetY = Math.floor(Math.random() * 10); // 0px to +10px
+      const randomRotation = (Math.random() * 20) - 10; // -10deg to +10deg
+      const scale = layerIndex === 0 ? 0.85 : layerIndex === 1 ? 1 : 1.1;
+      
+      rock.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${randomRotation}deg) scale(${scale})`;
+      
       const textDiv = document.createElement('div');
       textDiv.className = 'rock-text';
       textDiv.textContent = opinion.text;
-
+      
       const { width, height, fontSize } = getRockSize(opinion.text.length);
       Object.assign(rock.style, { width, height });
       textDiv.style.fontSize = fontSize;
       
-      // Add upgraded badge if applicable
       if (opinion.text.length > 40) {
         const badge = document.createElement('div');
         badge.className = 'upgraded-badge';
         badge.textContent = 'XL';
         rock.appendChild(badge);
       }
-
-      // Add click event for breaking
+      
       rock.addEventListener('click', () => {
         breakRock(rock, opinion.id);
-        // After breaking, check if we need to adjust the view
         setTimeout(() => {
-          const newVisibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
-          if (currentIndex > 0 && currentIndex + rocksPerPage > newVisibleOpinions.length) {
-            currentIndex = Math.max(0, newVisibleOpinions.length - rocksPerPage);
+          const newVisible = opinions.filter(op => !brokenOpinionIds.has(op.id));
+          if (currentIndex > 0 && currentIndex + rocksPerPage > newVisible.length) {
+            currentIndex = Math.max(0, newVisible.length - rocksPerPage);
           }
           renderValley();
         }, 1800);
       });
-
+      
       rock.appendChild(textDiv);
       rockItem.appendChild(rock);
       row.appendChild(rockItem);
