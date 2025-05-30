@@ -542,7 +542,6 @@ button#submitBtn {
 
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/leo-profanity@1.7.0/src/index.min.js"></script>
 
 </head>
 <body>
@@ -804,36 +803,20 @@ button#submitBtn {
     }
 
 
-
-
-
-
 async function submitOpinion() {
-  // 1️⃣ Lazy load leo-profanity if not set
-  if (!window.leoProfanity) {
-    alert('Profanity filter failed to load. Please refresh.');
-    return;
-  }
-  
-  // 2️⃣ Get and sanitize input
+  // 1️⃣ Get and sanitize input
   let raw = input.value.trim();
   if (!raw) return; // no empty submissions
   
   raw = DOMPurify.sanitize(raw, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+  const text = raw;
   
-  // 3️⃣ Clean profanity
-  const censored = window.leoProfanity.clean(raw);
-  if (censored !== raw) {
-    alert('We’ve polished your language a bit 😉');
-  }
-  const text = censored;
-  
-  // 4️⃣ Lock UI
+  // 2️⃣ Lock UI
   submitBtn.disabled = true;
   submitBtn.textContent = 'SUBMITTING…';
   
   try {
-    // 5️⃣ Save to Supabase
+    // 3️⃣ Save to Supabase
     const { data, error } = await supabase
       .from('opinions')
       .insert([{ text }])
@@ -845,7 +828,7 @@ async function submitOpinion() {
     }
     if (error) throw error;
     
-    // 6️⃣ Build & show the share card
+    // 4️⃣ Build & show the share card
     const savedOpinion = data[0];
     const promptText = document.querySelector('.prompt').textContent;
     const shareUrl = `https://opinion-rocks.netlify.app/o/${savedOpinion.id}`;
@@ -877,7 +860,7 @@ async function submitOpinion() {
       link.click();
     };
     
-    // 7️⃣ Reset form
+    // 5️⃣ Reset form
     input.value = '';
     previewText.textContent = '';
     Object.assign(preview.style, getRockSize(0));
@@ -887,7 +870,7 @@ async function submitOpinion() {
     const badge = preview.querySelector('.upgraded-badge');
     if (badge) badge.remove();
     
-    // 8️⃣ Clear state from URL
+    // 6️⃣ Clear state from URL
     const url = new URL(window.location);
     url.searchParams.delete('state');
     window.history.replaceState(null, '', url);
@@ -902,6 +885,9 @@ async function submitOpinion() {
     submitBtn.textContent = 'SUBMIT';
   }
 }
+
+
+
 
     async function loadOpinions() {
       loadingMessage.style.display = 'block';
