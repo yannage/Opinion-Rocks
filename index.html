@@ -7,6 +7,18 @@
   <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600&display=swap');
 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   font-family: 'Fredoka', sans-serif;
   background: url('art/cave.png') center/cover no-repeat;
@@ -523,6 +535,8 @@ button#submitBtn {
   }
 }
   </style>
+  
+
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -537,10 +551,10 @@ button#submitBtn {
       🎉 Upgrade successful! You can now write up to 80 characters!
     </div>
     <div class="banner-title">
-      <h1>OPINION ROCKS</h1>
-    </div>
-    <div class="prompt-banner">
-      <div class="prompt">Loading today's question...</div>
+  <h1>OPINION ROCKS</h1>
+</div>
+<div class="prompt-banner">
+    <div class="prompt">Loading today's question...</div>
     </div>
     <div class="rock-wrapper">
       <div class="rock" id="preview">
@@ -556,14 +570,11 @@ button#submitBtn {
       <span class="coin">🪙</span> You've reached your rock's limit! 
       <button class="upgrade-btn" onclick="upgradeRock()">Upgrade for $1</button>
     </div>
-    <div style="display: flex; gap: 10px; width: 100%; max-width: 400px; justify-content: center;">
-      <button class="explore-valley-btn" onclick="goToValley()" title="Explore Valley">🪨</button>
-      <button id="submitBtn" onclick="submitOpinion()" style="flex: 1;">SUBMIT</button>
-    </div>
+    <button id="submitBtn" onclick="submitOpinion()">SUBMIT</button>
   </div>
 
   <div id="phase2" class="phase">
-    <div class="prompt">Explore the Valley of Opinions</div>
+    <div class="prompt">Explore the Valley of Opinions<br><small style="font-size: 0.9rem; opacity: 0.8;">(Click rocks to break them!)</small></div>
     <div id="loadingMessage" class="loading" style="display: none;">Loading opinions...</div>
     <div id="errorMessage" class="error" style="display: none;"></div>
     <div class="valley-container">
@@ -619,16 +630,10 @@ button#submitBtn {
     const successMessage = document.getElementById('successMessage');
     
     let opinions = [];
+    let brokenOpinionIds = new Set();
     let currentIndex = 0;
     let charLimit = 40;
     let isUpgraded = false;
-
-    // Function to go to valley
-    function goToValley() {
-      document.getElementById('phase1').classList.remove('active');
-      document.getElementById('phase2').classList.add('active');
-      loadOpinions();
-    }
 
     // Function to save state to URL
     function saveStateToUrl() {
@@ -788,89 +793,89 @@ button#submitBtn {
       }
     }
 
-    async function submitOpinion() {
-      const text = input.value.trim();
-      if (!text) return;
-      
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'SUBMITTING...';
-      
-      try {
-        const { data, error } = await supabase
-          .from('opinions')
-          .insert([{ text }])
-          .select();
-        
-        if (error) throw error;
-        
-        const savedOpinion = data[0];
-        const permalink = `${window.location.origin}/?opinion=${savedOpinion.id}`;
-        
-        // Show share card
-        const shareSection = document.getElementById('shareSection');
-        const shareText = document.getElementById('shareText');
-        const shareTopic = document.getElementById('shareTopic');
-        shareText.textContent = savedOpinion.text;
-        
-        // Set first frame of rock sprite
-        const shareCard = document.getElementById('shareCard');
-        shareCard.style.backgroundPosition = '0% 0%';
-        
-        // Get current topic
-        const promptText = document.querySelector('.prompt').textContent;
-        shareTopic.textContent = promptText;
-        
-        shareSection.style.display = 'flex';
-        
-        // Setup social buttons
-        document.getElementById('shareXBtn').onclick = () => {
-          const shareMsg = encodeURIComponent(
-            `🪨 OPINION ROCKS 🪨\nEvery day, a new stone.\nEvery day, a new take.\n\nToday's question:\n${promptText}\n\n> ${savedOpinion.text}\n\nEtch yours:\nhttps://opinion-rocks.netlify.app`
-          );
-          window.open(`https://twitter.com/intent/tweet?text=${shareMsg}`, '_blank');
-        };
+  async function submitOpinion() {
+  const text = input.value.trim();
+  if (!text) return;
+  
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'SUBMITTING...';
+  
+  try {
+    const { data, error } = await supabase
+      .from('opinions')
+      .insert([{ text }])
+      .select();
+    
+    if (error) throw error;
+    
+    const savedOpinion = data[0];
+    const permalink = `${window.location.origin}/?opinion=${savedOpinion.id}`;
+    
+    // Show share card
+    const shareSection = document.getElementById('shareSection');
+    const shareText = document.getElementById('shareText');
+    const shareTopic = document.getElementById('shareTopic');
+    shareText.textContent = savedOpinion.text;
+    
+    // Set first frame of rock sprite
+    const shareCard = document.getElementById('shareCard');
+    shareCard.style.backgroundPosition = '0% 0%';
+    
+    // Get current topic
+    const promptText = document.querySelector('.prompt').textContent;
+    shareTopic.textContent = promptText;
+    
+    shareSection.style.display = 'flex';
+    
+// Setup social buttons
+document.getElementById('shareXBtn').onclick = () => {
+  const shareMsg = encodeURIComponent(
+    `🪨 OPINION ROCKS 🪨\nEvery day, a new stone.\nEvery day, a new take.\n\nToday’s question:\n${promptText}\n\n> ${savedOpinion.text}\n\nEtch yours:\nhttps://opinion-rocks.netlify.app`
+  );
+  window.open(`https://twitter.com/intent/tweet?text=${shareMsg}`, '_blank');
+};
 
-        document.getElementById('shareFBBtn').onclick = () => {
-          const shareUrl = encodeURIComponent('https://opinion-rocks.netlify.app');
-          const shareQuote = encodeURIComponent(
-            `🪨 OPINION ROCKS 🪨\nEvery day, a new stone.\nEvery day, a new take.\n\nToday's question:\n${promptText}\n\n> ${savedOpinion.text}\n\nEtch yours:`
-          );
-          window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${shareQuote}`, '_blank');
-        };
+document.getElementById('shareFBBtn').onclick = () => {
+  const shareUrl = encodeURIComponent('https://opinion-rocks.netlify.app');
+  const shareQuote = encodeURIComponent(
+    `🪨 OPINION ROCKS 🪨\nEvery day, a new stone.\nEvery day, a new take.\n\nToday’s question:\n${promptText}\n\n> ${savedOpinion.text}\n\nEtch yours:`
+  );
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${shareQuote}`, '_blank');
+};
 
-        document.getElementById('downloadBtn').onclick = async () => {
-          const wrapper = document.getElementById('shareCardWrapper');
-          const canvas = await html2canvas(wrapper, { backgroundColor: null });
-          const link = document.createElement('a');
-          const cleanText = savedOpinion.text.substring(0, 15).replace(/[^a-zA-Z0-9]/g, '');
-          link.download = `opinion-rock-${cleanText}.png`;
-          link.href = canvas.toDataURL();
-          link.click();
-        };
-        
-        // Clear input and reset UI
-        input.value = '';
-        previewText.textContent = '';
-        Object.assign(preview.style, getRockSize(0));
-        charCounter.textContent = '0/40';
-        charLimit = 40;
-        isUpgraded = false;
-        
-        const badge = preview.querySelector('.upgraded-badge');
-        if (badge) badge.remove();
-        
-        const url = new URL(window.location);
-        url.searchParams.delete('state');
-        window.history.replaceState(null, '', url);
-        
-      } catch (error) {
-        console.error('Error submitting opinion:', error);
-        alert('Failed to submit opinion. Please try again.');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'SUBMIT';
-      }
-    }
+document.getElementById('downloadBtn').onclick = async () => {
+  const wrapper = document.getElementById('shareCardWrapper');
+  const canvas = await html2canvas(wrapper, { backgroundColor: null });
+  const link = document.createElement('a');
+  const cleanText = savedOpinion.text.substring(0, 15).replace(/[^a-zA-Z0-9]/g, ''); // short clean slice
+  link.download = `opinion-rock-${cleanText}.png`;
+  link.href = canvas.toDataURL();
+  link.click();
+};
+    
+    // Clear input and reset UI
+    input.value = '';
+    previewText.textContent = '';
+    Object.assign(preview.style, getRockSize(0));
+    charCounter.textContent = '0/40';
+    charLimit = 40;
+    isUpgraded = false;
+    
+    const badge = preview.querySelector('.upgraded-badge');
+    if (badge) badge.remove();
+    
+    const url = new URL(window.location);
+    url.searchParams.delete('state');
+    window.history.replaceState(null, '', url);
+    
+  } catch (error) {
+    console.error('Error submitting opinion:', error);
+    alert('Failed to submit opinion. Please try again.');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'SUBMIT';
+  }
+}
 
     async function loadOpinions() {
       loadingMessage.style.display = 'block';
@@ -897,186 +902,233 @@ button#submitBtn {
       }
     }
 
-    function shakeRock(rockElement) {
-      if (rockElement.classList.contains('shaking')) return;
+    function breakRock(rockElement, opinionId) {
+      if (rockElement.classList.contains('breaking')) return;
       
-      rockElement.classList.add('shaking');
+      const textElement = rockElement.querySelector('.rock-text');
       
+      // Add breaking dust
+      const breakingDust = document.createElement('div');
+      breakingDust.className = 'breaking-dust';
+      rockElement.appendChild(breakingDust);
+      
+      // Start breaking animations
+      rockElement.classList.add('breaking');
+      textElement.classList.add('destroying');
+      
+      // Animate through sprite frames
+      const frames = [
+        '0% 0%',      // Frame 1: Intact
+        '50% 0%',     // Frame 2: Small crack
+        '100% 0%',    // Frame 3: Medium crack
+        '0% 50%',     // Frame 4: Large cracks
+        '50% 50%',    // Frame 5: Breaking apart
+        '100% 50%',   // Frame 6: Large pieces
+        '0% 100%',    // Frame 7: Small pieces
+        '50% 100%',   // Frame 8: Very small pieces
+        '100% 100%'   // Frame 9: Dust
+      ];
+      
+      let currentFrame = 0;
+      const frameInterval = setInterval(() => {
+        if (currentFrame < frames.length) {
+          rockElement.style.backgroundPosition = frames[currentFrame];
+          currentFrame++;
+        } else {
+          clearInterval(frameInterval);
+        }
+      }, 150);
+      
+      // Mark opinion as broken
+      brokenOpinionIds.add(opinionId);
+      
+      // Remove the rock element after animation completes
       setTimeout(() => {
-        rockElement.classList.remove('shaking');
-      }, 600);
+        rockElement.remove();
+      }, 1800);
     }
 
-    function navigateRocks(direction) {
-      const rocksPerPage = window.innerWidth <= 768 ? 4 : 7;
-      const maxIndex = Math.max(0, opinions.length - rocksPerPage);
-      
-      currentIndex = Math.max(0, Math.min(maxIndex, currentIndex + (direction * rocksPerPage)));
+function navigateRocks(direction) {
+  const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
+  const rocksPerPage = window.innerWidth <= 768 ? 4 : 7; // Mobile: 1-2-1, Desktop: 2-3-2
+  const maxIndex = Math.max(0, visibleOpinions.length - rocksPerPage);
+  
+  currentIndex = Math.max(0, Math.min(maxIndex, currentIndex + (direction * rocksPerPage)));
+  renderValley();
+}
+
+function updateNavigationButtons() {
+  const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
+  const rocksPerPage = window.innerWidth <= 768 ? 4 : 7;
+  const maxIndex = Math.max(0, visibleOpinions.length - rocksPerPage);
+  
+  prevBtn.disabled = currentIndex === 0;
+  nextBtn.disabled = currentIndex >= maxIndex || visibleOpinions.length <= rocksPerPage;
+}
+
+function renderValley() {
+  valley.innerHTML = '';
+  const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
+  
+  // Arrange into 3 layers: back, middle, front
+  const layerPattern = [0, 2, 3]; // total 10 per page
+  const rocksPerPage = layerPattern.reduce((a, b) => a + b, 0);
+  const rocksToShow = visibleOpinions.slice(currentIndex, currentIndex + rocksPerPage);
+  
+  let rockIndex = 0;
+
+if (rocksToShow.length <= 2) {
+  // Handle 1–2 rocks: center in a single row
+  const row = document.createElement('div');
+  row.className = 'valley-row';
+  row.style.justifyContent = 'center';
+  row.style.marginTop = '0px';
+  row.style.zIndex = 2;
+  
+  rocksToShow.forEach(opinion => {
+    const rockItem = createRockItem(opinion);
+    row.appendChild(rockItem);
+  });
+  
+  valley.appendChild(row);
+} else {
+  // Standard multi-layer display
+  layerPattern.forEach((count, layerIndex) => {
+    const row = document.createElement('div');
+    row.className = 'valley-row';
+    row.style.zIndex = layerIndex + 1;
+    row.style.marginTop = layerIndex === 0 ? '0px' : '-30px';
+    
+    for (let i = 0; i < count && rockIndex < rocksToShow.length; i++) {
+      const opinion = rocksToShow[rockIndex++];
+      const rockItem = createRockItem(opinion);
+      row.appendChild(rockItem);
+    }
+    
+    if (row.children.length > 0) {
+      valley.appendChild(row);
+    }
+  });
+}
+  
+  updateNavigationButtons();
+}
+
+function createRockItem(opinion) {
+  const rockItem = document.createElement('div');
+  rockItem.className = 'rock-item';
+  
+  const rock = document.createElement('div');
+  rock.className = 'rock';
+  
+  const offsetX = Math.floor(Math.random() * 20) - 10;
+  const offsetY = Math.floor(Math.random() * 10);
+  const randomRotation = (Math.random() * 20) - 10;
+  const scale = 1; // keep uniform for small sets
+  
+  rock.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${randomRotation}deg) scale(${scale})`;
+  
+  const textDiv = document.createElement('div');
+  textDiv.className = 'rock-text';
+  textDiv.textContent = opinion.text;
+  
+  const { width, height, fontSize } = getRockSize(opinion.text.length);
+  Object.assign(rock.style, { width, height });
+  textDiv.style.fontSize = fontSize;
+  
+  if (opinion.text.length > 40) {
+    const badge = document.createElement('div');
+    badge.className = 'upgraded-badge';
+    badge.textContent = 'XL';
+    rock.appendChild(badge);
+  }
+  
+  rock.addEventListener('click', () => {
+    breakRock(rock, opinion.id);
+    setTimeout(() => {
+      const newVisible = opinions.filter(op => !brokenOpinionIds.has(op.id));
+      if (currentIndex > 0 && currentIndex + rocksPerPage > newVisible.length) {
+        currentIndex = Math.max(0, newVisible.length - rocksPerPage);
+      }
       renderValley();
-    }
+    }, 1800);
+  });
+  
+  rock.appendChild(textDiv);
+  rockItem.appendChild(rock);
+  return rockItem;
+}
 
-    function updateNavigationButtons() {
-      const rocksPerPage = window.innerWidth <= 768 ? 4 : 7;
-      const maxIndex = Math.max(0, opinions.length - rocksPerPage);
-      
-      prevBtn.disabled = currentIndex === 0;
-      nextBtn.disabled = currentIndex >= maxIndex || opinions.length <= rocksPerPage;
-    }
-
-    function renderValley() {
-      valley.innerHTML = '';
-      
-      // Arrange into 3 layers: back, middle, front
-      const layerPattern = [2, 3, 2]; // 7 per page
-      const rocksPerPage = layerPattern.reduce((a, b) => a + b, 0);
-      const rocksToShow = opinions.slice(currentIndex, currentIndex + rocksPerPage);
-      
-      let rockIndex = 0;
-
-      if (rocksToShow.length <= 2) {
-        // Handle 1–2 rocks: center in a single row
-        const row = document.createElement('div');
-        row.className = 'valley-row';
-        row.style.justifyContent = 'center';
-        row.style.marginTop = '0px';
-        row.style.zIndex = 2;
-        
-        rocksToShow.forEach(opinion => {
-          const rockItem = createRockItem(opinion);
-          row.appendChild(rockItem);
-        });
-        
-        valley.appendChild(row);
-      } else {
-        // Standard multi-layer display
-        layerPattern.forEach((count, layerIndex) => {
-          const row = document.createElement('div');
-          row.className = 'valley-row';
-          row.style.zIndex = layerIndex + 1;
-          row.style.marginTop = layerIndex === 0 ? '0px' : '-25px';
-          
-          for (let i = 0; i < count && rockIndex < rocksToShow.length; i++) {
-            const opinion = rocksToShow[rockIndex++];
-            const rockItem = createRockItem(opinion);
-            row.appendChild(rockItem);
-          }
-          
-          if (row.children.length > 0) {
-            valley.appendChild(row);
-          }
-        });
-      }
-      
-      updateNavigationButtons();
-    }
-
-    function createRockItem(opinion) {
-      const rockItem = document.createElement('div');
-      rockItem.className = 'rock-item';
-      
-      const rock = document.createElement('div');
-      rock.className = 'rock';
-      
-      const offsetX = Math.floor(Math.random() * 20) - 10;
-      const offsetY = Math.floor(Math.random() * 10);
-      const randomRotation = (Math.random() * 20) - 10;
-      const scale = 1;
-      
-      rock.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${randomRotation}deg) scale(${scale})`;
-      
-      const textDiv = document.createElement('div');
-      textDiv.className = 'rock-text';
-      textDiv.textContent = opinion.text;
-      
-      const { width, height, fontSize } = getRockSize(opinion.text.length);
-      Object.assign(rock.style, { width, height });
-      textDiv.style.fontSize = fontSize;
-      
-      if (opinion.text.length > 40) {
-        const badge = document.createElement('div');
-        badge.className = 'upgraded-badge';
-        badge.textContent = 'XL';
-        rock.appendChild(badge);
-      }
-      
-      rock.addEventListener('click', () => {
-        shakeRock(rock);
-      });
-      
-      rock.appendChild(textDiv);
-      rockItem.appendChild(rock);
-      return rockItem;
-    }
-
-    function getRockSize(length) {
-      const isMobile = window.innerWidth <= 768;
-      const baseSize = isMobile ? 120 : 160;
-      const upgradedSize = isMobile ? 140 : 180;
-      
-      if (length <= 40) {
-        return { width: `${baseSize}px`, height: `${baseSize}px`, fontSize: isMobile ? '0.7rem' : '0.85rem' };
-      }
-      
-      // For upgraded rocks (40–80 characters)
-      return { width: `${upgradedSize}px`, height: `${upgradedSize}px`, fontSize: isMobile ? '0.65rem' : '0.8rem' };
-    }
+function getRockSize(length) {
+  const isMobile = window.innerWidth <= 768;
+  const baseSize = isMobile ? 140 : 180; // Smaller rocks to fit more
+  const upgradedSize = isMobile ? 160 : 200;
+  
+  if (length <= 40) {
+    return { width: `${baseSize}px`, height: `${baseSize}px`, fontSize: isMobile ? '0.8rem' : '0.9rem' };
+  }
+  
+  // For upgraded rocks (40–80 characters)
+  return { width: `${upgradedSize}px`, height: `${upgradedSize}px`, fontSize: isMobile ? '0.75rem' : '0.85rem' };
+}
 
     // Add this function to load today's topic
-    async function loadDailyTopic() {
-      try {
-        const { data, error } = await supabase
-          .from('daily_state')
-          .select('*')
-          .order('id', { ascending: false })
-          .limit(1);
-        
-        if (error) throw error;
-        
-        console.log('Fetched daily_state data:', JSON.stringify(data, null, 2));
-        
-        if (data && data.length > 0) {
-          const topic = data[0].current_topic;
-          
-          if (topic && topic.trim() !== '') {
-            document.querySelector('.prompt').textContent = topic;
-          } else {
-            document.querySelector('.prompt').textContent = "No topic text in this row!";
-          }
-        } else {
-          document.querySelector('.prompt').textContent = "No topic rows found!";
-        }
-      } catch (error) {
-        console.error('Error loading topic:', error);
-        document.querySelector('.prompt').textContent =
-          "What's the most overrated hat everyone pretends to love?";
+async function loadDailyTopic() {
+  try {
+    const { data, error } = await supabase
+      .from('daily_state')
+      .select('*') // select all columns for debug
+      .order('id', { ascending: false }) // get the most recent row
+      .limit(1);
+    
+    if (error) throw error;
+    
+    console.log('Fetched daily_state data:', JSON.stringify(data, null, 2));
+    
+    if (data && data.length > 0) {
+      const topic = data[0].current_topic;
+      
+      if (topic && topic.trim() !== '') {
+        document.querySelector('.prompt').textContent = topic;
+      } else {
+        document.querySelector('.prompt').textContent = "No topic text in this row!";
       }
+    } else {
+      document.querySelector('.prompt').textContent = "No topic rows found!";
     }
+  } catch (error) {
+    console.error('Error loading topic:', error);
+    document.querySelector('.prompt').textContent =
+      "What's the most overrated hat everyone pretends to love?";
+  }
+}
+
 
     window.addEventListener('DOMContentLoaded', async () => {
-      await loadDailyTopic();
-      loadStateFromUrl();
+  await loadDailyTopic(); // Add await here
+  loadStateFromUrl();
+  
+  const preview = document.getElementById('preview');
+  const previewText = document.getElementById('previewText');
+  const dust = document.getElementById('dustEffect');
+  
+  // Only animate if we're not returning from checkout
+  const urlParams = new URLSearchParams(window.location.search);
+  if (!urlParams.get('state') && !urlParams.get('success')) {
+    preview.classList.add('animate-in');
+    previewText.classList.add('animate-in');
+    
+    setTimeout(() => {
+      document.body.classList.add('shake');
+      dust.style.animation = 'dustPuff 0.6s ease-out forwards';
       
-      const preview = document.getElementById('preview');
-      const previewText = document.getElementById('previewText');
-      const dust = document.getElementById('dustEffect');
-      
-      // Only animate if we're not returning from checkout
-      const urlParams = new URLSearchParams(window.location.search);
-      if (!urlParams.get('state') && !urlParams.get('success')) {
-        preview.classList.add('animate-in');
-        previewText.classList.add('animate-in');
-        
-        setTimeout(() => {
-          document.body.classList.add('shake');
-          dust.style.animation = 'dustPuff 0.6s ease-out forwards';
-          
-          setTimeout(() => {
-            document.body.classList.remove('shake');
-            dust.style.animation = '';
-          }, 600);
-        }, 1000);
-      }
-    });
+      setTimeout(() => {
+        document.body.classList.remove('shake');
+        dust.style.animation = '';
+      }, 600);
+    }, 1000);
+  }
+});
 
     function restart() {
       document.getElementById('phase2').classList.remove('active');
@@ -1090,9 +1142,13 @@ button#submitBtn {
     }
     
     // This ONLY handles the X button on the share card
-    document.getElementById('closeShareCard').addEventListener('click', () => {
-      document.getElementById('shareSection').style.display = 'none';
-      document.getElementById('phase1').classList.remove('active');
-      document.getElementById('phase2').classList.add('active');
-      loadOpinions();
-    });
+document.getElementById('closeShareCard').addEventListener('click', () => {
+  document.getElementById('shareSection').style.display = 'none';
+  document.getElementById('phase1').classList.remove('active');
+  document.getElementById('phase2').classList.add('active');
+  loadOpinions();
+});
+    
+  </script>
+</body>
+</html>
