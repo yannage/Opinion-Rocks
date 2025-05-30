@@ -1026,49 +1026,55 @@ if (rocksToShow.length <= 2) {
 }
 
 function createRockItem(opinion) {
-  const rockItem = document.createElement('div');
-  rockItem.className = 'rock-item';
   
-  const rock = document.createElement('div');
-  rock.className = 'rock';
   
-  const offsetX = Math.floor(Math.random() * 20) - 10;
-  const offsetY = Math.floor(Math.random() * 10);
-  const randomRotation = (Math.random() * 20) - 10;
-  const scale = 1; // keep uniform for small sets
-  
-  rock.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${randomRotation}deg) scale(${scale})`;
-  
-  const textDiv = document.createElement('div');
-  textDiv.className = 'rock-text';
-  textDiv.textContent = opinion.text;
-  
-  const { width, height, fontSize } = getRockSize(opinion.text.length);
-  Object.assign(rock.style, { width, height });
-  textDiv.style.fontSize = fontSize;
-  
-  if (opinion.text.length > 40) {
-    const badge = document.createElement('div');
-    badge.className = 'upgraded-badge';
-    badge.textContent = 'XL';
-    rock.appendChild(badge);
-  }
-  
-  rock.addEventListener('click', () => {
-    breakRock(rock, opinion.id);
-    setTimeout(() => {
-      const newVisible = opinions.filter(op => !brokenOpinionIds.has(op.id));
-      if (currentIndex > 0 && currentIndex + rocksPerPage > newVisible.length) {
-        currentIndex = Math.max(0, newVisible.length - rocksPerPage);
+      const rockItem = document.createElement('div');
+      rockItem.className = 'rock-item';
+      
+      const rock = document.createElement('div');
+      rock.className = 'rock';
+      
+      const offsetX = Math.floor(Math.random() * 20) - 10;
+      const offsetY = Math.floor(Math.random() * 10);
+      const randomRotation = (Math.random() * 20) - 10;
+      const scale = 1;
+      
+      rock.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${randomRotation}deg) scale(${scale})`;
+      
+      const textDiv = document.createElement('div');
+      textDiv.className = 'rock-text';
+      textDiv.textContent = opinion.text;
+      
+      const { width, height, fontSize } = getRockSize(opinion.text.length);
+      Object.assign(rock.style, { width, height });
+      textDiv.style.fontSize = fontSize;
+      
+      if (opinion.text.length > 40) {
+        const badge = document.createElement('div');
+        badge.className = 'upgraded-badge';
+        badge.textContent = 'XL';
+        rock.appendChild(badge);
       }
-      renderValley();
-    }, 1800);
-  });
-  
-  rock.appendChild(textDiv);
-  rockItem.appendChild(rock);
-  return rockItem;
+      
+      rock.addEventListener('click', () => {
+        shakeRock(rock);
+      });
+      
+      rock.appendChild(textDiv);
+      rockItem.appendChild(rock);
+      return rockItem;
+    
 }
+
+  function shakeRock(rockElement) {
+    if (rockElement.classList.contains('shaking')) return;
+    
+    rockElement.classList.add('shaking');
+    
+    setTimeout(() => {
+      rockElement.classList.remove('shaking');
+    }, 600);
+  }
 
 function getRockSize(length) {
   const isMobile = window.innerWidth <= 768;
