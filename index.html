@@ -535,18 +535,15 @@ button#submitBtn {
   }
 }
   </style>
-  <!-- Supabase SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- Stripe JS -->
-  <script src="https://js.stripe.com/v3/"></script>
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<!-- Purify -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
 
-<!-- leo-profanity (UMD bundle attaches itself to window.leoProfanity) -->
-<script src="https://cdn.jsdelivr.net/npm/leo-profanity@1.7.0/leo-profanity.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leo-profanity@1.7.0/src/index.min.js"></script>
+
 </head>
 <body>
   <div id="phase1" class="phase active">
@@ -612,6 +609,7 @@ button#submitBtn {
   </div>
 </div>
   <script>
+
     // IMPORTANT: Replace these with your actual Supabase credentials
     const SUPABASE_URL = 'https://vqtmoptfigcwjuxszzat.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxdG1vcHRmaWdjd2p1eHN6emF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwOTcwOTgsImV4cCI6MjA2MzY3MzA5OH0.Z8To5RhckorBkoUp9mnIaAaZDuBGLpjYo38t5TbYhIg';
@@ -806,111 +804,96 @@ button#submitBtn {
     }
 
 
+
+
+
+
 async function submitOpinion() {
-if (typeof leoProfanity === 'undefined') {
-  console.error('leo-profanity failed to load.');
-  alert('Content filter could not be loaded. Please refresh.');
-}
-
-
-  // 1. Collect & trim user text
-  let raw = input.value.trim();
-  if (!raw) return;
+  // 1️⃣ Lazy load leo-profanity if not set
+  if (!window.leoProfanity) {
+    alert('Profanity filter failed to load. Please refresh.');
+    return;
+  }
   
-  // 2. Strip any HTML tags
+  // 2️⃣ Get and sanitize input
+  let raw = input.value.trim();
+  if (!raw) return; // no empty submissions
+  
   raw = DOMPurify.sanitize(raw, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
   
-  // 3. Auto-censor profanity
-  if (!window.__leoLoaded) { // load dictionary once per session
-    leoProfanity.loadDictionary();
-    window.__leoLoaded = true;
-  }
-  const censored = leoProfanity.clean(raw); // “fuck” → “****”
-  
-  // Optional gentle nudge if we changed something
+  // 3️⃣ Clean profanity
+  const censored = window.leoProfanity.clean(raw);
   if (censored !== raw) {
     alert('We’ve polished your language a bit 😉');
   }
+  const text = censored;
   
-  const text = censored; // what we’ll actually store / share
-  
-  // 4. UI: lock button
+  // 4️⃣ Lock UI
   submitBtn.disabled = true;
   submitBtn.textContent = 'SUBMITTING…';
   
   try {
-    // 5. Insert into Supabase
+    // 5️⃣ Save to Supabase
     const { data, error } = await supabase
       .from('opinions')
       .insert([{ text }])
       .select();
     
-    // Duplicate-in-a-day guard (requires the UNIQUE constraint mentioned earlier)
     if (error?.code === '23505') {
       alert('Looks like someone already etched that today. Try a twist!');
-      throw error; // skip the rest of the success flow
+      throw error;
     }
-    if (error) throw error; // other errors
+    if (error) throw error;
     
-    // 6. Success → show share card (unchanged from your original code)
+    // 6️⃣ Build & show the share card
     const savedOpinion = data[0];
-    const shareSection = document.getElementById('shareSection');
-    const shareText = document.getElementById('shareText');
-    const shareTopic = document.getElementById('shareTopic');
-    shareText.textContent = savedOpinion.text;
-    
-    const shareCard = document.getElementById('shareCard');
-    shareCard.style.backgroundPosition = '0% 0%';
-    
     const promptText = document.querySelector('.prompt').textContent;
-    shareTopic.textContent = promptText;
-    
-    shareSection.style.display = 'flex';
-    
-    // --- SOCIAL BUTTONS (same as before) --------------------------
     const shareUrl = `https://opinion-rocks.netlify.app/o/${savedOpinion.id}`;
     
+    document.getElementById('shareText').textContent = savedOpinion.text;
+    document.getElementById('shareTopic').textContent = promptText;
+    document.getElementById('shareCard').style.backgroundPosition = '0% 0%';
+    document.getElementById('shareSection').style.display = 'flex';
+    
     document.getElementById('shareXBtn').onclick = () => {
-      const shareMsg = encodeURIComponent(
+      const msg = encodeURIComponent(
         `🪨 OPINION ROCKS 🪨\nEvery day, a new stone.\nEvery day, a new take.\n\nToday's question:\n${promptText}\n\n> ${savedOpinion.text}\n\nEtch yours:\n${shareUrl}`
       );
-      window.open(`https://twitter.com/intent/tweet?text=${shareMsg}`, '_blank');
+      window.open(`https://twitter.com/intent/tweet?text=${msg}`, '_blank');
     };
     
     document.getElementById('shareFBBtn').onclick = () => {
-      const shareQuote = encodeURIComponent(
+      const quote = encodeURIComponent(
         `🪨 OPINION ROCKS 🪨\nEvery day, a new stone.\nEvery day, a new take.\n\nToday's question:\n${promptText}\n\n> ${savedOpinion.text}\n\nEtch yours:`
       );
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${shareQuote}`, '_blank');
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${quote}`, '_blank');
     };
     
     document.getElementById('downloadBtn').onclick = async () => {
-      const wrapper = document.getElementById('shareCardWrapper');
-      const canvas = await html2canvas(wrapper, { backgroundColor: null });
+      const canvas = await html2canvas(document.getElementById('shareCardWrapper'), { backgroundColor: null });
       const link = document.createElement('a');
-      const clean = savedOpinion.text.substring(0, 15).replace(/[^a-zA-Z0-9]/g, '');
-      link.download = `opinion-rock-${clean}.png`;
+      link.download = `opinion-rock-${savedOpinion.id}.png`;
       link.href = canvas.toDataURL();
       link.click();
     };
     
-    // 7. Reset UI for next opinion
+    // 7️⃣ Reset form
     input.value = '';
     previewText.textContent = '';
     Object.assign(preview.style, getRockSize(0));
     charCounter.textContent = '0/40';
     charLimit = 40;
     isUpgraded = false;
-    
     const badge = preview.querySelector('.upgraded-badge');
     if (badge) badge.remove();
     
+    // 8️⃣ Clear state from URL
     const url = new URL(window.location);
     url.searchParams.delete('state');
     window.history.replaceState(null, '', url);
     
   } catch (err) {
-    if (!err?.code) { // already handled dup-post alert
+    if (!err?.code) {
       console.error('Error submitting opinion:', err);
       alert('Failed to submit opinion. Please try again.');
     }
@@ -919,7 +902,6 @@ if (typeof leoProfanity === 'undefined') {
     submitBtn.textContent = 'SUBMIT';
   }
 }
-// -----------------------------------------------------------------
 
     async function loadOpinions() {
       loadingMessage.style.display = 'block';
