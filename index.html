@@ -750,6 +750,14 @@ button#submitBtn {
       Object.assign(preview.style, { width, height });
       previewText.style.fontSize = fontSize;
     });
+    
+        // Function to go to valley
+    function goToValley() {
+      document.getElementById('phase1').classList.remove('active');
+      document.getElementById('phase2').classList.add('active');
+      loadOpinions();
+    }
+
 
     // Upgrade rock function
     async function upgradeRock() {
