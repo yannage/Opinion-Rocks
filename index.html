@@ -451,9 +451,6 @@ button:disabled {
 }
 
 button#submitBtn {
-  width: 100%;
-  max-width: 250px;
-  padding: 12px 20px;
   font-size: 1rem;
   font-weight: bold;
 }
@@ -472,20 +469,20 @@ button#submitBtn {
 }
 
 .explore-valley-btn {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
-  padding: 10px 20px;
-  font-size: 0.9rem;
-  border-radius: 25px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: #A0522D;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: bold;
 }
 
 .explore-valley-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+  background-color: #8B4513;
 }
 
 /* Better mobile responsiveness */
@@ -566,8 +563,10 @@ button#submitBtn {
       <span class="coin">🪙</span> You've reached your rock's limit! 
       <button class="upgrade-btn" onclick="upgradeRock()">Upgrade for $1</button>
     </div>
-    <button id="submitBtn" onclick="submitOpinion()">SUBMIT</button>
-    <button class="explore-valley-btn" onclick="goToValley()">Explore Valley →</button>
+    <div style="display: flex; gap: 10px; width: 100%; max-width: 400px; justify-content: center;">
+      <button id="submitBtn" onclick="submitOpinion()" style="flex: 1;">SUBMIT</button>
+      <button class="explore-valley-btn" onclick="goToValley()" style="flex: 1;">EXPLORE VALLEY</button>
+    </div>
   </div>
 
   <div id="phase2" class="phase">
