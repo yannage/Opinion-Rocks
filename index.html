@@ -535,14 +535,13 @@ button#submitBtn {
   }
 }
   </style>
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Stripe JS -->
+  <script src="https://js.stripe.com/v3/"></script>
   
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://js.stripe.com/v3/"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
-
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
   <div id="phase1" class="phase active">
@@ -608,7 +607,6 @@ button#submitBtn {
   </div>
 </div>
   <script>
-
     // IMPORTANT: Replace these with your actual Supabase credentials
     const SUPABASE_URL = 'https://vqtmoptfigcwjuxszzat.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxdG1vcHRmaWdjd2p1eHN6emF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwOTcwOTgsImV4cCI6MjA2MzY3MzA5OH0.Z8To5RhckorBkoUp9mnIaAaZDuBGLpjYo38t5TbYhIg';
@@ -802,92 +800,89 @@ button#submitBtn {
       }
     }
 
+    async function submitOpinion() {
+      const text = input.value.trim();
+      if (!text) return;
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'SUBMITTING...';
+      
+      try {
+        const { data, error } = await supabase
+          .from('opinions')
+          .insert([{ text }])
+          .select();
+        
+        if (error) throw error;
+        
+        const savedOpinion = data[0];
+        const permalink = `${window.location.origin}/?opinion=${savedOpinion.id}`;
+        
+        // Show share card
+        const shareSection = document.getElementById('shareSection');
+        const shareText = document.getElementById('shareText');
+        const shareTopic = document.getElementById('shareTopic');
+        shareText.textContent = savedOpinion.text;
+        
+        // Set first frame of rock sprite
+        const shareCard = document.getElementById('shareCard');
+        shareCard.style.backgroundPosition = '0% 0%';
+        
+        // Get current topic
+        const promptText = document.querySelector('.prompt').textContent;
+        shareTopic.textContent = promptText;
+        
+        shareSection.style.display = 'flex';
+        
+        // Setup social buttons
+        document.getElementById('shareXBtn').onclick = () => {
+          const shareMsg = encodeURIComponent(
+            `🪨 OPINION ROCKS 🪨\nEvery day, a new stone.\nEvery day, a new take.\n\nToday's question:\n${promptText}\n\n> ${savedOpinion.text}\n\nEtch yours:\nhttps://opinion-rocks.netlify.app`
+          );
+          window.open(`https://twitter.com/intent/tweet?text=${shareMsg}`, '_blank');
+        };
 
-async function submitOpinion() {
-  // 1️⃣ Get and sanitize input
-  let raw = input.value.trim();
-  if (!raw) return; // no empty submissions
-  
-  raw = DOMPurify.sanitize(raw, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
-  const text = raw;
-  
-  // 2️⃣ Lock UI
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'SUBMITTING…';
-  
-  try {
-    // 3️⃣ Save to Supabase
-    const { data, error } = await supabase
-      .from('opinions')
-      .insert([{ text }])
-      .select();
-    
-    if (error?.code === '23505') {
-      alert('Looks like someone already etched that today. Try a twist!');
-      throw error;
+        document.getElementById('shareFBBtn').onclick = () => {
+          const shareUrl = encodeURIComponent('https://opinion-rocks.netlify.app');
+          const shareQuote = encodeURIComponent(
+            `🪨 OPINION ROCKS 🪨\nEvery day, a new stone.\nEvery day, a new take.\n\nToday's question:\n${promptText}\n\n> ${savedOpinion.text}\n\nEtch yours:`
+          );
+          window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${shareQuote}`, '_blank');
+        };
+
+        document.getElementById('downloadBtn').onclick = async () => {
+          const wrapper = document.getElementById('shareCardWrapper');
+          const canvas = await html2canvas(wrapper, { backgroundColor: null });
+          const link = document.createElement('a');
+          const cleanText = savedOpinion.text.substring(0, 15).replace(/[^a-zA-Z0-9]/g, '');
+          link.download = `opinion-rock-${cleanText}.png`;
+          link.href = canvas.toDataURL();
+          link.click();
+        };
+        
+        // Clear input and reset UI
+        input.value = '';
+        previewText.textContent = '';
+        Object.assign(preview.style, getRockSize(0));
+        charCounter.textContent = '0/40';
+        charLimit = 40;
+        isUpgraded = false;
+        
+        const badge = preview.querySelector('.upgraded-badge');
+        if (badge) badge.remove();
+        
+        const url = new URL(window.location);
+        url.searchParams.delete('state');
+        window.history.replaceState(null, '', url);
+        
+      } catch (error) {
+        console.error('Error submitting opinion:', error);
+        alert('Failed to submit opinion. Please try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'SUBMIT';
+      }
     }
-    if (error) throw error;
-    
-    // 4️⃣ Build & show the share card
-    const savedOpinion = data[0];
-    const promptText = document.querySelector('.prompt').textContent;
-    const shareUrl = `https://opinion-rocks.netlify.app/o/${savedOpinion.id}`;
-    
-    document.getElementById('shareText').textContent = savedOpinion.text;
-    document.getElementById('shareTopic').textContent = promptText;
-    document.getElementById('shareCard').style.backgroundPosition = '0% 0%';
-    document.getElementById('shareSection').style.display = 'flex';
-    
-    document.getElementById('shareXBtn').onclick = () => {
-      const msg = encodeURIComponent(
-        `🪨 OPINION ROCKS 🪨\nEvery day, a new stone.\nEvery day, a new take.\n\nToday's question:\n${promptText}\n\n> ${savedOpinion.text}\n\nEtch yours:\n${shareUrl}`
-      );
-      window.open(`https://twitter.com/intent/tweet?text=${msg}`, '_blank');
-    };
-    
-    document.getElementById('shareFBBtn').onclick = () => {
-      const quote = encodeURIComponent(
-        `🪨 OPINION ROCKS 🪨\nEvery day, a new stone.\nEvery day, a new take.\n\nToday's question:\n${promptText}\n\n> ${savedOpinion.text}\n\nEtch yours:`
-      );
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${quote}`, '_blank');
-    };
-    
-    document.getElementById('downloadBtn').onclick = async () => {
-      const canvas = await html2canvas(document.getElementById('shareCardWrapper'), { backgroundColor: null });
-      const link = document.createElement('a');
-      link.download = `opinion-rock-${savedOpinion.id}.png`;
-      link.href = canvas.toDataURL();
-      link.click();
-    };
-    
-    // 5️⃣ Reset form
-    input.value = '';
-    previewText.textContent = '';
-    Object.assign(preview.style, getRockSize(0));
-    charCounter.textContent = '0/40';
-    charLimit = 40;
-    isUpgraded = false;
-    const badge = preview.querySelector('.upgraded-badge');
-    if (badge) badge.remove();
-    
-    // 6️⃣ Clear state from URL
-    const url = new URL(window.location);
-    url.searchParams.delete('state');
-    window.history.replaceState(null, '', url);
-    
-  } catch (err) {
-    if (!err?.code) {
-      console.error('Error submitting opinion:', err);
-      alert('Failed to submit opinion. Please try again.');
-    }
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'SUBMIT';
-  }
-}
-
-
-
 
     async function loadOpinions() {
       loadingMessage.style.display = 'block';
