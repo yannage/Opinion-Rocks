@@ -1,0 +1,17 @@
+{
+  "name": "opinion-rocks",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+      "minify:html": "html-minifier index.html -o dist/index.html --collapse-whitespace --remove-comments --minify-css true --minify-js true"
+      },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "cssnano": "^7.0.7",
+    "html-minifier": "^4.0.0",
+    "uglify-js": "^3.19.3"
+  }
+}
