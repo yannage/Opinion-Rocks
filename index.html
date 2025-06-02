@@ -81,7 +81,27 @@ body.shake {
   -webkit-touch-callout: none; /* iOS "copy/share" bubble */
 }
 
+/* == pebble counter ===================================== */
+.pebble-badge{
+  position:absolute;
+  bottom:15px;                /* hug bottom-left of the rock            */
+  left:15px;
+  width:32px;                /* tune if you want it bigger / smaller   */
+  aspect-ratio:1/1;
+  background:url('art/pebble.png') center / contain no-repeat;
+  display:flex;              /* centers the number inside the pebble   */
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;       /* pebble itself shouldn’t steal clicks    */
+  font-family:'Fredoka',sans-serif;
+  font-size:0.9rem;          /* inherits text-color from .badge */
+}
 
+/* just the number */
+.pebble-badge .badge{
+  color:#2F1B14;             /* same ink as other rock text */
+  font-weight:700;
+}
 
 
 .rock:hover {
@@ -1187,11 +1207,16 @@ function createRockItem(opinion) {
     rock.appendChild(xl);
   }
   
-  /* ---------- echo counter badge ---------- */
-  const echoBadge = document.createElement('span');
-  echoBadge.className = 'badge';
-  echoBadge.textContent = opinion.echo_count ?? 0;
-  rock.appendChild(echoBadge);
+/* ---------- echo counter pebble ---------- */
+const pebble = document.createElement('div');
+pebble.className = 'pebble-badge';
+
+const echoBadge = document.createElement('span');
+echoBadge.className = 'badge';
+echoBadge.textContent = opinion.echo_count ?? 0;
+
+pebble.appendChild(echoBadge); // number sits on top of the pebble
+rock.appendChild(pebble); // pebble sits in bottom-left of rock
   
 /* ---------- thumbs-up overlay ---------- */
 const agreeOverlay = document.createElement('div');
