@@ -292,7 +292,7 @@ button:disabled {
 
 /*  ── Echo halo  ──────────────────────────────── */
 .rock.echoed {
-  box-shadow: 0 0 0 4px #ffdd55, 0 0 12px 6px #ffdd5533;
+  box-shadow: none;
 }
 
 /*  ── Floating feedback text  ─────────────────── */
@@ -452,6 +452,20 @@ button:disabled {
     opacity: 0;
   }
 }
+
+/* art/thumb_up_overlay.png is 512 × 512 with alpha */
+.rock-agree {
+  position: absolute;
+  inset: 0;                    /* stretch to rock bounds */
+  display: none;               /* hidden until echoed */
+  pointer-events: none;        /* overlay is not clickable */
+  background: url('art/thumbs_up_overlay.png') center/contain no-repeat;
+  bottom: -70px;
+left: 115px;
+width: 35%;
+height: auto;
+}
+
 
 .rock-wrapper {
   margin: 10px 0;
@@ -1137,8 +1151,13 @@ if (rocksToShow.length <= 2) {
  *  Build one rock DOM element, wire echo (+) on tap, un-echo (–) on
  *  long-press (600 ms), and keep local / Supabase state in sync.
  * ------------------------------------------------------------------ */
+/** ------------------------------------------------------------------
+ *  Build one rock DOM element, wire echo (+) on tap, un-echo (–) on
+ *  long-press (600 ms), show a thumbs-up overlay when echoed, and keep
+ *  local + Supabase state in sync.
+ * ------------------------------------------------------------------ */
 function createRockItem(opinion) {
-  /* ---------- shell & layout ---------- */
+  /* ---------- outer wrappers ---------- */
   const rockItem = document.createElement('div');
   rockItem.className = 'rock-item';
   
@@ -1151,7 +1170,7 @@ function createRockItem(opinion) {
   const rotation = (Math.random() * 20) - 10;
   rock.style.transform = `translate(${offsetX}px,${offsetY}px) rotate(${rotation}deg)`;
   
-  /* ---------- text ---------- */
+  /* ---------- opinion text ---------- */
   const textDiv = document.createElement('div');
   textDiv.className = 'rock-text';
   textDiv.textContent = opinion.text;
@@ -1160,7 +1179,7 @@ function createRockItem(opinion) {
   Object.assign(rock.style, { width, height });
   textDiv.style.fontSize = fontSize;
   
-  /* XL badge for upgraded rocks */
+  /* ---------- “XL” badge for upgraded posts ---------- */
   if (opinion.text.length > 40) {
     const xl = document.createElement('div');
     xl.className = 'upgraded-badge';
@@ -1168,57 +1187,69 @@ function createRockItem(opinion) {
     rock.appendChild(xl);
   }
   
-  /* ---------- echo badge ---------- */
+  /* ---------- echo counter badge ---------- */
   const echoBadge = document.createElement('span');
   echoBadge.className = 'badge';
   echoBadge.textContent = opinion.echo_count ?? 0;
   rock.appendChild(echoBadge);
   
-  /* ---------- initial echoed state ---------- */
-  if (echoedRocks.includes(opinion.id)) {
-    rock.classList.add('echoed');
+/* ---------- thumbs-up overlay ---------- */
+const agreeOverlay = document.createElement('div');
+agreeOverlay.className = 'rock-agree';
+rock.appendChild(agreeOverlay);
+
+/* ---------- initial echoed state ---------- */
+const isEchoed = echoedRocks.includes(opinion.id);
+if (isEchoed) {
+  agreeOverlay.style.display = 'block';
+}
+  
+  /* ===============================================================
+   *  helpers  – addEcho()  &  removeEcho()
+   * =========================================================== */
+  async function addEcho() {
+  if (echoedRocks.includes(opinion.id)) return;
+  
+  rock.classList.add('echoed');
+  spawnFloatingText(rock);
+  
+  opinion.echo_count = (opinion.echo_count ?? 0) + 1;
+  echoBadge.textContent = opinion.echo_count;
+  
+  // ✅ show thumbs-up overlay
+  agreeOverlay.style.display = 'block';
+  
+  /* 1) record echo */
+  const { error: insErr } = await supabase
+    .from('opinion_echoes')
+    .insert({ opinion_id: opinion.id, user_id: DEVICE_ID });
+  
+  if (insErr && insErr.code !== '23505') {
+    console.error('echo insert failed', insErr);
+    return;
   }
   
-  /* =================================================================
-   *           ⬆️  helpers  – addEcho / removeEcho
-   * ================================================================= */
-  async function addEcho() {
-    if (echoedRocks.includes(opinion.id)) return;
-    
-    rock.classList.add('echoed');
-    spawnFloatingText(rock);
-    opinion.echo_count = (opinion.echo_count ?? 0) + 1;
-    echoBadge.textContent = opinion.echo_count;
-    
-    /* 1) one-row insert (duplicate = 23505 → safe to ignore) */
-    const { error: insErr } = await supabase
-      .from('opinion_echoes')
-      .insert({ opinion_id: opinion.id, user_id: DEVICE_ID });
-    
-    if (insErr && insErr.code !== '23505') {
-      console.error('echo insert failed', insErr);
-      return;
-    }
-    
-    /* 2) bump counter */
-    await supabase
-      .from('opinions')
-      .update({ echo_count: opinion.echo_count })
-      .eq('id', opinion.id);
-    
-    /* 3) cache locally */
-    echoedRocks.push(opinion.id);
-    saveEchoCache(echoedRocks);
-  }
+  /* 2) bump counter on opinions table */
+  await supabase
+    .from('opinions')
+    .update({ echo_count: opinion.echo_count })
+    .eq('id', opinion.id);
+  
+  /* 3) cache locally */
+  echoedRocks.push(opinion.id);
+  saveEchoCache(echoedRocks);
+}
   
   async function removeEcho() {
     if (!echoedRocks.includes(opinion.id)) return;
     
     rock.classList.remove('echoed');
+    agreeOverlay.style.display = 'none';
+    
     opinion.echo_count = Math.max((opinion.echo_count ?? 1) - 1, 0);
     echoBadge.textContent = opinion.echo_count;
     
-    /* 1) delete echo row */
+    /* 1) delete echo record */
     const { error: delErr } = await supabase
       .from('opinion_echoes')
       .delete()
@@ -1230,28 +1261,26 @@ function createRockItem(opinion) {
       return;
     }
     
-    /* 2) decrement counter */
+    /* 2) update counter */
     await supabase
       .from('opinions')
       .update({ echo_count: opinion.echo_count })
       .eq('id', opinion.id);
     
-    /* 3) update cache */
+    /* 3) update local cache */
     echoedRocks = echoedRocks.filter(id => id !== opinion.id);
     saveEchoCache(echoedRocks);
   }
   
-  /* =================================================================
-   *           👆  input handling  – tap vs long-press
-   * ================================================================= */
-  let timerId;
-  let longPressHandled = false;
-  const LONG = 600; // ms hold to un-echo
+  /* ===============================================================
+   *  input handling  – short tap vs 600 ms long-press
+   * =========================================================== */
+  let timerId, longPressHandled = false;
+  const LONG = 600; // ms hold to remove echo
   
   rock.addEventListener('pointerdown', e => {
-    e.preventDefault(); // stop copy / context bubble
+    e.preventDefault(); // stop copy / share bubble
     longPressHandled = false;
-    
     timerId = setTimeout(() => {
       longPressHandled = true;
       removeEcho();
@@ -1260,14 +1289,14 @@ function createRockItem(opinion) {
   
   rock.addEventListener('pointerup', () => {
     clearTimeout(timerId);
-    if (longPressHandled) return; // already removed
-    addEcho(); // short tap → add
+    if (longPressHandled) return; // long-press already handled
+    addEcho(); // quick tap → add echo
   });
   
   rock.addEventListener('pointerleave', () => clearTimeout(timerId));
   rock.addEventListener('contextmenu', e => e.preventDefault());
   
-  /* assemble & return */
+  /* ---------- assemble ---------- */
   rock.appendChild(textDiv);
   rockItem.appendChild(rock);
   return rockItem;
