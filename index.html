@@ -1267,81 +1267,78 @@ if (isEchoed) {
   /* ===============================================================
    *  helpers  – addEcho()  &  removeEcho()
    * =========================================================== */
-  async function addEcho() {
-  if (echoedRocks.includes(opinion.id)) return false;
+  /**
+ * Add an echo if this device hasn’t echoed it yet.
+ * @returns {Boolean} true ⇢ echo added • false ⇢ no change
+ */
+/**
+ * Add one echo to this opinion.
+ * Returns true if an echo was added, false if it was already there.
+ */
+async function addEcho() {
+  if (echoedRocks.includes(opinion.id)) return;
   
   rock.classList.add('echoed');
   spawnFloatingText(rock);
   
+  // Increment local count
   opinion.echo_count = (opinion.echo_count ?? 0) + 1;
   echoBadge.textContent = opinion.echo_count;
   
-
-  
-  /* 1) record echo */
-  const { error: insErr } = await supabase
-    .from('opinion_echoes')
-    .insert({ opinion_id: opinion.id, user_id: DEVICE_ID });
-  
-  if (insErr && insErr.code !== '23505') {
-    console.error('echo insert failed', insErr);
-    return true;
-  }
-  
-  /* 2) bump counter on opinions table */
-  await supabase
+  // Update in DB — we just send the new value, no literal
+  const { error } = await supabase
     .from('opinions')
     .update({ echo_count: opinion.echo_count })
     .eq('id', opinion.id);
   
-  /* 3) cache locally */
+  if (error) {
+    console.error('Failed to update echo count:', error);
+    alert('Failed to save your vote. Please try again.');
+    // Optionally rollback
+    opinion.echo_count = Math.max(opinion.echo_count - 1, 0);
+    echoBadge.textContent = opinion.echo_count;
+    rock.classList.remove('echoed');
+    return;
+  }
+  
   echoedRocks.push(opinion.id);
   saveEchoCache(echoedRocks);
 }
+
+async function removeEcho() {
+  if (!echoedRocks.includes(opinion.id)) return;
   
-  async function removeEcho() {
-    if (!echoedRocks.includes(opinion.id)) return;
-  
-  // Trigger bounce-back animation
+  // Bounce back visual
   const pebble = rock.querySelector('.pebble-badge');
   pebble.style.animation = 'bounceBack 0.15s ease-out';
-  
-  // Clear the animation after it runs
   pebble.addEventListener('animationend', () => {
     pebble.style.animation = '';
   }, { once: true });
   
-  
+  // Decrement local count
   opinion.echo_count = Math.max((opinion.echo_count ?? 1) - 1, 0);
   echoBadge.textContent = opinion.echo_count;
-    
-    rock.classList.remove('echoed');
-    opinion.echo_count = Math.max((opinion.echo_count ?? 1) - 1, 0);
+  rock.classList.remove('echoed');
+  
+  // Update in DB — just send the new value, no literal
+  const { error } = await supabase
+    .from('opinions')
+    .update({ echo_count: opinion.echo_count })
+    .eq('id', opinion.id);
+  
+  if (error) {
+    console.error('Failed to update echo count:', error);
+    alert('Failed to remove your vote. Please try again.');
+    // Optionally rollback
+    opinion.echo_count += 1;
     echoBadge.textContent = opinion.echo_count;
-    
-    /* 1) delete echo record */
-    const { error: delErr } = await supabase
-      .from('opinion_echoes')
-      .delete()
-      .eq('opinion_id', opinion.id)
-      .eq('user_id', DEVICE_ID);
-    
-    if (delErr) {
-      console.error('echo delete failed', delErr);
-      return;
-    }
-    
-    /* 2) update counter */
-    await supabase
-      .from('opinions')
-      .update({ echo_count: opinion.echo_count })
-      .eq('id', opinion.id);
-    
-    /* 3) update local cache */
-    echoedRocks = echoedRocks.filter(id => id !== opinion.id);
-    saveEchoCache(echoedRocks);
+    rock.classList.add('echoed');
+    return;
   }
   
+  echoedRocks = echoedRocks.filter(id => id !== opinion.id);
+  saveEchoCache(echoedRocks);
+}
 /* -------------------------------------------------------------
  *  tap  = addEcho()
  *  long = removeEcho()          (LONG = 600 ms — same as before)
@@ -1365,12 +1362,12 @@ rock.addEventListener('pointerdown', e => {
   }, LONG);
 });
 
-rock.addEventListener('pointerup', () => {
+rock.addEventListener('pointerup', async () => {
   clearTimeout(timerId);
   if (stopGrow) stopGrow();
   
-  if (!longPressHandled) { // only if we did *not* long-press
-    const added = addEcho(); // see next patch
+  if (!longPressHandled) {
+    const added = await addEcho(); // await it
     if (added) rock.classList.add('echo-added');
   }
 });
