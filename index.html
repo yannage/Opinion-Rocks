@@ -70,6 +70,20 @@ body.shake {
   cursor: pointer;
   transition: transform 0.1s ease;
 }
+
+/* prevent copy / text-selection & context-menu inside rocks */
+.rock,
+.rock * {
+  -webkit-user-select: none;   /* Safari / iOS */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* IE */
+  user-select: none;           /* Standard */
+  -webkit-touch-callout: none; /* iOS "copy/share" bubble */
+}
+
+
+
+
 .rock:hover {
   transform: scale(1.05);
 }
@@ -660,6 +674,27 @@ button#submitBtn {
     let charLimit = 40;
     let isUpgraded = false;
     
+    // -------------------------------------------------------------
+// anonymous device ID that survives reloads
+function getDeviceId() {
+  let id = localStorage.getItem('opinion_device_id');
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem('opinion_device_id', id);
+  }
+  return id;
+}
+const DEVICE_ID = getDeviceId();
+
+// cache echoed rock IDs locally so the UI blocks repeat clicks
+function loadEchoCache() {
+  try { return JSON.parse(localStorage.getItem('echoed_rocks') || '[]'); }
+  catch { return []; }
+}
+function saveEchoCache(arr) {
+  localStorage.setItem('echoed_rocks', JSON.stringify(arr));
+}
+let echoedRocks = loadEchoCache();
     
     // Simple sprite helper for the emoji "nod"
 const nodFrames = ['🙂', '😊', '😎', '😊', '🙂'];
@@ -1098,21 +1133,25 @@ if (rocksToShow.length <= 2) {
   updateNavigationButtons();
 }
 
+/** ------------------------------------------------------------------
+ *  Build one rock DOM element, wire echo (+) on tap, un-echo (–) on
+ *  long-press (600 ms), and keep local / Supabase state in sync.
+ * ------------------------------------------------------------------ */
 function createRockItem(opinion) {
+  /* ---------- shell & layout ---------- */
   const rockItem = document.createElement('div');
   rockItem.className = 'rock-item';
   
   const rock = document.createElement('div');
   rock.className = 'rock';
-  rock.dataset.id = opinion.id; // ensure dataset for click handlers
+  rock.dataset.id = opinion.id;
   
   const offsetX = Math.floor(Math.random() * 20) - 10;
   const offsetY = Math.floor(Math.random() * 10);
-  const randomRotation = (Math.random() * 20) - 10;
-  const scale = 1;
+  const rotation = (Math.random() * 20) - 10;
+  rock.style.transform = `translate(${offsetX}px,${offsetY}px) rotate(${rotation}deg)`;
   
-  rock.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${randomRotation}deg) scale(${scale})`;
-  
+  /* ---------- text ---------- */
   const textDiv = document.createElement('div');
   textDiv.className = 'rock-text';
   textDiv.textContent = opinion.text;
@@ -1121,51 +1160,114 @@ function createRockItem(opinion) {
   Object.assign(rock.style, { width, height });
   textDiv.style.fontSize = fontSize;
   
-  // Add upgraded badge if needed
+  /* XL badge for upgraded rocks */
   if (opinion.text.length > 40) {
-    const upgradeBadge = document.createElement('div');
-    upgradeBadge.className = 'upgraded-badge';
-    upgradeBadge.textContent = 'XL';
-    rock.appendChild(upgradeBadge);
+    const xl = document.createElement('div');
+    xl.className = 'upgraded-badge';
+    xl.textContent = 'XL';
+    rock.appendChild(xl);
   }
   
-  // 💥 Add echo count badge (single instance)
+  /* ---------- echo badge ---------- */
   const echoBadge = document.createElement('span');
   echoBadge.className = 'badge';
-  echoBadge.textContent = opinion.echo_count ?? 0; // force null → 0
+  echoBadge.textContent = opinion.echo_count ?? 0;
   rock.appendChild(echoBadge);
   
-  // Attach click handler
-  rock.addEventListener('click', async e => {
-    const id = opinion.id;
-    const opinionData = opinions.find(o => o.id === id);
-    if (!opinionData) return;
+  /* ---------- initial echoed state ---------- */
+  if (echoedRocks.includes(opinion.id)) {
+    rock.classList.add('echoed');
+  }
+  
+  /* =================================================================
+   *           ⬆️  helpers  – addEcho / removeEcho
+   * ================================================================= */
+  async function addEcho() {
+    if (echoedRocks.includes(opinion.id)) return;
     
-    rock.classList.toggle('echoed');
+    rock.classList.add('echoed');
     spawnFloatingText(rock);
+    opinion.echo_count = (opinion.echo_count ?? 0) + 1;
+    echoBadge.textContent = opinion.echo_count;
     
-    opinionData.echo_count = opinionData.echo_count ?? 0; // force null → 0
-    const delta = rock.classList.contains('echoed') ? 1 : -1;
-    opinionData.echo_count += delta;
+    /* 1) one-row insert (duplicate = 23505 → safe to ignore) */
+    const { error: insErr } = await supabase
+      .from('opinion_echoes')
+      .insert({ opinion_id: opinion.id, user_id: DEVICE_ID });
     
-    echoBadge.textContent = opinionData.echo_count;
-    
-    try {
-      const { data, error } = await supabase
-        .from('opinions')
-        .update({ echo_count: opinionData.echo_count })
-        .eq('id', id);
-      
-      if (error) {
-        console.error('Supabase update error:', error);
-      } else {
-        console.log('Supabase update success:', data);
-      }
-    } catch (err) {
-      console.error('Echo save failed (network or other):', err);
+    if (insErr && insErr.code !== '23505') {
+      console.error('echo insert failed', insErr);
+      return;
     }
+    
+    /* 2) bump counter */
+    await supabase
+      .from('opinions')
+      .update({ echo_count: opinion.echo_count })
+      .eq('id', opinion.id);
+    
+    /* 3) cache locally */
+    echoedRocks.push(opinion.id);
+    saveEchoCache(echoedRocks);
+  }
+  
+  async function removeEcho() {
+    if (!echoedRocks.includes(opinion.id)) return;
+    
+    rock.classList.remove('echoed');
+    opinion.echo_count = Math.max((opinion.echo_count ?? 1) - 1, 0);
+    echoBadge.textContent = opinion.echo_count;
+    
+    /* 1) delete echo row */
+    const { error: delErr } = await supabase
+      .from('opinion_echoes')
+      .delete()
+      .eq('opinion_id', opinion.id)
+      .eq('user_id', DEVICE_ID);
+    
+    if (delErr) {
+      console.error('echo delete failed', delErr);
+      return;
+    }
+    
+    /* 2) decrement counter */
+    await supabase
+      .from('opinions')
+      .update({ echo_count: opinion.echo_count })
+      .eq('id', opinion.id);
+    
+    /* 3) update cache */
+    echoedRocks = echoedRocks.filter(id => id !== opinion.id);
+    saveEchoCache(echoedRocks);
+  }
+  
+  /* =================================================================
+   *           👆  input handling  – tap vs long-press
+   * ================================================================= */
+  let timerId;
+  let longPressHandled = false;
+  const LONG = 600; // ms hold to un-echo
+  
+  rock.addEventListener('pointerdown', e => {
+    e.preventDefault(); // stop copy / context bubble
+    longPressHandled = false;
+    
+    timerId = setTimeout(() => {
+      longPressHandled = true;
+      removeEcho();
+    }, LONG);
   });
   
+  rock.addEventListener('pointerup', () => {
+    clearTimeout(timerId);
+    if (longPressHandled) return; // already removed
+    addEcho(); // short tap → add
+  });
+  
+  rock.addEventListener('pointerleave', () => clearTimeout(timerId));
+  rock.addEventListener('contextmenu', e => e.preventDefault());
+  
+  /* assemble & return */
   rock.appendChild(textDiv);
   rockItem.appendChild(rock);
   return rockItem;
