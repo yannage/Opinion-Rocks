@@ -276,6 +276,27 @@ button:disabled {
   z-index: 3;
 }
 
+/*  ── Echo halo  ──────────────────────────────── */
+.rock.echoed {
+  box-shadow: 0 0 0 4px #ffdd55, 0 0 12px 6px #ffdd5533;
+}
+
+/*  ── Floating feedback text  ─────────────────── */
+.floating-text {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -10px);
+  font-size: 1.1rem;
+  pointer-events: none;
+  animation: floatUp 700ms ease-out forwards;
+}
+
+@keyframes floatUp {
+  from { opacity: 1; transform: translate(-50%, 0); }
+  to   { opacity: 0; transform: translate(-50%, -60px); }
+}
+
 .rock-item .rock {  
   transition: transform 0.2s ease, z-index 0s;
 }
@@ -638,6 +659,58 @@ button#submitBtn {
     let currentIndex = 0;
     let charLimit = 40;
     let isUpgraded = false;
+    
+    
+    // Simple sprite helper for the emoji "nod"
+const nodFrames = ['🙂', '😊', '😎', '😊', '🙂'];
+
+function spawnFloatingText(targetEl) {
+  const span = document.createElement('span');
+  span.className = 'floating-text';
+  
+  // 50 % chance numeric / emoji
+  if (Math.random() < 0.5) {
+    span.textContent = '🪨 +1';
+  } else {
+    span.textContent = nodFrames[0];
+    let i = 0;
+    const interval = setInterval(() => {
+      i = (i + 1) % nodFrames.length;
+      span.textContent = nodFrames[i];
+    }, 80); // 5 × 80 ms ≈ 400 ms loop
+    span.addEventListener('animationend', () => clearInterval(interval));
+  }
+  
+  targetEl.appendChild(span);
+  span.addEventListener('animationend', () => span.remove());
+}
+
+// attach once right after you finish rendering the valley
+document.querySelectorAll('.rock').forEach(rockEl => {
+  rockEl.addEventListener('click', async e => {
+    const id = +rockEl.dataset.id;
+    const opinion = opinions.find(o => o.id === id);
+    if (!opinion) return;
+    
+    // 1️⃣ optimistic UI
+    rockEl.classList.toggle('echoed');
+    spawnFloatingText(rockEl);
+    
+    // 2️⃣ client-side echo count (optional badge)
+    opinion.echo_count += rockEl.classList.contains('echoed') ? 1 : -1;
+    rockEl.querySelector('.badge').textContent = opinion.echo_count;
+    
+    // 3️⃣ persist (can fail silently)
+    try {
+      await supabase
+        .from('opinions')
+        .update({ echo_count: opinion.echo_count })
+        .eq('id', id);
+    } catch (err) {
+      console.error('Echo save failed', err);
+    }
+  });
+});
 
     // Function to save state to URL
     function saveStateToUrl() {
@@ -1026,44 +1099,76 @@ if (rocksToShow.length <= 2) {
 }
 
 function createRockItem(opinion) {
+  const rockItem = document.createElement('div');
+  rockItem.className = 'rock-item';
   
+  const rock = document.createElement('div');
+  rock.className = 'rock';
+  rock.dataset.id = opinion.id; // ensure dataset for click handlers
   
-      const rockItem = document.createElement('div');
-      rockItem.className = 'rock-item';
-      
-      const rock = document.createElement('div');
-      rock.className = 'rock';
-      
-      const offsetX = Math.floor(Math.random() * 20) - 10;
-      const offsetY = Math.floor(Math.random() * 10);
-      const randomRotation = (Math.random() * 20) - 10;
-      const scale = 1;
-      
-      rock.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${randomRotation}deg) scale(${scale})`;
-      
-      const textDiv = document.createElement('div');
-      textDiv.className = 'rock-text';
-      textDiv.textContent = opinion.text;
-      
-      const { width, height, fontSize } = getRockSize(opinion.text.length);
-      Object.assign(rock.style, { width, height });
-      textDiv.style.fontSize = fontSize;
-      
-      if (opinion.text.length > 40) {
-        const badge = document.createElement('div');
-        badge.className = 'upgraded-badge';
-        badge.textContent = 'XL';
-        rock.appendChild(badge);
-      }
-      
-      rock.addEventListener('click', () => {
-        shakeRock(rock);
-      });
-      
-      rock.appendChild(textDiv);
-      rockItem.appendChild(rock);
-      return rockItem;
+  const offsetX = Math.floor(Math.random() * 20) - 10;
+  const offsetY = Math.floor(Math.random() * 10);
+  const randomRotation = (Math.random() * 20) - 10;
+  const scale = 1;
+  
+  rock.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${randomRotation}deg) scale(${scale})`;
+  
+  const textDiv = document.createElement('div');
+  textDiv.className = 'rock-text';
+  textDiv.textContent = opinion.text;
+  
+  const { width, height, fontSize } = getRockSize(opinion.text.length);
+  Object.assign(rock.style, { width, height });
+  textDiv.style.fontSize = fontSize;
+  
+  // Add upgraded badge if needed
+  if (opinion.text.length > 40) {
+    const upgradeBadge = document.createElement('div');
+    upgradeBadge.className = 'upgraded-badge';
+    upgradeBadge.textContent = 'XL';
+    rock.appendChild(upgradeBadge);
+  }
+  
+  // 💥 Add echo count badge (single instance)
+  const echoBadge = document.createElement('span');
+  echoBadge.className = 'badge';
+  echoBadge.textContent = opinion.echo_count ?? 0; // force null → 0
+  rock.appendChild(echoBadge);
+  
+  // Attach click handler
+  rock.addEventListener('click', async e => {
+    const id = opinion.id;
+    const opinionData = opinions.find(o => o.id === id);
+    if (!opinionData) return;
     
+    rock.classList.toggle('echoed');
+    spawnFloatingText(rock);
+    
+    opinionData.echo_count = opinionData.echo_count ?? 0; // force null → 0
+    const delta = rock.classList.contains('echoed') ? 1 : -1;
+    opinionData.echo_count += delta;
+    
+    echoBadge.textContent = opinionData.echo_count;
+    
+    try {
+      const { data, error } = await supabase
+        .from('opinions')
+        .update({ echo_count: opinionData.echo_count })
+        .eq('id', id);
+      
+      if (error) {
+        console.error('Supabase update error:', error);
+      } else {
+        console.log('Supabase update success:', data);
+      }
+    } catch (err) {
+      console.error('Echo save failed (network or other):', err);
+    }
+  });
+  
+  rock.appendChild(textDiv);
+  rockItem.appendChild(rock);
+  return rockItem;
 }
 
   function shakeRock(rockElement) {
