@@ -81,28 +81,41 @@ body.shake {
   -webkit-touch-callout: none; /* iOS "copy/share" bubble */
 }
 
+
+
+
+/* the number itself */
+.badge{
+  font-size:0.9rem;
+  font-weight:700;
+  color:#2F1B14;       /* dark ink – same as rock text */
+  pointer-events:none;
+}
+
 /* == pebble counter ===================================== */
+/* default (un-echoed) pebble */
+/* ◀ default pebble (clay) */
 .pebble-badge{
   position:absolute;
-  bottom:15px;                /* hug bottom-left of the rock            */
-  left:15px;
-  width:32px;                /* tune if you want it bigger / smaller   */
+  bottom:14px; left:14px;
+  width:32px;
   aspect-ratio:1/1;
-  background:url('art/pebble.png') center / contain no-repeat;
-  display:flex;              /* centers the number inside the pebble   */
-  align-items:center;
-  justify-content:center;
-  pointer-events:none;       /* pebble itself shouldn’t steal clicks    */
-  font-family:'Fredoka',sans-serif;
-  font-size:0.9rem;          /* inherits text-color from .badge */
+  background:url("art/pebble.png") center/contain no-repeat;
+  display:flex; align-items:center; justify-content:center;
+  pointer-events:none;
 }
 
-/* just the number */
-.pebble-badge .badge{
-  color:#2F1B14;             /* same ink as other rock text */
-  font-weight:700;
+/* ◀ when the parent rock has been echoed  */
+.rock.echoed .pebble-badge{
+  background:url("art/gold_pebble.png") center/contain no-repeat;
+  animation:bounce 0.15s ease-out;
 }
 
+@keyframes bounce{
+  0%{transform:scale(1);}
+  40%{transform:scale(1.25);}
+  100%{transform:scale(1);}
+}
 
 .rock:hover {
   transform: scale(1.05);
@@ -754,32 +767,6 @@ function spawnFloatingText(targetEl) {
   span.addEventListener('animationend', () => span.remove());
 }
 
-// attach once right after you finish rendering the valley
-document.querySelectorAll('.rock').forEach(rockEl => {
-  rockEl.addEventListener('click', async e => {
-    const id = +rockEl.dataset.id;
-    const opinion = opinions.find(o => o.id === id);
-    if (!opinion) return;
-    
-    // 1️⃣ optimistic UI
-    rockEl.classList.toggle('echoed');
-    spawnFloatingText(rockEl);
-    
-    // 2️⃣ client-side echo count (optional badge)
-    opinion.echo_count += rockEl.classList.contains('echoed') ? 1 : -1;
-    rockEl.querySelector('.badge').textContent = opinion.echo_count;
-    
-    // 3️⃣ persist (can fail silently)
-    try {
-      await supabase
-        .from('opinions')
-        .update({ echo_count: opinion.echo_count })
-        .eq('id', id);
-    } catch (err) {
-      console.error('Echo save failed', err);
-    }
-  });
-});
 
     // Function to save state to URL
     function saveStateToUrl() {
@@ -1217,16 +1204,11 @@ echoBadge.textContent = opinion.echo_count ?? 0;
 
 pebble.appendChild(echoBadge); // number sits on top of the pebble
 rock.appendChild(pebble); // pebble sits in bottom-left of rock
-  
-/* ---------- thumbs-up overlay ---------- */
-const agreeOverlay = document.createElement('div');
-agreeOverlay.className = 'rock-agree';
-rock.appendChild(agreeOverlay);
 
 /* ---------- initial echoed state ---------- */
 const isEchoed = echoedRocks.includes(opinion.id);
 if (isEchoed) {
-  agreeOverlay.style.display = 'block';
+  rock.classList.add('echoed'); // pebble starts gold
 }
   
   /* ===============================================================
@@ -1241,8 +1223,7 @@ if (isEchoed) {
   opinion.echo_count = (opinion.echo_count ?? 0) + 1;
   echoBadge.textContent = opinion.echo_count;
   
-  // ✅ show thumbs-up overlay
-  agreeOverlay.style.display = 'block';
+
   
   /* 1) record echo */
   const { error: insErr } = await supabase
@@ -1269,8 +1250,6 @@ if (isEchoed) {
     if (!echoedRocks.includes(opinion.id)) return;
     
     rock.classList.remove('echoed');
-    agreeOverlay.style.display = 'none';
-    
     opinion.echo_count = Math.max((opinion.echo_count ?? 1) - 1, 0);
     echoBadge.textContent = opinion.echo_count;
     
