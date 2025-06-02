@@ -78,6 +78,7 @@ body.shake {
   -moz-user-select: none;      /* Firefox */
   -ms-user-select: none;       /* IE */
   user-select: none;           /* Standard */
+  -webkit-tap-highlight-color: transparent ;
   -webkit-touch-callout: none; /* iOS "copy/share" bubble */
 }
 
@@ -115,6 +116,12 @@ body.shake {
   0%{transform:scale(1);}
   40%{transform:scale(1.25);}
   100%{transform:scale(1);}
+}
+
+@keyframes bounceBack {
+  0% { transform: scale(1); }
+  40% { transform: scale(0.8); }
+  100% { transform: scale(1); }
 }
 
 .rock:hover {
@@ -616,6 +623,30 @@ button#submitBtn {
     margin: 5px 0;
   }
 }
+
+
+/* ONE place in your stylesheet – replace the .rock transform line */
+.rock{
+  --tx: 0px;                /* horizontal nudge   */
+  --ty: 0px;                /* vertical nudge     */
+  --tilt: 0deg;             /* random rotation    */
+  --scale: 1;               /* live press-scale   */
+
+  transform:
+    translate(var(--tx),var(--ty))
+    rotate(var(--tilt))
+    scale(var(--scale));
+  transition: transform 80ms ease-out;
+}
+
+@keyframes echoBounce      { 0%{transform:scale(1)} 60%{transform:scale(1.25)} 100%{transform:scale(1.1)} }
+@keyframes unEchoBounce    { 0%{transform:scale(1)} 60%{transform:scale(0.8)}  100%{transform:scale(1)}   }
+
+.rock.echo-added   { animation: echoBounce   230ms ease-out both; }
+.rock.echo-removed { animation: unEchoBounce 230ms ease-out both; }
+
+
+
   </style>
   
 
@@ -888,7 +919,26 @@ function spawnFloatingText(targetEl) {
       loadOpinions();
     }
 
+/**
+ * Smoothly grow the element while the user holds.
+ * Returns a function you must call on release to stop + reset.
+ */
+function startPressGrow(el, maxScale = 1.35, growMs = 600) {
+  const t0 = performance.now();
+  function frame(now) {
+    const p = Math.min(1, (now - t0) / growMs);           // 0 → 1
+    const s = 1 + (maxScale - 1) * p * p;                 // ease-in quad
+    el.style.setProperty('--scale', s.toFixed(3));
+    if (p < 1) el._growRAF = requestAnimationFrame(frame);
+  }
+  el._growRAF = requestAnimationFrame(frame);
 
+  /* stop function */
+  return () => {
+    cancelAnimationFrame(el._growRAF);
+    el.style.setProperty('--scale', 1);                   // spring back
+  };
+}
     // Upgrade rock function
     async function upgradeRock() {
       const upgradeBtn = upgradePrompt.querySelector('.upgrade-btn');
@@ -1175,7 +1225,10 @@ function createRockItem(opinion) {
   const offsetX = Math.floor(Math.random() * 20) - 10;
   const offsetY = Math.floor(Math.random() * 10);
   const rotation = (Math.random() * 20) - 10;
-  rock.style.transform = `translate(${offsetX}px,${offsetY}px) rotate(${rotation}deg)`;
+  /* inside createRockItem() – replace the old inline transform */
+rock.style.setProperty('--tx', `${offsetX}px`);
+rock.style.setProperty('--ty', `${offsetY}px`);
+rock.style.setProperty('--tilt', `${rotation}deg`);
   
   /* ---------- opinion text ---------- */
   const textDiv = document.createElement('div');
@@ -1215,7 +1268,7 @@ if (isEchoed) {
    *  helpers  – addEcho()  &  removeEcho()
    * =========================================================== */
   async function addEcho() {
-  if (echoedRocks.includes(opinion.id)) return;
+  if (echoedRocks.includes(opinion.id)) return false;
   
   rock.classList.add('echoed');
   spawnFloatingText(rock);
@@ -1232,7 +1285,7 @@ if (isEchoed) {
   
   if (insErr && insErr.code !== '23505') {
     console.error('echo insert failed', insErr);
-    return;
+    return true;
   }
   
   /* 2) bump counter on opinions table */
@@ -1248,6 +1301,19 @@ if (isEchoed) {
   
   async function removeEcho() {
     if (!echoedRocks.includes(opinion.id)) return;
+  
+  // Trigger bounce-back animation
+  const pebble = rock.querySelector('.pebble-badge');
+  pebble.style.animation = 'bounceBack 0.15s ease-out';
+  
+  // Clear the animation after it runs
+  pebble.addEventListener('animationend', () => {
+    pebble.style.animation = '';
+  }, { once: true });
+  
+  
+  opinion.echo_count = Math.max((opinion.echo_count ?? 1) - 1, 0);
+  echoBadge.textContent = opinion.echo_count;
     
     rock.classList.remove('echoed');
     opinion.echo_count = Math.max((opinion.echo_count ?? 1) - 1, 0);
@@ -1276,29 +1342,49 @@ if (isEchoed) {
     saveEchoCache(echoedRocks);
   }
   
-  /* ===============================================================
-   *  input handling  – short tap vs 600 ms long-press
-   * =========================================================== */
-  let timerId, longPressHandled = false;
-  const LONG = 600; // ms hold to remove echo
+/* -------------------------------------------------------------
+ *  tap  = addEcho()
+ *  long = removeEcho()          (LONG = 600 ms — same as before)
+ *  while holding we scale using --scale (see CSS above)
+ * ----------------------------------------------------------- */
+
+const LONG = 600;
+let timerId, stopGrow;
+let longPressHandled = false; // <-- add this
+
+rock.addEventListener('pointerdown', e => {
+  e.preventDefault();
+  longPressHandled = false; // reset each press
+  stopGrow = startPressGrow(rock);
   
-  rock.addEventListener('pointerdown', e => {
-    e.preventDefault(); // stop copy / share bubble
-    longPressHandled = false;
-    timerId = setTimeout(() => {
-      longPressHandled = true;
-      removeEcho();
-    }, LONG);
-  });
+  timerId = setTimeout(() => {
+    longPressHandled = true; // mark that long-press fired
+    stopGrow();
+    removeEcho();
+    rock.classList.add('echo-removed');
+  }, LONG);
+});
+
+rock.addEventListener('pointerup', () => {
+  clearTimeout(timerId);
+  if (stopGrow) stopGrow();
   
-  rock.addEventListener('pointerup', () => {
-    clearTimeout(timerId);
-    if (longPressHandled) return; // long-press already handled
-    addEcho(); // quick tap → add echo
-  });
-  
-  rock.addEventListener('pointerleave', () => clearTimeout(timerId));
-  rock.addEventListener('contextmenu', e => e.preventDefault());
+  if (!longPressHandled) { // only if we did *not* long-press
+    const added = addEcho(); // see next patch
+    if (added) rock.classList.add('echo-added');
+  }
+});
+
+rock.addEventListener('pointerleave', () => {
+  clearTimeout(timerId);
+  if (stopGrow) stopGrow();
+});
+
+rock.addEventListener('animationend', e => {
+  // clean up helper classes after the bounce
+  if (e.animationName === 'echoBounce') rock.classList.remove('echo-added');
+  if (e.animationName === 'unEchoBounce') rock.classList.remove('echo-removed');
+});
   
   /* ---------- assemble ---------- */
   rock.appendChild(textDiv);
