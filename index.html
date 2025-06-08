@@ -293,9 +293,13 @@ button:disabled {
 .valley-container.scroll-mode {
   background: #C0C0C0;
   border: 2px solid #FFF;
-  box-shadow: inset -2px -2px #808080, inset 2px 2px #FFFFFF;
+  box-shadow: inset -2px -2px #808080, inset 2px 2px #FFFFFF,
+              4px 4px 0 rgba(0, 0, 0, 0.5);
   padding: 8px;
 }
+
+.stats-box{display:none;background:#C0C0C0;border:2px solid #FFF;box-shadow:inset -2px -2px #808080,inset 2px 2px #FFFFFF;padding:4px;font-family:"MS Sans Serif",sans-serif;margin-bottom:6px;}
+.valley-container.scroll-mode .stats-box{display:block;}
 
 .scroll-header {
   display: none;
@@ -343,7 +347,7 @@ button:disabled {
 .valley-container.scroll-mode .valley {
   flex-direction: row;
   flex-wrap: wrap;
-  overflow-y: auto;
+  overflow-y: scroll;
   height: 60vh;
   align-content: flex-start;
   gap: 10px;
@@ -788,13 +792,14 @@ button#submitBtn {
     </div>
     <div id="loadingMessage" class="loading" style="display: none;">Loading opinions...</div>
     <div id="errorMessage" class="error" style="display: none;"></div>
-    <div style="margin: 5px 0;">
-      <button id="toggleViewBtn" class="toggle-view-btn" onclick="toggleView()" title="Toggle View">👁️</button>
-    </div>
     <div class="valley-container">
       <div class="scroll-header">
         <span>valley_of_opinions.exe</span>
         <button class="close-btn" aria-label="close" onclick="toggleView()">✖</button>
+      </div>
+      <div id="statsBox" class="stats-box">
+        <div id="dailyStats">Loading stats...</div>
+        <canvas id="statsChart" width="220" height="120"></canvas>
       </div>
       <button class="nav-arrow prev" onclick="navigateRocks(-1)" id="prevBtn">‹</button>
       <div class="valley" id="opinionValley"></div>
@@ -1207,6 +1212,7 @@ function startPressGrow(el, maxScale = 1.35, growMs = 600) {
 
         opinions = data || [];
         currentIndex = 0;
+        updateStats();
         renderValley();
       } catch (error) {
         console.error('Error loading opinions:', error);
@@ -1286,6 +1292,75 @@ function updateNavigationButtons() {
     prevBtn.disabled = currentIndex === 0;
     nextBtn.disabled = currentIndex >= maxIndex || visibleOpinions.length <= rocksPerPage;
   }
+}
+
+function updateStats() {
+  const statsBox = document.getElementById('statsBox');
+  if (!statsBox) return;
+  const dailyStats = document.getElementById('dailyStats');
+  const canvas = document.getElementById('statsChart');
+  if (!dailyStats || !canvas) return;
+
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const end = new Date(start);
+  end.setDate(start.getDate() + 1);
+
+  const todayOpinions = opinions.filter(op => {
+    const d = new Date(op.created_at);
+    return d >= start && d < end;
+  });
+
+  dailyStats.textContent = `Today's submissions: ${todayOpinions.length}`;
+
+  const hourly = new Array(24).fill(0);
+  todayOpinions.forEach(op => {
+    const h = new Date(op.created_at).getHours();
+    hourly[h]++;
+  });
+
+  drawStatsChart(canvas, hourly);
+}
+
+function drawStatsChart(canvas, data) {
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+
+  ctx.fillStyle = '#C0C0C0';
+  ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = '#000';
+  ctx.strokeRect(0, 0, w, h);
+
+  ctx.font = '8px "MS Sans Serif", sans-serif';
+  ctx.fillStyle = '#000';
+  ctx.textAlign = 'center';
+
+  const max = Math.max(...data, 1);
+  const barW = (w - 20) / data.length;
+  for (let i = 0; i < data.length; i++) {
+    const barH = (data[i] / max) * (h - 20);
+    const x = 10 + i * barW;
+    ctx.fillStyle = '#808080';
+    ctx.fillRect(x, h - 10 - barH, barW - 2, barH);
+    if (i % 6 === 0) {
+      ctx.fillStyle = '#000';
+      ctx.fillText(i.toString(), x + barW / 2 - 1, h - 8);
+      ctx.fillStyle = '#808080';
+    }
+  }
+
+  ctx.fillStyle = '#000';
+  ctx.textAlign = 'right';
+  ctx.fillText('0', 8, h - 10);
+  ctx.fillText(String(max), 8, 10);
+
+  ctx.beginPath();
+  ctx.moveTo(10, 10);
+  ctx.lineTo(10, h - 10);
+  ctx.lineTo(w - 10, h - 10);
+  ctx.stroke();
 }
 
 function renderValley() {
