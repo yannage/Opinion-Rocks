@@ -1002,7 +1002,20 @@ function startPressGrow(el, maxScale = 1.35, growMs = 600) {
   submitBtn.textContent = 'SUBMITTING…';
   
   try {
-    // 3️⃣ Save to Supabase
+    // 3️⃣ Check for duplicates
+    const { data: dupCheck, error: dupErr } = await supabase
+      .from('opinions')
+      .select('id')
+      .eq('text', text)
+      .limit(1);
+
+    if (dupErr) throw dupErr;
+    if (dupCheck && dupCheck.length > 0) {
+      alert('Looks like someone already etched that today. Try a twist!');
+      return;
+    }
+
+    // 4️⃣ Save to Supabase
     const { data, error } = await supabase
       .from('opinions')
       .insert([{ text }])
@@ -1014,7 +1027,7 @@ function startPressGrow(el, maxScale = 1.35, growMs = 600) {
     }
     if (error) throw error;
     
-    // 4️⃣ Build & show the share card
+    // 5️⃣ Build & show the share card
     const savedOpinion = data[0];
     const promptText = document.querySelector('.daily-question').textContent;
     const shareUrl = `https://opinion-rocks.netlify.app/o/${savedOpinion.id}`;
@@ -1046,7 +1059,7 @@ function startPressGrow(el, maxScale = 1.35, growMs = 600) {
       link.click();
     };
     
-    // 5️⃣ Reset form
+    // 6️⃣ Reset form
     input.value = '';
     previewText.textContent = '';
     Object.assign(preview.style, getRockSize(0));
@@ -1056,7 +1069,7 @@ function startPressGrow(el, maxScale = 1.35, growMs = 600) {
     const badge = preview.querySelector('.upgraded-badge');
     if (badge) badge.remove();
     
-    // 6️⃣ Clear state from URL
+    // 7️⃣ Clear state from URL
     const url = new URL(window.location);
     url.searchParams.delete('state');
     window.history.replaceState(null, '', url);
