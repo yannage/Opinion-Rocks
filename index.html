@@ -290,6 +290,13 @@ button:disabled {
   margin: 0 auto;
 }
 
+.valley-container.scroll-mode {
+  background: #C0C0C0;
+  border: 2px solid #FFF;
+  box-shadow: inset -2px -2px #808080, inset 2px 2px #FFFFFF;
+  padding: 8px;
+}
+
 .valley {
   display: flex;
   flex-direction: column;
@@ -300,6 +307,30 @@ button:disabled {
   width: 100%;
   max-height: 400px;
   position: relative;
+}
+
+.valley-container.scroll-mode .valley {
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow-y: auto;
+  height: 60vh;
+  align-content: flex-start;
+  gap: 10px;
+}
+
+.valley-container.scroll-mode .rock-item {
+  margin: 5px;
+}
+
+.valley-container.scroll-mode .valley::-webkit-scrollbar {
+  width: 16px;
+  background-color: #C0C0C0;
+}
+
+.valley-container.scroll-mode .valley::-webkit-scrollbar-thumb {
+  background-color: #E0E0E0;
+  border: 2px solid #808080;
+  box-shadow: inset -1px -1px #FFF, inset 1px 1px #404040;
 }
 
 .valley-row {
@@ -699,6 +730,9 @@ button#submitBtn {
     </div>
     <div id="loadingMessage" class="loading" style="display: none;">Loading opinions...</div>
     <div id="errorMessage" class="error" style="display: none;"></div>
+    <div style="margin: 5px 0;">
+      <button id="toggleViewBtn" onclick="toggleView()">Scroll View</button>
+    </div>
     <div class="valley-container">
       <button class="nav-arrow prev" onclick="navigateRocks(-1)" id="prevBtn">‹</button>
       <div class="valley" id="opinionValley"></div>
@@ -756,6 +790,7 @@ button#submitBtn {
     let currentIndex = 0;
     let charLimit = 40;
     let isUpgraded = false;
+    let scrollView = false;
     
     // -------------------------------------------------------------
 // anonymous device ID that survives reloads
@@ -922,6 +957,13 @@ function spawnFloatingText(targetEl) {
       document.getElementById('phase1').classList.remove('active');
       document.getElementById('phase2').classList.add('active');
       loadOpinions();
+    }
+
+    function toggleView() {
+      scrollView = !scrollView;
+      const btn = document.getElementById('toggleViewBtn');
+      btn.textContent = scrollView ? 'Paged View' : 'Scroll View';
+      renderValley();
     }
 
 /**
@@ -1160,7 +1202,7 @@ function navigateRocks(direction) {
   const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
   const rocksPerPage = window.innerWidth <= 768 ? 4 : 7; // Mobile: 1-2-1, Desktop: 2-3-2
   const maxIndex = Math.max(0, visibleOpinions.length - rocksPerPage);
-  
+
   currentIndex = Math.max(0, Math.min(maxIndex, currentIndex + (direction * rocksPerPage)));
   renderValley();
 }
@@ -1169,56 +1211,73 @@ function updateNavigationButtons() {
   const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
   const rocksPerPage = window.innerWidth <= 768 ? 4 : 7;
   const maxIndex = Math.max(0, visibleOpinions.length - rocksPerPage);
-  
-  prevBtn.disabled = currentIndex === 0;
-  nextBtn.disabled = currentIndex >= maxIndex || visibleOpinions.length <= rocksPerPage;
+
+  if (scrollView) {
+    prevBtn.style.display = 'none';
+    nextBtn.style.display = 'none';
+  } else {
+    prevBtn.style.display = '';
+    nextBtn.style.display = '';
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex >= maxIndex || visibleOpinions.length <= rocksPerPage;
+  }
 }
 
 function renderValley() {
   valley.innerHTML = '';
   const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
   
-  // Arrange into 3 layers: back, middle, front
-  const layerPattern = [0, 2, 3]; // total 10 per page
-  const rocksPerPage = layerPattern.reduce((a, b) => a + b, 0);
-  const rocksToShow = visibleOpinions.slice(currentIndex, currentIndex + rocksPerPage);
-  
-  let rockIndex = 0;
 
-if (rocksToShow.length <= 2) {
-  // Handle 1–2 rocks: center in a single row
-  const row = document.createElement('div');
-  row.className = 'valley-row';
-  row.style.justifyContent = 'center';
-  row.style.marginTop = '0px';
-  row.style.zIndex = 2;
-  
-  rocksToShow.forEach(opinion => {
-    const rockItem = createRockItem(opinion);
-    row.appendChild(rockItem);
-  });
-  
-  valley.appendChild(row);
-} else {
-  // Standard multi-layer display
-  layerPattern.forEach((count, layerIndex) => {
-    const row = document.createElement('div');
-    row.className = 'valley-row';
-    row.style.zIndex = layerIndex + 1;
-    row.style.marginTop = layerIndex === 0 ? '0px' : '-30px';
-    
-    for (let i = 0; i < count && rockIndex < rocksToShow.length; i++) {
-      const opinion = rocksToShow[rockIndex++];
+  if (scrollView) {
+    document.querySelector('.valley-container').classList.add('scroll-mode');
+    visibleOpinions.forEach(opinion => {
       const rockItem = createRockItem(opinion);
-      row.appendChild(rockItem);
-    }
-    
-    if (row.children.length > 0) {
+      valley.appendChild(rockItem);
+    });
+  } else {
+    document.querySelector('.valley-container').classList.remove('scroll-mode');
+    // Arrange into 3 layers: back, middle, front
+    const layerPattern = [0, 2, 3]; // total 10 per page
+    const rocksPerPage = layerPattern.reduce((a, b) => a + b, 0);
+    const rocksToShow = visibleOpinions.slice(currentIndex, currentIndex + rocksPerPage);
+
+    let rockIndex = 0;
+
+    if (rocksToShow.length <= 2) {
+      // Handle 1–2 rocks: center in a single row
+      const row = document.createElement('div');
+      row.className = 'valley-row';
+      row.style.justifyContent = 'center';
+      row.style.marginTop = '0px';
+      row.style.zIndex = 2;
+
+      rocksToShow.forEach(opinion => {
+        const rockItem = createRockItem(opinion);
+        row.appendChild(rockItem);
+      });
+
       valley.appendChild(row);
+    } else {
+      // Standard multi-layer display
+      layerPattern.forEach((count, layerIndex) => {
+        const row = document.createElement('div');
+        row.className = 'valley-row';
+        row.style.zIndex = layerIndex + 1;
+        row.style.marginTop = layerIndex === 0 ? '0px' : '-30px';
+
+        for (let i = 0; i < count && rockIndex < rocksToShow.length; i++) {
+          const opinion = rocksToShow[rockIndex++];
+          const rockItem = createRockItem(opinion);
+          row.appendChild(rockItem);
+        }
+
+        if (row.children.length > 0) {
+          valley.appendChild(row);
+        }
+      });
     }
-  });
-}
-  
+  }
+
   updateNavigationButtons();
 }
 
