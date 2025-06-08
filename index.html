@@ -668,7 +668,7 @@ button#submitBtn {
       <h1>OPINION ROCKS</h1>
     </div>
     <div class="prompt-banner">
-      <div class="prompt">Loading today's question...</div>
+      <div class="prompt daily-question">Loading today's question...</div>
     </div>
     <div class="rock-wrapper">
       <div class="rock" id="preview">
@@ -691,7 +691,12 @@ button#submitBtn {
   </div>
   
   <div id="phase2" class="phase">
-    <div class="prompt">Explore the Valley of Opinions</div>
+    <div class="banner-title">
+      <h1>VALLEY OF OPINIONS</h1>
+    </div>
+    <div class="prompt-banner">
+      <div class="prompt daily-question">Loading today's question...</div>
+    </div>
     <div id="loadingMessage" class="loading" style="display: none;">Loading opinions...</div>
     <div id="errorMessage" class="error" style="display: none;"></div>
     <div class="valley-container">
@@ -707,7 +712,7 @@ button#submitBtn {
       
       <button id="closeShareCard" style="position: absolute; top: 10px; right: 10px; background: white; color: #2F1B14; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">✖</button>
       
-      <div id="shareTopic" style="font-weight: bold; margin-bottom: 10px; color: #2F1B14; text-align: center;">Today's Topic</div>
+      <div id="shareTopic" class="prompt-banner prompt">Today's Topic</div>
       
       <div id="shareCard" style="width: 300px; height: 300px; background: url('art/rock_sprite.png') 0 0 no-repeat; background-size: 300% 300%; display: flex; align-items: center; justify-content: center; border-radius: 20px;">
         <div id="shareText" style="font-family: 'Fredoka', sans-serif; color: #2F1B14; text-align: center; font-size: 1rem; word-break: break-word; padding: 10px;"></div>
@@ -1011,7 +1016,7 @@ function startPressGrow(el, maxScale = 1.35, growMs = 600) {
     
     // 4️⃣ Build & show the share card
     const savedOpinion = data[0];
-    const promptText = document.querySelector('.prompt').textContent;
+    const promptText = document.querySelector('.daily-question').textContent;
     const shareUrl = `https://opinion-rocks.netlify.app/o/${savedOpinion.id}`;
     
     document.getElementById('shareText').textContent = savedOpinion.text;
@@ -1427,19 +1432,20 @@ async function loadDailyTopic() {
     
     if (data && data.length > 0) {
       const topic = data[0].current_topic;
-      
+
       if (topic && topic.trim() !== '') {
-        document.querySelector('.prompt').textContent = topic;
+        document.querySelectorAll('.daily-question').forEach(el => el.textContent = topic);
       } else {
-        document.querySelector('.prompt').textContent = "No topic text in this row!";
+        document.querySelectorAll('.daily-question').forEach(el => el.textContent = "No topic text in this row!");
       }
     } else {
-      document.querySelector('.prompt').textContent = "No topic rows found!";
+      document.querySelectorAll('.daily-question').forEach(el => el.textContent = "No topic rows found!");
     }
   } catch (error) {
     console.error('Error loading topic:', error);
-    document.querySelector('.prompt').textContent =
-      "What's the most overrated hat everyone pretends to love?";
+    document.querySelectorAll('.daily-question').forEach(el =>
+      el.textContent = "What's the most overrated hat everyone pretends to love?"
+    );
   }
 }
 
