@@ -290,6 +290,44 @@ button:disabled {
   margin: 0 auto;
 }
 
+.valley-container.scroll-mode {
+  background: #C0C0C0;
+  border: 2px solid #FFF;
+  box-shadow: inset -2px -2px #808080, inset 2px 2px #FFFFFF;
+  padding: 8px;
+}
+
+.scroll-header {
+  display: none;
+  background: linear-gradient(#000080, #1084d0);
+  color: white;
+  font-family: 'MS Sans Serif', sans-serif;
+  font-size: 0.9rem;
+  padding: 2px 6px;
+  margin-bottom: 6px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.scroll-header .close-btn {
+  background: #C0C0C0;
+  border: 2px solid #FFFFFF;
+  box-shadow: inset -1px -1px #808080, inset 1px 1px #FFFFFF;
+  color: black;
+  width: 18px;
+  height: 18px;
+  font-size: 0.7rem;
+  line-height: 1;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.valley-container.scroll-mode .scroll-header {
+  display: flex;
+}
+
 .valley {
   display: flex;
   flex-direction: column;
@@ -300,6 +338,35 @@ button:disabled {
   width: 100%;
   max-height: 400px;
   position: relative;
+}
+
+.valley-container.scroll-mode .valley {
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow-y: auto;
+  height: 60vh;
+  align-content: flex-start;
+  gap: 10px;
+}
+
+.valley-container.scroll-mode .rock-item {
+  margin: 5px;
+}
+
+.valley-container.scroll-mode .valley::-webkit-scrollbar {
+  width: 16px;
+  background-color: #C0C0C0;
+}
+
+.valley-container.scroll-mode .valley::-webkit-scrollbar-track {
+  border: 2px solid #808080;
+  box-shadow: inset -1px -1px #FFFFFF, inset 1px 1px #000000;
+}
+
+.valley-container.scroll-mode .valley::-webkit-scrollbar-thumb {
+  background-color: #E0E0E0;
+  border: 2px solid #808080;
+  box-shadow: inset -1px -1px #FFF, inset 1px 1px #404040;
 }
 
 .valley-row {
@@ -579,6 +646,28 @@ button#submitBtn {
   background-color: #4A3A2A;
 }
 
+.toggle-view-btn {
+  background: #7A6A5A;
+  color: white;
+  border: none;
+  padding: 0;
+  width: 44px;
+  height: 44px;
+  font-size: 1.1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Fredoka', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.toggle-view-btn:hover {
+  background-color: #6A5A4A;
+}
+
 /* Better mobile responsiveness */
 @media (max-width: 768px) {
   .phase {
@@ -700,11 +789,18 @@ button#submitBtn {
     <div id="loadingMessage" class="loading" style="display: none;">Loading opinions...</div>
     <div id="errorMessage" class="error" style="display: none;"></div>
     <div class="valley-container">
+      <div class="scroll-header">
+        <span>valley_of_opinions.exe</span>
+        <button class="close-btn" aria-label="close" onclick="toggleView()">✖</button>
+      </div>
       <button class="nav-arrow prev" onclick="navigateRocks(-1)" id="prevBtn">‹</button>
       <div class="valley" id="opinionValley"></div>
       <button class="nav-arrow next" onclick="navigateRocks(1)" id="nextBtn">›</button>
     </div>
-    <button onclick="restart()">ADD ANOTHER OPINION</button>
+    <div style="display: flex; gap: 10px; width: 100%; max-width: 400px; justify-content: center;">
+      <button id="toggleViewBtn" class="toggle-view-btn" onclick="toggleView()" title="Toggle View">👁️</button>
+      <button onclick="restart()" style="flex: 1;">ADD ANOTHER OPINION</button>
+    </div>
   </div>
   
   <div id="shareSection" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 9999;">
@@ -756,6 +852,7 @@ button#submitBtn {
     let currentIndex = 0;
     let charLimit = 40;
     let isUpgraded = false;
+    let scrollView = false;
     
     // -------------------------------------------------------------
 // anonymous device ID that survives reloads
@@ -922,6 +1019,13 @@ function spawnFloatingText(targetEl) {
       document.getElementById('phase1').classList.remove('active');
       document.getElementById('phase2').classList.add('active');
       loadOpinions();
+    }
+
+    function toggleView() {
+      scrollView = !scrollView;
+      const btn = document.getElementById('toggleViewBtn');
+      btn.textContent = scrollView ? '📄' : '👁️';
+      renderValley();
     }
 
 /**
@@ -1160,7 +1264,7 @@ function navigateRocks(direction) {
   const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
   const rocksPerPage = window.innerWidth <= 768 ? 4 : 7; // Mobile: 1-2-1, Desktop: 2-3-2
   const maxIndex = Math.max(0, visibleOpinions.length - rocksPerPage);
-  
+
   currentIndex = Math.max(0, Math.min(maxIndex, currentIndex + (direction * rocksPerPage)));
   renderValley();
 }
@@ -1169,56 +1273,73 @@ function updateNavigationButtons() {
   const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
   const rocksPerPage = window.innerWidth <= 768 ? 4 : 7;
   const maxIndex = Math.max(0, visibleOpinions.length - rocksPerPage);
-  
-  prevBtn.disabled = currentIndex === 0;
-  nextBtn.disabled = currentIndex >= maxIndex || visibleOpinions.length <= rocksPerPage;
+
+  if (scrollView) {
+    prevBtn.style.display = 'none';
+    nextBtn.style.display = 'none';
+  } else {
+    prevBtn.style.display = '';
+    nextBtn.style.display = '';
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex >= maxIndex || visibleOpinions.length <= rocksPerPage;
+  }
 }
 
 function renderValley() {
   valley.innerHTML = '';
   const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
   
-  // Arrange into 3 layers: back, middle, front
-  const layerPattern = [0, 2, 3]; // total 10 per page
-  const rocksPerPage = layerPattern.reduce((a, b) => a + b, 0);
-  const rocksToShow = visibleOpinions.slice(currentIndex, currentIndex + rocksPerPage);
-  
-  let rockIndex = 0;
 
-if (rocksToShow.length <= 2) {
-  // Handle 1–2 rocks: center in a single row
-  const row = document.createElement('div');
-  row.className = 'valley-row';
-  row.style.justifyContent = 'center';
-  row.style.marginTop = '0px';
-  row.style.zIndex = 2;
-  
-  rocksToShow.forEach(opinion => {
-    const rockItem = createRockItem(opinion);
-    row.appendChild(rockItem);
-  });
-  
-  valley.appendChild(row);
-} else {
-  // Standard multi-layer display
-  layerPattern.forEach((count, layerIndex) => {
-    const row = document.createElement('div');
-    row.className = 'valley-row';
-    row.style.zIndex = layerIndex + 1;
-    row.style.marginTop = layerIndex === 0 ? '0px' : '-30px';
-    
-    for (let i = 0; i < count && rockIndex < rocksToShow.length; i++) {
-      const opinion = rocksToShow[rockIndex++];
+  if (scrollView) {
+    document.querySelector('.valley-container').classList.add('scroll-mode');
+    visibleOpinions.forEach(opinion => {
       const rockItem = createRockItem(opinion);
-      row.appendChild(rockItem);
-    }
-    
-    if (row.children.length > 0) {
+      valley.appendChild(rockItem);
+    });
+  } else {
+    document.querySelector('.valley-container').classList.remove('scroll-mode');
+    // Arrange into 3 layers: back, middle, front
+    const layerPattern = [0, 2, 3]; // total 10 per page
+    const rocksPerPage = layerPattern.reduce((a, b) => a + b, 0);
+    const rocksToShow = visibleOpinions.slice(currentIndex, currentIndex + rocksPerPage);
+
+    let rockIndex = 0;
+
+    if (rocksToShow.length <= 2) {
+      // Handle 1–2 rocks: center in a single row
+      const row = document.createElement('div');
+      row.className = 'valley-row';
+      row.style.justifyContent = 'center';
+      row.style.marginTop = '0px';
+      row.style.zIndex = 2;
+
+      rocksToShow.forEach(opinion => {
+        const rockItem = createRockItem(opinion);
+        row.appendChild(rockItem);
+      });
+
       valley.appendChild(row);
+    } else {
+      // Standard multi-layer display
+      layerPattern.forEach((count, layerIndex) => {
+        const row = document.createElement('div');
+        row.className = 'valley-row';
+        row.style.zIndex = layerIndex + 1;
+        row.style.marginTop = layerIndex === 0 ? '0px' : '-30px';
+
+        for (let i = 0; i < count && rockIndex < rocksToShow.length; i++) {
+          const opinion = rocksToShow[rockIndex++];
+          const rockItem = createRockItem(opinion);
+          row.appendChild(rockItem);
+        }
+
+        if (row.children.length > 0) {
+          valley.appendChild(row);
+        }
+      });
     }
-  });
-}
-  
+  }
+
   updateNavigationButtons();
 }
 
