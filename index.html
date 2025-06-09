@@ -1182,16 +1182,17 @@ function startPressGrow(el, maxScale = 1.35, growMs = 600) {
       const downloadBtn = document.getElementById('downloadBtn');
       const closeBtn = document.getElementById('closeShareCard');
 
-      downloadBtn.style.display = 'none';
-      if (shareBtns) shareBtns.style.display = 'none';
-      if (closeBtn) closeBtn.style.display = 'none';
+      const hideEls = [downloadBtn, shareBtns, closeBtn];
+      hideEls.forEach(el => { if (el) el.style.visibility = 'hidden'; });
 
       await document.fonts.ready;
-      const canvas = await html2canvas(wrapper, { backgroundColor: null, useCORS: true, scale: 2 });
+      const canvas = await html2canvas(wrapper, {
+        backgroundColor: null,
+        useCORS: true,
+        scale: window.devicePixelRatio || 1
+      });
 
-      downloadBtn.style.display = '';
-      if (shareBtns) shareBtns.style.display = '';
-      if (closeBtn) closeBtn.style.display = '';
+      hideEls.forEach(el => { if (el) el.style.visibility = ''; });
 
       const link = document.createElement('a');
       link.download = `opinion-rock-${savedOpinion.id}.png`;
