@@ -758,6 +758,8 @@ button#submitBtn {
   
   
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
+  <!-- html2canvas for generating image -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
   <div id="phase1" class="phase active">
@@ -834,8 +836,8 @@ button#submitBtn {
       </div>
       
       <button id="downloadBtn" style="margin-top: 10px;">Download Image</button>
-      
-      <div style="display: flex; gap: 10px; margin-top: 10px;">
+
+      <div id="shareBtns" style="display: flex; gap: 10px; margin-top: 10px;">
         <button id="shareXBtn">Share to X</button>
         <button id="shareFBBtn">Share to Facebook</button>
       </div>
@@ -1175,10 +1177,25 @@ function startPressGrow(el, maxScale = 1.35, growMs = 600) {
     };
     
     document.getElementById('downloadBtn').onclick = async () => {
-      const canvas = await html2canvas(document.getElementById('shareCardWrapper'), { backgroundColor: null });
+      const wrapper = document.getElementById('shareCardWrapper');
+      const shareBtns = document.getElementById('shareBtns');
+      const downloadBtn = document.getElementById('downloadBtn');
+      const closeBtn = document.getElementById('closeShareCard');
+
+      downloadBtn.style.display = 'none';
+      if (shareBtns) shareBtns.style.display = 'none';
+      if (closeBtn) closeBtn.style.display = 'none';
+
+      await document.fonts.ready;
+      const canvas = await html2canvas(wrapper, { backgroundColor: null, useCORS: true, scale: 2 });
+
+      downloadBtn.style.display = '';
+      if (shareBtns) shareBtns.style.display = '';
+      if (closeBtn) closeBtn.style.display = '';
+
       const link = document.createElement('a');
       link.download = `opinion-rock-${savedOpinion.id}.png`;
-      link.href = canvas.toDataURL();
+      link.href = canvas.toDataURL('image/png');
       link.click();
     };
     
