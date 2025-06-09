@@ -816,7 +816,7 @@ button#submitBtn {
     </div>
     <div style="display: flex; gap: 10px; width: 100%; max-width: 400px; justify-content: center;">
       <button id="toggleViewBtn" class="toggle-view-btn" onclick="toggleView()" title="Toggle View">
-        <img src="art/button_valley.png" alt="Toggle View" style="width: 55px; height: 55px;" />
+        <img src="art/button_window.png" alt="Toggle View" style="width: 55px; height: 55px;" />
       </button>
       <button onclick="restart()" style="flex: 1;">ADD ANOTHER OPINION</button>
     </div>
@@ -1043,7 +1043,7 @@ function spawnFloatingText(targetEl) {
     function toggleView() {
       scrollView = !scrollView;
       const btnImg = document.querySelector('#toggleViewBtn img');
-      btnImg.src = scrollView ? 'art/button_window.png' : 'art/button_valley.png';
+      btnImg.src = scrollView ? 'art/button_valley.png' : 'art/button_window.png';
       renderValley();
     }
 
