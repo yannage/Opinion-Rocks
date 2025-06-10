@@ -724,6 +724,15 @@ button#submitBtn {
   }
 }
 
+/* --- Fix rock text POSITION *only* inside the download card ---------- */
+#shareCard .rock-text{
+  margin:0;                  /* kill the 35-px nudge                 */
+  width:80%;                 /* a little wider than the normal 67 %  */
+  padding:0 6px;             /* keeps descenders from touching edge  */
+  line-height:1.15;
+  text-align:center;         /* guarantees perfect horizontal centring */
+}
+
 
 /* ONE place in your stylesheet – replace the .rock transform line */
 .rock{
@@ -1177,6 +1186,8 @@ function startPressGrow(el, maxScale = 1.35, growMs = 600) {
     };
     
     document.getElementById('downloadBtn').onclick = async () => {
+      const sel = window.getSelection?.();
+if (sel && sel.removeAllRanges) sel.removeAllRanges();
       const wrapper = document.getElementById('shareCardWrapper');
       const shareBtns = document.getElementById('shareBtns');
       const downloadBtn = document.getElementById('downloadBtn');
@@ -1187,10 +1198,10 @@ function startPressGrow(el, maxScale = 1.35, growMs = 600) {
 
       await document.fonts.ready;
       const canvas = await html2canvas(wrapper, {
-        backgroundColor: null,
-        useCORS: true,
-        scale: window.devicePixelRatio || 1
-      });
+  backgroundColor: null,
+  useCORS: true,
+  scale: 2 // <<— force a consistent 2× everywhere
+});
 
       hideEls.forEach(el => { if (el) el.style.visibility = ''; });
 
