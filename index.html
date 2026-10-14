@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rock Your Opinion</title>
   <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600&display=swap');
@@ -749,31 +749,49 @@ button#submitBtn {
 
 
 
+/* Accessible controls and scroll-safe compact screens. */
+[hidden] { display: none !important; }
+.phase { min-height: 100%; height: 100%; justify-content: flex-start; padding-block: 24px; }
+.phase > * { flex-shrink: 0; }
+.phase::before, .phase::after { content: ''; flex: 1 0 0; }
+.intro, .day-notice { max-width: 520px; padding: 5px 10px; border-radius: 8px; background: rgba(255,255,255,.92); line-height: 1.35; }
+.intro { font-size: .9rem; }
+.day-notice, .checkout-notice { font-size: .8rem; }
+.input-wrapper label { display: block; text-align: left; color: #2f1b14; background: #fff; width: fit-content; padding: 3px 8px; border-radius: 6px 6px 0 0; }
+button:focus-visible, textarea:focus-visible, .rock[role="button"]:focus-visible { outline: 3px solid #0045a5; outline-offset: 4px; }
+.error { color: #713714; max-width: 500px; }
+.valley { max-height: none; }
+.nav-arrow { padding: 0; min-width: 44px; min-height: 44px; }
+#shareSection { padding: 16px; overflow-y: auto; }
+#shareCardWrapper { max-width: 100%; max-height: calc(100dvh - 32px); overflow-y: auto; flex-shrink: 0; }
+#closeShareCard { min-width: 44px; min-height: 44px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition: none !important; }
+}
   </style>
   
 
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Stripe JS -->
-  <script src="https://js.stripe.com/v3/"></script>
+  <!-- Stripe is not loaded while checkout is unavailable. -->
   
   
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
+
   <!-- html2canvas for generating image -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
   <div id="phase1" class="phase active">
-    <div id="successMessage" class="success-message" style="display: none;">
-      🎉 Upgrade successful! You can now write up to 80 characters!
-    </div>
     <div class="banner-title">
       <h1>OPINION ROCKS</h1>
     </div>
     <div class="prompt-banner">
-      <div class="prompt daily-question">Loading today's question...</div>
+      <div class="prompt daily-question" role="status">Loading today's question...</div>
     </div>
+    <p class="intro">One daily question. One short take on a rock. Explore the valley and echo the takes you agree with.</p>
+    <p class="day-notice">A new question clears the valley. There is no archive.</p>
+    <button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button>
     <div class="rock-wrapper">
       <div class="rock" id="preview">
         <div class="rock-text" id="previewText"></div>
@@ -781,18 +799,21 @@ button#submitBtn {
       <div class="dust" id="dustEffect"></div>
     </div>
     <div class="input-wrapper">
-      <textarea id="input" rows="3" placeholder="Type your opinion here..."></textarea>
-      <div class="char-counter" id="charCounter">0/40</div>
+      <label for="input">Your opinion</label>
+      <textarea id="input" rows="3" aria-describedby="charCounter draftStatus" placeholder="Type your opinion here..."></textarea>
+      <div class="char-counter" id="charCounter" aria-live="polite">0/40</div>
     </div>
+    <p id="draftStatus" class="error" role="status" hidden></p>
     <div class="upgrade-prompt" id="upgradePrompt">
-      <span class="coin">🪙</span> You've reached your rock's limit!
-      <button class="upgrade-btn" onclick="upgradeRock()">Upgrade for $1</button>
+      <span class="coin" aria-hidden="true">🪙</span> You've reached your rock's limit.
+      <button class="upgrade-btn" onclick="upgradeRock()">About XL rocks</button>
+      <p class="checkout-notice">XL checkout is temporarily unavailable.</p>
     </div>
     <div style="display: flex; gap: 10px; width: 100%; max-width: 400px; justify-content: center;">
-      <button class="explore-valley-btn" onclick="goToValley()" title="Explore Valley">
-        <img src="art/button_rock.png" alt="Rock" style="width: 65px; height: 65px;" />
+      <button class="explore-valley-btn" onclick="goToValley()" title="Explore today’s valley" aria-label="Explore today’s valley">
+        <img src="art/button_rock.png" alt="" style="width: 65px; height: 65px;" />
       </button>
-      <button id="submitBtn" onclick="submitOpinion()" style="flex: 1;">SUBMIT</button>
+      <button id="submitBtn" disabled onclick="submitOpinion()" style="flex: 1;">SUBMIT</button>
     </div>
   </div>
   
@@ -801,35 +822,39 @@ button#submitBtn {
       <h1>VALLEY OF OPINIONS</h1>
     </div>
     <div class="prompt-banner">
-      <div class="prompt daily-question">Loading today's question...</div>
+      <div class="prompt daily-question" role="status">Loading today's question...</div>
     </div>
-    <div id="loadingMessage" class="loading" style="display: none;">Loading opinions...</div>
-    <div id="errorMessage" class="error" style="display: none;"></div>
+    <p class="day-notice">Today’s rocks only. Tap to echo. Hold to remove your echo. With a keyboard, use Enter or Space to toggle.</p>
+    <button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button>
+    <div id="loadingMessage" class="loading" role="status" style="display: none;">Loading opinions...</div>
+    <div id="errorMessage" class="error" role="status" style="display: none;"></div>
+    <button id="retryOpinionsBtn" onclick="loadOpinions()" hidden>Try loading the valley again</button>
     <div class="valley-container">
       <div class="scroll-header">
         <span>valley_of_opinions.exe</span>
-        <button class="close-btn" aria-label="close" onclick="toggleView()">✖</button>
+        <button class="close-btn" aria-label="Return to rock view" onclick="toggleView()">✖</button>
       </div>
       <div id="statsBox" class="stats-box">
         <div id="dailyStats">Loading stats...</div>
-        <canvas id="statsChart" width="220" height="120"></canvas>
+        <canvas id="statsChart" width="220" height="120" aria-label="Submissions per hour, in UTC" role="img"></canvas>
       </div>
-      <button class="nav-arrow prev" onclick="navigateRocks(-1)" id="prevBtn">‹</button>
+      <button class="nav-arrow prev" onclick="navigateRocks(-1)" id="prevBtn" aria-label="Previous opinions">‹</button>
       <div class="valley" id="opinionValley"></div>
-      <button class="nav-arrow next" onclick="navigateRocks(1)" id="nextBtn">›</button>
+      <button class="nav-arrow next" onclick="navigateRocks(1)" id="nextBtn" aria-label="Next opinions">›</button>
     </div>
+    <p id="pageStatus" class="day-notice" role="status"></p>
     <div style="display: flex; gap: 10px; width: 100%; max-width: 400px; justify-content: center;">
-      <button id="toggleViewBtn" class="toggle-view-btn" onclick="toggleView()" title="Toggle View">
-        <img src="art/button_window.png" alt="Toggle View" style="width: 55px; height: 55px;" />
+      <button id="toggleViewBtn" class="toggle-view-btn" onclick="toggleView()" title="Switch to list view" aria-label="Switch to list view" aria-pressed="false">
+        <img src="art/button_window.png" alt="" style="width: 55px; height: 55px;" />
       </button>
       <button onclick="restart()" style="flex: 1;">ADD ANOTHER OPINION</button>
     </div>
   </div>
   
-  <div id="shareSection" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 9999;">
+  <div id="shareSection" role="dialog" aria-modal="true" aria-labelledby="shareTopic" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 9999;">
     <div id="shareCardWrapper" style="position: relative; background: url('art/cave.png') center/cover no-repeat; padding: 20px; border-radius: 20px; width: 340px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center;">
       
-      <button id="closeShareCard" style="position: absolute; top: 10px; right: 10px; background: white; color: #2F1B14; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">✖</button>
+      <button id="closeShareCard" aria-label="Close share card and explore the valley" style="position: absolute; top: 10px; right: 10px; background: white; color: #2F1B14; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">✖</button>
       
       <div id="shareTopic" class="prompt-banner prompt">Today's Topic</div>
       
@@ -837,6 +862,7 @@ button#submitBtn {
         <div id="shareText" class="rock-text"></div>
       </div>
       
+      <p id="shareStatus" role="status"></p>
       <button id="downloadBtn" style="margin-top: 10px;">Download Image</button>
 
       <div id="shareBtns" style="display: flex; gap: 10px; margin-top: 10px;">
@@ -852,10 +878,10 @@ button#submitBtn {
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxdG1vcHRmaWdjd2p1eHN6emF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwOTcwOTgsImV4cCI6MjA2MzY3MzA5OH0.Z8To5RhckorBkoUp9mnIaAaZDuBGLpjYo38t5TbYhIg';
     
     // Initialize Supabase client
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = window.supabase?.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // Initialize Stripe (replace with your publishable key)
-    const stripe = Stripe('pk_test_51RSSG7A46eCcIv5C0N5hOGioWReufmFsKBM3idJtpn83Zqk34QjKFRBVi6ZtPCCOF4Rqyhh36cJTUbZPPw9i59UJ00Xbn810Vo');
+    // Checkout stays unavailable until server-side payment verification is in place.
+    // A URL parameter is never proof of a paid entitlement.
 
     const input = document.getElementById('input');
     const previewText = document.getElementById('previewText');
@@ -868,7 +894,6 @@ button#submitBtn {
     const nextBtn = document.getElementById('nextBtn');
     const charCounter = document.getElementById('charCounter');
     const upgradePrompt = document.getElementById('upgradePrompt');
-    const successMessage = document.getElementById('successMessage');
     
     let opinions = [];
     let brokenOpinionIds = new Set();
@@ -876,29 +901,40 @@ button#submitBtn {
     let charLimit = 40;
     let isUpgraded = false;
     let scrollView = false;
+    let topicReady = false;
+    let dailyState = null;
+    let topicRequest = 0;
+    let opinionRequest = 0;
+    let isSubmitting = false;
+    let upgradeInFlight = false;
+    let restoredLongDraft = false;
+    const pendingEchoes = new Set();
+    const draftStatus = document.getElementById('draftStatus');
+
+    function showDraftStatus(message) {
+      draftStatus.textContent = message;
+      draftStatus.hidden = !message;
+    }
+    function updateSubmitButton() {
+      submitBtn.disabled = isSubmitting || !topicReady || !input.value.trim() || characterCount(input.value.trim()) > charLimit;
+    }
+    function characterCount(text) { return Array.from(text).length; }
+    function limitText(text, limit) { return Array.from(text).slice(0, limit).join(''); }
+
     
     // -------------------------------------------------------------
-// anonymous device ID that survives reloads
-function getDeviceId() {
-  let id = localStorage.getItem('opinion_device_id');
-  if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem('opinion_device_id', id);
-  }
-  return id;
-}
-const DEVICE_ID = getDeviceId();
-
-// cache echoed rock IDs locally so the UI blocks repeat clicks
+// Local echo history is best-effort; privacy modes must not break the app.
 function loadEchoCache() {
-  try { return JSON.parse(localStorage.getItem('echoed_rocks') || '[]'); }
-  catch { return []; }
+  try {
+    const ids = JSON.parse(localStorage.getItem('echoed_rocks') || '[]');
+    return Array.isArray(ids) ? ids : [];
+  } catch { return []; }
 }
-function saveEchoCache(arr) {
-  localStorage.setItem('echoed_rocks', JSON.stringify(arr));
+function saveEchoCache(ids) {
+  try { localStorage.setItem('echoed_rocks', JSON.stringify(ids)); } catch { /* session only */ }
 }
 let echoedRocks = loadEchoCache();
-    
+
     // Simple sprite helper for the emoji "nod"
 const nodFrames = ['🙂', '😊', '😎', '😊', '🙂'];
 
@@ -917,82 +953,64 @@ function spawnFloatingText(targetEl) {
       span.textContent = nodFrames[i];
     }, 80); // 5 × 80 ms ≈ 400 ms loop
     span.addEventListener('animationend', () => clearInterval(interval));
+    setTimeout(() => clearInterval(interval), 1000);
   }
   
   targetEl.appendChild(span);
   span.addEventListener('animationend', () => span.remove());
+  setTimeout(() => span.remove(), 1000);
 }
 
 
-    // Function to save state to URL
+    // UTF-8 state keeps emoji and non-Latin drafts intact on older return URLs.
+    function encodeDraftState(text) {
+      const bytes = new TextEncoder().encode(JSON.stringify({ text }));
+      return btoa(Array.from(bytes, byte => String.fromCharCode(byte)).join(''));
+    }
+    function decodeDraftState(encoded) {
+      const binary = atob(encoded);
+      try {
+        return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(
+          Uint8Array.from(binary, char => char.charCodeAt(0))));
+      } catch {
+        // Backward compatibility with the original Latin-1 btoa format.
+        return JSON.parse(binary);
+      }
+    }
     function saveStateToUrl() {
-      const state = {
-        text: input.value,
-        upgraded: isUpgraded,
-        limit: charLimit
-      };
-      const stateString = btoa(JSON.stringify(state));
-      const url = new URL(window.location);
-      url.searchParams.set('state', stateString);
+      const url = new URL(window.location.href);
+      url.searchParams.set('state', encodeDraftState(input.value));
       window.history.replaceState(null, '', url);
     }
-
-    // Function to load state from URL
     function loadStateFromUrl() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const stateString = urlParams.get('state');
-      const success = urlParams.get('success');
-      
-      if (stateString) {
+      const url = new URL(window.location.href);
+      const encoded = url.searchParams.get('state');
+      if (encoded) {
         try {
-          const state = JSON.parse(atob(stateString));
-          input.value = state.text || '';
-          isUpgraded = state.upgraded || false;
-          charLimit = state.limit || 40;
-          
-          // Update UI based on loaded state
-          updateCharCounter();
-          previewText.textContent = input.value.trim();
-          const { width, height, fontSize } = getRockSize(input.value.trim().length);
-          Object.assign(preview.style, { width, height });
-          previewText.style.fontSize = fontSize;
-          
-          // If upgraded, add badge
-          if (isUpgraded) {
-            const badge = document.createElement('div');
-            badge.className = 'upgraded-badge';
-            badge.textContent = 'XL';
-            preview.appendChild(badge);
+          const state = decodeDraftState(encoded);
+          if (typeof state.text !== 'string') throw new Error('Invalid draft');
+          // Keep the full draft visible; never silently discard a longer paid draft.
+          input.value = state.text;
+          if (characterCount(state.text) > charLimit) {
+            restoredLongDraft = true;
+            showDraftStatus('Your full draft is restored. Please shorten it to 40 characters while XL checkout is unavailable.');
           }
-          
-          // Clear the state from URL after loading
-          const url = new URL(window.location);
-          url.searchParams.delete('state');
-          window.history.replaceState(null, '', url);
-        } catch (e) {
-          console.error('Failed to load state:', e);
+        } catch {
+          showDraftStatus('We could not restore that draft link. You can write a new opinion below.');
         }
       }
-      
-      // Check if returning from successful payment
-      if (success === 'true') {
-        isUpgraded = true;
-        charLimit = 80;
-        successMessage.style.display = 'block';
-        setTimeout(() => {
-          successMessage.style.display = 'none';
-        }, 5000);
-        
-        // Clear success param from URL
-        const url = new URL(window.location);
-        url.searchParams.delete('success');
-        window.history.replaceState(null, '', url);
+      if (url.searchParams.has('success')) {
+        showDraftStatus('A checkout return link cannot verify payment. XL access is unavailable until payment can be confirmed. Your draft is kept.');
       }
+      url.searchParams.delete('state');
+      url.searchParams.delete('success');
+      window.history.replaceState(null, '', url);
+      refreshPreview();
     }
 
     // Update character counter function
     function updateCharCounter() {
-      const length = input.value.length;
+      const length = characterCount(input.value);
       charCounter.textContent = `${length}/${charLimit}`;
       
       // Update counter styling
@@ -1017,24 +1035,18 @@ function spawnFloatingText(targetEl) {
       }
     }
 
-    // Character counter and limit enforcement
-    input.addEventListener('input', () => {
-      const text = input.value;
-      const length = text.length;
-      
-      // Prevent further input if at limit
-      if (length > charLimit) {
-        input.value = text.substring(0, charLimit);
-        return;
-      }
-      
+    function refreshPreview() {
       updateCharCounter();
-      
-      // Update preview
+      updateSubmitButton();
       previewText.textContent = input.value.trim();
-      const { width, height, fontSize } = getRockSize(input.value.trim().length);
+      const { width, height, fontSize } = getRockSize(characterCount(input.value.trim()));
       Object.assign(preview.style, { width, height });
       previewText.style.fontSize = fontSize;
+    }
+    input.addEventListener('input', () => {
+      if (!restoredLongDraft) input.value = limitText(input.value, charLimit);
+      if (characterCount(input.value) <= charLimit) restoredLongDraft = false;
+      refreshPreview();
     });
     
         // Function to go to valley
@@ -1048,6 +1060,10 @@ function spawnFloatingText(targetEl) {
       scrollView = !scrollView;
       const btnImg = document.querySelector('#toggleViewBtn img');
       btnImg.src = scrollView ? 'art/button_valley.png' : 'art/button_window.png';
+      const button = document.getElementById('toggleViewBtn');
+      button.setAttribute('aria-label', scrollView ? 'Switch to rock view' : 'Switch to list view');
+      button.setAttribute('aria-pressed', String(scrollView));
+      button.title = button.getAttribute('aria-label');
       renderValley();
     }
 
@@ -1071,111 +1087,101 @@ function startPressGrow(el, maxScale = 1.35, growMs = 600) {
     el.style.setProperty('--scale', 1);                   // spring back
   };
 }
-    // Upgrade rock function
+    // Preserve the upgrade entry point without starting unverified checkout.
     async function upgradeRock() {
-      const upgradeBtn = upgradePrompt.querySelector('.upgrade-btn');
-      upgradeBtn.textContent = 'Processing...';
-      upgradeBtn.disabled = true;
-      
-      // Save current state before redirecting
-      saveStateToUrl();
-      
+      if (upgradeInFlight) return;
+      const button = upgradePrompt.querySelector('.upgrade-btn');
+      upgradeInFlight = true;
+      button.disabled = true;
       try {
-        // Get current URL for success/cancel redirects
-        const currentUrl = window.location.origin + window.location.pathname;
-        const successUrl = `${currentUrl}?success=true&state=${btoa(JSON.stringify({ text: input.value, upgraded: true, limit: 80 }))}`;
-        const cancelUrl = `${currentUrl}?state=${btoa(JSON.stringify({ text: input.value, upgraded: false, limit: 40 }))}`;
-        
-        const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-          body: { 
-            product: 'big_rock',
-            success_url: successUrl,
-            cancel_url: cancelUrl
-          }
-        });
-        
-        if (error) {
-          console.error(error);
-          alert('Failed to create Stripe session.');
-        } else if (data.sessionId) {
-          const { error: stripeError } = await stripe.redirectToCheckout({ sessionId: data.sessionId });
-          if (stripeError) {
-            console.error(stripeError);
-            alert('Stripe checkout failed. Please try again.');
-          }
-        } else {
-          console.error('No sessionId returned:', data);
-          alert('Failed to create Stripe session.');
-        }
-      } catch (err) {
-        console.error('Upgrade error:', err);
-        alert('Upgrade error. Please try again.');
+        showDraftStatus('XL rocks are temporarily unavailable while checkout is being verified. Your draft is safe. You can submit up to 40 characters.');
       } finally {
-        upgradeBtn.textContent = 'Upgrade for $1';
-        upgradeBtn.disabled = false;
+        button.textContent = 'About XL rocks';
+        button.disabled = false;
+        upgradeInFlight = false;
       }
     }
 
   async function submitOpinion() {
-  // 1️⃣ Get and sanitize input
-  let raw = input.value.trim();
-  if (!raw) return; // no empty submissions
-  
-  raw = DOMPurify.sanitize(raw, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
-  const text = raw;
+  if (isSubmitting) return;
+  if (!topicReady || !supabaseClient) {
+    showDraftStatus('Load today’s question before submitting. Your draft is kept.');
+    return;
+  }
+  // All opinion rendering uses textContent, so text is never interpreted as HTML.
+  const text = input.value.trim();
+  if (!text) return;
+  if (characterCount(text) > charLimit) {
+    showDraftStatus('Please shorten your opinion to 40 characters. Your full draft is still here.');
+    return;
+  }
+  showDraftStatus('');
+  isSubmitting = true;
+  input.readOnly = true;
   
   // 2️⃣ Lock UI
   submitBtn.disabled = true;
   submitBtn.textContent = 'SUBMITTING…';
   
   try {
+    if (!await loadDailyTopic()) {
+      showDraftStatus('Please check the current question before submitting. Your draft is kept.');
+      return;
+    }
     // 3️⃣ Check for duplicates
-    const { data: dupCheck, error: dupErr } = await supabase
+    const { data: dupCheck, error: dupErr } = await supabaseClient
       .from('opinions')
       .select('id')
       .eq('text', text)
+      .gte('created_at', dailyCycleStart())
       .limit(1);
 
     if (dupErr) throw dupErr;
     if (dupCheck && dupCheck.length > 0) {
-      alert('Looks like someone already etched that today. Try a twist!');
+      showDraftStatus('Someone already etched that today. Try a twist!');
       return;
     }
 
     // 4️⃣ Save to Supabase
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('opinions')
       .insert([{ text }])
       .select();
     
     if (error?.code === '23505') {
-      alert('Looks like someone already etched that today. Try a twist!');
-      throw error;
+      showDraftStatus('Someone already etched that today. Try a twist!');
+      return;
     }
     if (error) throw error;
     
     // 5️⃣ Build & show the share card
-    const savedOpinion = data[0];
-    const promptText = document.querySelector('.daily-question').textContent;
-    const shareUrl = `https://opinion-rocks.netlify.app/o/${savedOpinion.id}`;
+    const savedOpinion = data?.[0];
+    if (!savedOpinion) throw new Error('No saved opinion returned');
+    const promptText = dailyState.current_topic;
+    // Share the current app home; no unimplemented /o/:id route is advertised.
+    const shareUrl = new URL(window.location.pathname, window.location.origin).href;
     
+    document.getElementById('shareStatus').textContent = '';
     document.getElementById('shareText').textContent = savedOpinion.text;
     document.getElementById('shareTopic').textContent = promptText;
     document.getElementById('shareCard').style.backgroundPosition = '0% 0%';
     document.getElementById('shareSection').style.display = 'flex';
+    document.getElementById('phase1').inert = true;
+    document.getElementById('phase2').inert = true;
+    document.getElementById('closeShareCard').focus();
     
     document.getElementById('shareXBtn').onclick = () => {
       const msg = encodeURIComponent(
         `🪨 OPINION ROCKS 🪨\nEvery day, a new stone.\nEvery day, a new take.\n\nToday's question:\n${promptText}\n\n> ${savedOpinion.text}\n\nEtch yours:\n${shareUrl}`
       );
-      window.open(`https://twitter.com/intent/tweet?text=${msg}`, '_blank');
+      window.open(`https://twitter.com/intent/tweet?text=${msg}`, '_blank', 'noopener,noreferrer');
     };
     
     document.getElementById('shareFBBtn').onclick = () => {
       const quote = encodeURIComponent(
         `🪨 OPINION ROCKS 🪨\nEvery day, a new stone.\nEvery day, a new take.\n\nToday's question:\n${promptText}\n\n> ${savedOpinion.text}\n\nEtch yours:`
       );
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${quote}`, '_blank');
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${quote}`, '_blank', 'noopener,noreferrer');
     };
     
     document.getElementById('downloadBtn').onclick = async () => {
@@ -1186,14 +1192,22 @@ if (sel && sel.removeAllRanges) sel.removeAllRanges();
       const downloadBtn = document.getElementById('downloadBtn');
       const closeBtn = document.getElementById('closeShareCard');
 
-      const hideEls = [downloadBtn, shareBtns, closeBtn];
+      const hideEls = [downloadBtn, shareBtns, closeBtn, document.getElementById('shareStatus')];
       hideEls.forEach(el => { if (el) el.style.visibility = 'hidden'; });
 
+      try {
+      document.getElementById('shareStatus').textContent = '';
       await document.fonts.ready;
       const canvas = await html2canvas(wrapper, {
   backgroundColor: null,
   useCORS: true,
-  scale: 2 // <<— force a consistent 2× everywhere
+  scale: 2,
+  // Capture the full card even on a short mobile viewport.
+  onclone: clonedDocument => {
+    const card = clonedDocument.getElementById('shareCardWrapper');
+    card.style.maxHeight = 'none';
+    card.style.overflow = 'visible';
+  }
 });
 
       hideEls.forEach(el => { if (el) el.style.visibility = ''; });
@@ -1202,10 +1216,18 @@ if (sel && sel.removeAllRanges) sel.removeAllRanges();
       link.download = `opinion-rock-${savedOpinion.id}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
+      } catch (error) {
+        console.error('Image export failed:', error);
+        document.getElementById('shareStatus').textContent = 'Image download failed. Please try again.';
+      } finally {
+        hideEls.forEach(el => { if (el) el.style.visibility = ''; });
+      }
     };
     
-    // 6️⃣ Reset form
+    // Clear only the submitted draft; never discard a newer edit.
+    if (input.value.trim() === text) {
     input.value = '';
+    restoredLongDraft = false;
     previewText.textContent = '';
     Object.assign(preview.style, getRockSize(0));
     charCounter.textContent = '0/40';
@@ -1213,6 +1235,8 @@ if (sel && sel.removeAllRanges) sel.removeAllRanges();
     isUpgraded = false;
     const badge = preview.querySelector('.upgraded-badge');
     if (badge) badge.remove();
+    }
+    refreshPreview();
     
     // 7️⃣ Clear state from URL
     const url = new URL(window.location);
@@ -1220,39 +1244,50 @@ if (sel && sel.removeAllRanges) sel.removeAllRanges();
     window.history.replaceState(null, '', url);
     
   } catch (err) {
-    if (!err?.code) {
-      console.error('Error submitting opinion:', err);
-      alert('Failed to submit opinion. Please try again.');
-    }
+    console.error('Error submitting opinion:', err);
+    showDraftStatus('We could not confirm your submission. Your draft is kept. Check the valley before trying again.');
   } finally {
-    submitBtn.disabled = false;
+    isSubmitting = false;
+    input.readOnly = false;
     submitBtn.textContent = 'SUBMIT';
+    updateSubmitButton();
   }
 }
 
     async function loadOpinions() {
+      const request = ++opinionRequest;
       loadingMessage.style.display = 'block';
       errorMessage.style.display = 'none';
-      
+      document.getElementById('retryOpinionsBtn').hidden = true;
       try {
-        // Fetch all opinions from Supabase, ordered by newest first
-        const { data, error } = await supabase
-          .from('opinions')
-          .select('*')
-          .order('created_at', { ascending: false });
-
+        if (!supabaseClient) throw new Error('Service unavailable');
+        if (!topicReady && !await loadDailyTopic()) throw new Error('Question unavailable');
+        const { data, error } = await supabaseClient
+          .from('opinions').select('*').gte('created_at', dailyCycleStart()).order('created_at', { ascending: false });
+        if (request !== opinionRequest) return;
         if (error) throw error;
-
         opinions = data || [];
+        // Scope to the server's verified daily reset timestamp, never local midnight.
+        const ids = new Set(opinions.map(opinion => opinion.id));
+        echoedRocks = echoedRocks.filter(id => ids.has(id));
+        saveEchoCache(echoedRocks);
         currentIndex = 0;
         updateStats();
         renderValley();
       } catch (error) {
+        if (request !== opinionRequest) return;
         console.error('Error loading opinions:', error);
-        errorMessage.textContent = 'Failed to load opinions. Please refresh the page.';
+        opinions = [];
+        renderValley();
+        document.getElementById('pageStatus').textContent = '';
+        valley.textContent = '';
+        document.getElementById('dailyStats').textContent = 'Stats unavailable';
+        drawStatsChart(document.getElementById('statsChart'), new Array(24).fill(0));
+        errorMessage.textContent = 'The valley could not load. Please try again.';
         errorMessage.style.display = 'block';
+        document.getElementById('retryOpinionsBtn').hidden = false;
       } finally {
-        loadingMessage.style.display = 'none';
+        if (request === opinionRequest) loadingMessage.style.display = 'none';
       }
     }
 
@@ -1302,29 +1337,23 @@ if (sel && sel.removeAllRanges) sel.removeAllRanges();
       }, 1800);
     }
 
+function getLayerPattern() { return window.innerWidth <= 768 ? [1, 2, 1] : [2, 3, 2]; }
+function getRocksPerPage() { return getLayerPattern().reduce((sum, count) => sum + count, 0); }
+function maxPageIndex(count) { return Math.max(0, (Math.ceil(count / getRocksPerPage()) - 1) * getRocksPerPage()); }
 function navigateRocks(direction) {
-  const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
-  const rocksPerPage = window.innerWidth <= 768 ? 4 : 7; // Mobile: 1-2-1, Desktop: 2-3-2
-  const maxIndex = Math.max(0, visibleOpinions.length - rocksPerPage);
-
-  currentIndex = Math.max(0, Math.min(maxIndex, currentIndex + (direction * rocksPerPage)));
+  const count = opinions.filter(op => !brokenOpinionIds.has(op.id)).length;
+  currentIndex = Math.max(0, Math.min(maxPageIndex(count), currentIndex + direction * getRocksPerPage()));
   renderValley();
 }
-
 function updateNavigationButtons() {
-  const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
-  const rocksPerPage = window.innerWidth <= 768 ? 4 : 7;
-  const maxIndex = Math.max(0, visibleOpinions.length - rocksPerPage);
-
-  if (scrollView) {
-    prevBtn.style.display = 'none';
-    nextBtn.style.display = 'none';
-  } else {
-    prevBtn.style.display = '';
-    nextBtn.style.display = '';
-    prevBtn.disabled = currentIndex === 0;
-    nextBtn.disabled = currentIndex >= maxIndex || visibleOpinions.length <= rocksPerPage;
-  }
+  const count = opinions.filter(op => !brokenOpinionIds.has(op.id)).length;
+  prevBtn.style.display = scrollView ? 'none' : '';
+  nextBtn.style.display = scrollView ? 'none' : '';
+  prevBtn.disabled = currentIndex === 0;
+  nextBtn.disabled = currentIndex >= maxPageIndex(count);
+  document.getElementById('pageStatus').textContent = count
+    ? (scrollView ? `${count} rocks in today’s valley` : `Rocks ${currentIndex + 1}–${Math.min(currentIndex + getRocksPerPage(), count)} of ${count}`)
+    : 'No rocks yet. Be the first to add your take.';
 }
 
 function updateStats() {
@@ -1334,22 +1363,11 @@ function updateStats() {
   const canvas = document.getElementById('statsChart');
   if (!dailyStats || !canvas) return;
 
-  const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const end = new Date(start);
-  end.setDate(start.getDate() + 1);
-
-  const todayOpinions = opinions.filter(op => {
-    const d = new Date(op.created_at);
-    return d >= start && d < end;
-  });
-
-  dailyStats.textContent = `Today's submissions: ${todayOpinions.length}`;
-
+  dailyStats.textContent = `Today's submissions: ${opinions.length}`;
   const hourly = new Array(24).fill(0);
-  todayOpinions.forEach(op => {
-    const h = new Date(op.created_at).getHours();
-    hourly[h]++;
+  opinions.forEach(opinion => {
+    const hour = new Date(opinion.created_at).getUTCHours();
+    if (Number.isInteger(hour)) hourly[hour]++;
   });
 
   drawStatsChart(canvas, hourly);
@@ -1399,7 +1417,7 @@ function drawStatsChart(canvas, data) {
 function renderValley() {
   valley.innerHTML = '';
   const visibleOpinions = opinions.filter(op => !brokenOpinionIds.has(op.id));
-  
+  currentIndex = Math.min(currentIndex, maxPageIndex(visibleOpinions.length));
 
   if (scrollView) {
     document.querySelector('.valley-container').classList.add('scroll-mode');
@@ -1410,7 +1428,7 @@ function renderValley() {
   } else {
     document.querySelector('.valley-container').classList.remove('scroll-mode');
     // Arrange into 3 layers: back, middle, front
-    const layerPattern = [0, 2, 3]; // total 10 per page
+    const layerPattern = getLayerPattern();
     const rocksPerPage = layerPattern.reduce((a, b) => a + b, 0);
     const rocksToShow = visibleOpinions.slice(currentIndex, currentIndex + rocksPerPage);
 
@@ -1463,6 +1481,17 @@ function renderValley() {
  *  long-press (600 ms), show a thumbs-up overlay when echoed, and keep
  *  local + Supabase state in sync.
  * ------------------------------------------------------------------ */
+function applyEchoState(rock, opinion) {
+  const echoed = echoedRocks.includes(opinion.id);
+  rock.classList.toggle('echoed', echoed);
+  rock.setAttribute('aria-pressed', String(echoed));
+  rock.setAttribute('aria-label', `${opinion.text}. ${opinion.echo_count ?? 0} echoes. ${echoed ? 'Remove your echo' : 'Echo this opinion'}.`);
+  if (pendingEchoes.has(opinion.id)) rock.setAttribute('aria-busy', 'true');
+  else rock.removeAttribute('aria-busy');
+  const badge = rock.querySelector('.badge');
+  if (badge) badge.textContent = opinion.echo_count ?? 0;
+}
+
 function createRockItem(opinion) {
   /* ---------- outer wrappers ---------- */
   const rockItem = document.createElement('div');
@@ -1471,6 +1500,8 @@ function createRockItem(opinion) {
   const rock = document.createElement('div');
   rock.className = 'rock';
   rock.dataset.id = opinion.id;
+  rock.setAttribute('role', 'button');
+  rock.tabIndex = 0;
   
   const offsetX = Math.floor(Math.random() * 20) - 10;
   const offsetY = Math.floor(Math.random() * 10);
@@ -1485,12 +1516,12 @@ rock.style.setProperty('--tilt', `${rotation}deg`);
   textDiv.className = 'rock-text';
   textDiv.textContent = opinion.text;
   
-  const { width, height, fontSize } = getRockSize(opinion.text.length);
+  const { width, height, fontSize } = getRockSize(characterCount(opinion.text));
   Object.assign(rock.style, { width, height });
   textDiv.style.fontSize = fontSize;
   
   /* ---------- “XL” badge for upgraded posts ---------- */
-  if (opinion.text.length > 40) {
+  if (characterCount(opinion.text) > 40) {
     const xl = document.createElement('div');
     xl.className = 'upgraded-badge';
     xl.textContent = 'XL';
@@ -1514,117 +1545,84 @@ if (isEchoed) {
   rock.classList.add('echoed'); // pebble starts gold
 }
   
-  /* ===============================================================
-   *  helpers  – addEcho()  &  removeEcho()
-   * =========================================================== */
-  /**
- * Add an echo if this device hasn’t echoed it yet.
- * @returns {Boolean} true ⇢ echo added • false ⇢ no change
- */
-/**
- * Add one echo to this opinion.
- * Returns true if an echo was added, false if it was already there.
- */
-async function addEcho() {
-  if (echoedRocks.includes(opinion.id)) return;
-  
-  rock.classList.add('echoed');
-  spawnFloatingText(rock);
-  
-  // Increment local count
-  opinion.echo_count = (opinion.echo_count ?? 0) + 1;
-  echoBadge.textContent = opinion.echo_count;
-  
-  // Update in DB — we just send the new value, no literal
-  const { error } = await supabase
-    .from('opinions')
-    .update({ echo_count: opinion.echo_count })
-    .eq('id', opinion.id);
-  
-  if (error) {
-    console.error('Failed to update echo count:', error);
-    alert('Failed to save your vote. Please try again.');
-    // Optionally rollback
-    opinion.echo_count = Math.max(opinion.echo_count - 1, 0);
-    echoBadge.textContent = opinion.echo_count;
-    rock.classList.remove('echoed');
-    return;
+applyEchoState(rock, opinion);
+async function changeEcho(add) {
+  if (pendingEchoes.has(opinion.id) || echoedRocks.includes(opinion.id) === add) return false;
+  pendingEchoes.add(opinion.id);
+  rock.setAttribute('aria-busy', 'true');
+  const cycle = dailyCycleKey();
+  const previous = opinion.echo_count ?? 0;
+  const next = Math.max(previous + (add ? 1 : -1), 0);
+  rock.classList.toggle('echoed', add);
+  echoBadge.textContent = next;
+  try {
+    const { data, error } = await supabaseClient.from('opinions').update({ echo_count: next }).eq('id', opinion.id).select('id, echo_count');
+    if (error) throw error;
+    if (dailyCycleKey() !== cycle) return false;
+    if (!data?.some(item => item.id === opinion.id)) throw new Error('Opinion no longer available');
+    opinion.echo_count = next;
+    opinions.filter(item => item.id === opinion.id).forEach(item => item.echo_count = next);
+    echoedRocks = add ? [...echoedRocks, opinion.id] : echoedRocks.filter(id => id !== opinion.id);
+    saveEchoCache(echoedRocks);
+    if (add && rock.isConnected) spawnFloatingText(rock);
+    return true;
+  } catch (error) {
+    console.error('Echo could not be saved:', error);
+    echoBadge.textContent = previous;
+    rock.classList.toggle('echoed', !add);
+    errorMessage.textContent = 'Your echo could not be saved. Please try again.';
+    errorMessage.style.display = 'block';
+    return false;
+  } finally {
+    pendingEchoes.delete(opinion.id);
+    applyEchoState(rock, opinion);
+    const currentOpinion = opinions.find(item => item.id === opinion.id);
+    if (currentOpinion) {
+      valley.querySelectorAll('.rock').forEach(element => {
+        if (element.dataset.id === String(opinion.id)) applyEchoState(element, currentOpinion);
+      });
+    }
   }
-  
-  echoedRocks.push(opinion.id);
-  saveEchoCache(echoedRocks);
 }
-
-async function removeEcho() {
-  if (!echoedRocks.includes(opinion.id)) return;
-  
-  // Bounce back visual
-  const pebble = rock.querySelector('.pebble-badge');
-  pebble.style.animation = 'bounceBack 0.15s ease-out';
-  pebble.addEventListener('animationend', () => {
-    pebble.style.animation = '';
-  }, { once: true });
-  
-  // Decrement local count
-  opinion.echo_count = Math.max((opinion.echo_count ?? 1) - 1, 0);
-  echoBadge.textContent = opinion.echo_count;
-  rock.classList.remove('echoed');
-  
-  // Update in DB — just send the new value, no literal
-  const { error } = await supabase
-    .from('opinions')
-    .update({ echo_count: opinion.echo_count })
-    .eq('id', opinion.id);
-  
-  if (error) {
-    console.error('Failed to update echo count:', error);
-    alert('Failed to remove your vote. Please try again.');
-    // Optionally rollback
-    opinion.echo_count += 1;
-    echoBadge.textContent = opinion.echo_count;
-    rock.classList.add('echoed');
-    return;
-  }
-  
-  echoedRocks = echoedRocks.filter(id => id !== opinion.id);
-  saveEchoCache(echoedRocks);
-}
-/* -------------------------------------------------------------
- *  tap  = addEcho()
- *  long = removeEcho()          (LONG = 600 ms — same as before)
- *  while holding we scale using --scale (see CSS above)
- * ----------------------------------------------------------- */
-
 const LONG = 600;
 let timerId, stopGrow;
-let longPressHandled = false; // <-- add this
-
-rock.addEventListener('pointerdown', e => {
-  e.preventDefault();
-  longPressHandled = false; // reset each press
+let pressActive = false;
+let longPressHandled = false;
+function cancelPress() {
+  clearTimeout(timerId);
+  if (stopGrow) stopGrow();
+  pressActive = false;
+}
+rock.addEventListener('pointerdown', event => {
+  if (event.button !== 0 || pendingEchoes.has(opinion.id)) return;
+  event.preventDefault();
+  rock.focus({ preventScroll: true });
+  pressActive = true;
+  longPressHandled = false;
   stopGrow = startPressGrow(rock);
-  
-  timerId = setTimeout(() => {
-    longPressHandled = true; // mark that long-press fired
-    stopGrow();
-    removeEcho();
-    rock.classList.add('echo-removed');
+  timerId = setTimeout(async () => {
+    if (!rock.isConnected) { cancelPress(); return; }
+    longPressHandled = true;
+    if (stopGrow) stopGrow();
+    if (await changeEcho(false)) rock.classList.add('echo-removed');
   }, LONG);
 });
-
 rock.addEventListener('pointerup', async () => {
-  clearTimeout(timerId);
-  if (stopGrow) stopGrow();
-  
-  if (!longPressHandled) {
-    const added = await addEcho(); // await it
-    if (added) rock.classList.add('echo-added');
-  }
+  if (!pressActive) return;
+  cancelPress();
+  if (!longPressHandled && await changeEcho(true)) rock.classList.add('echo-added');
 });
-
-rock.addEventListener('pointerleave', () => {
-  clearTimeout(timerId);
-  if (stopGrow) stopGrow();
+rock.addEventListener('pointerleave', cancelPress);
+rock.addEventListener('pointercancel', cancelPress);
+rock.addEventListener('click', event => {
+  // Assistive technology can activate a button without pointer or key events.
+  if (event.detail === 0) changeEcho(!echoedRocks.includes(opinion.id));
+});
+rock.addEventListener('keydown', async event => {
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  event.preventDefault();
+  if (event.repeat) return;
+  await changeEcho(!echoedRocks.includes(opinion.id));
 });
 
 rock.addEventListener('animationend', e => {
@@ -1662,38 +1660,62 @@ function getRockSize(length) {
   return { width: `${upgradedSize}px`, height: `${upgradedSize}px`, fontSize: isMobile ? '0.75rem' : '0.85rem' };
 }
 
-    // Add this function to load today's topic
-async function loadDailyTopic() {
-  try {
-    const { data, error } = await supabase
-      .from('daily_state')
-      .select('*') // select all columns for debug
-      .order('id', { ascending: false }) // get the most recent row
-      .limit(1);
-    
-    if (error) throw error;
-    
-    console.log('Fetched daily_state data:', JSON.stringify(data, null, 2));
-    
-    if (data && data.length > 0) {
-      const topic = data[0].current_topic;
-
-      if (topic && topic.trim() !== '') {
-        document.querySelectorAll('.daily-question').forEach(el => el.textContent = topic);
-      } else {
-        document.querySelectorAll('.daily-question').forEach(el => el.textContent = "No topic text in this row!");
-      }
-    } else {
-      document.querySelectorAll('.daily-question').forEach(el => el.textContent = "No topic rows found!");
-    }
-  } catch (error) {
-    console.error('Error loading topic:', error);
-    document.querySelectorAll('.daily-question').forEach(el =>
-      el.textContent = "What's the most overrated hat everyone pretends to love?"
-    );
-  }
+function dailyCycleKey(state = dailyState) {
+  return JSON.stringify([state?.date, state?.updated_at, state?.current_topic]);
 }
 
+// daily_state.updated_at is a UTC timestamp without a timezone in the verified schema.
+function dailyCycleStart(state = dailyState) {
+  const value = state?.updated_at;
+  if (typeof value !== 'string') throw new Error('Missing daily cycle timestamp');
+  const timestamp = /(?:Z|[+-]\d{2}:?\d{2})$/.test(value) ? value : `${value}Z`;
+  const date = new Date(timestamp);
+  if (!Number.isFinite(date.getTime())) throw new Error('Invalid daily cycle timestamp');
+  return date.toISOString();
+}
+
+    // The server's current row, rather than a made-up fallback question, is authoritative.
+async function loadDailyTopic() {
+  const request = ++topicRequest;
+  topicReady = false;
+  updateSubmitButton();
+  document.querySelectorAll('.retry-topic').forEach(button => button.hidden = true);
+  try {
+    if (!supabaseClient) throw new Error('Service unavailable');
+    const { data, error } = await supabaseClient.from('daily_state').select('*').order('id', { ascending: false }).limit(1);
+    if (request !== topicRequest) return false;
+    if (error) throw error;
+    const state = data?.[0];
+    if (!state || typeof state.current_topic !== 'string' || !state.current_topic.trim()) throw new Error('No current question');
+    dailyCycleStart(state);
+    const changed = dailyState && dailyCycleKey() !== dailyCycleKey(state);
+    dailyState = state;
+    topicReady = true;
+    document.querySelectorAll('.daily-question').forEach(element => element.textContent = state.current_topic);
+    if (changed) {
+      ++opinionRequest;
+      loadingMessage.style.display = 'none';
+      opinions = [];
+      brokenOpinionIds.clear();
+      echoedRocks = [];
+      saveEchoCache(echoedRocks);
+      currentIndex = 0;
+      renderValley();
+      closeShareCard(false);
+      showDraftStatus('A new daily question is here. Your draft is kept so you can check it before submitting.');
+      if (document.getElementById('phase2').classList.contains('active')) await loadOpinions();
+    }
+    return !changed;
+  } catch (error) {
+    if (request !== topicRequest) return false;
+    console.error('Error loading topic:', error);
+    document.querySelectorAll('.daily-question').forEach(element => element.textContent = 'Today’s question could not load. Please retry.');
+    document.querySelectorAll('.retry-topic').forEach(button => button.hidden = false);
+    return false;
+  } finally {
+    if (request === topicRequest) updateSubmitButton();
+  }
+}
 
     window.addEventListener('DOMContentLoaded', async () => {
   await loadDailyTopic(); // Add await here
@@ -1732,13 +1754,45 @@ async function loadDailyTopic() {
       loadOpinions();
     }
     
-    // This ONLY handles the X button on the share card
-document.getElementById('closeShareCard').addEventListener('click', () => {
-  document.getElementById('shareSection').style.display = 'none';
-  document.getElementById('phase1').classList.remove('active');
-  document.getElementById('phase2').classList.add('active');
-  loadOpinions();
+function closeShareCard(explore = true) {
+  const dialog = document.getElementById('shareSection');
+  const wasOpen = dialog.style.display === 'flex';
+  dialog.style.display = 'none';
+  document.getElementById('phase1').inert = false;
+  document.getElementById('phase2').inert = false;
+  if (wasOpen && explore) {
+    goToValley();
+    document.getElementById('toggleViewBtn').focus();
+  }
+}
+document.getElementById('closeShareCard').addEventListener('click', () => closeShareCard());
+document.getElementById('shareSection').addEventListener('click', event => {
+  if (event.target.id === 'shareSection') closeShareCard();
 });
+document.addEventListener('keydown', event => {
+  if (document.getElementById('shareSection').style.display !== 'flex') return;
+  if (event.key === 'Escape') closeShareCard();
+  if (event.key === 'Tab') {
+    const buttons = [...document.querySelectorAll('#shareSection button')].filter(button => !button.disabled);
+    if (event.shiftKey && document.activeElement === buttons[0]) {
+      event.preventDefault(); buttons.at(-1).focus();
+    } else if (!event.shiftKey && document.activeElement === buttons.at(-1)) {
+      event.preventDefault(); buttons[0].focus();
+    }
+  }
+});
+window.addEventListener('resize', () => {
+  currentIndex = Math.floor(currentIndex / getRocksPerPage()) * getRocksPerPage();
+  refreshPreview();
+  renderValley();
+});
+// Refresh after returning to an open tab so a previous day's question is not submitted.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') loadDailyTopic();
+});
+window.setInterval(() => {
+  if (document.visibilityState === 'visible') loadDailyTopic();
+}, 60000);
     
   </script>
 </body>
