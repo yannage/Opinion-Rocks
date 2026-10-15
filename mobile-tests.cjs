@@ -177,6 +177,8 @@ async function main() {
     await page.locator('#submitBtn').click();
     await page.locator('#shareSection').waitFor({ state: 'visible' });
     await page.waitForFunction(() => !document.querySelector('#downloadBtn').disabled);
+    const previewFits = await page.locator('#shareImagePreview').evaluate(image => image.getBoundingClientRect().height <= image.parentElement.clientHeight);
+    assert(previewFits, 'Share preview is not cropped by a shrinking flex container');
     await page.screenshot({ path: path.join(appRoot, 'share-dialog-mobile.png') });
     const buttons = page.locator('#shareSection button:visible:not([disabled]), #shareSection a[href]:visible');
     const count = await buttons.count();
