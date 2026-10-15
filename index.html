@@ -766,8 +766,87 @@ button:focus-visible, textarea:focus-visible, .rock[role="button"]:focus-visible
 #shareCardWrapper { max-width: 100%; max-height: calc(100dvh - 32px); overflow-y: auto; flex-shrink: 0; }
 #closeShareCard { min-width: 44px; min-height: 44px; }
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition: none !important; }
+  *, *::before, *::after { animation-delay: 0ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition: none !important; }
 }
+
+/* Daily experience: warm paper, generous writing space, and a readable valley. */
+body {background: #efe9dc; color:#302e24; justify-content:flex-start;}
+.phase {padding:28px max(24px,calc((100vw - 1120px)/2)); gap:20px;}
+.phase::before,.phase::after {display:none;}
+.site-header {width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;border-bottom:1px solid #d6cfbf;padding-bottom:22px;}
+.brand {font-size:1.2rem;letter-spacing:-.04em;text-align:left;}
+.brand small {display:block;font:11px/1.6 sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#686654;}
+.section-nav {display:flex;gap:4px;background:#e1dacb;padding:5px;border-radius:30px;}
+.section-nav button {width:auto;padding:10px 22px;background:transparent;color:#4b493b;border-radius:24px;font-size:.9rem;}
+.section-nav button[aria-current="page"] {background:#fffaf0;box-shadow:0 2px 5px #302e2410;}
+.daily-heading {width:100%;padding:22px 0 6px;text-align:left;}
+.eyebrow {font:700 11px/1.5 sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#6a6c44;margin-bottom:12px;}
+.prompt-banner {background:none;border:0;box-shadow:none;padding:0;margin:0;display:block;text-transform:none;letter-spacing:-.035em;}
+.prompt {font-size:clamp(1.8rem,3.5vw,3rem);line-height:1.12;max-width:850px;}
+.intro,.day-notice {background:none;padding:0;max-width:none;color:#625e50;font:14px/1.6 sans-serif;}
+.daily-heading .day-notice {margin-top:12px;}
+.composer-layout {display:grid;grid-template-columns:1.1fr 1fr;gap:36px;align-items:center;width:100%;padding-bottom:18px;}
+.preview-stage {min-height:390px;background:linear-gradient(#0001,#0003),url('art/cave.png') center/cover;border-radius:24px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;box-shadow:inset 0 0 0 1px #302e241a;}
+.preview-stage .eyebrow {position:absolute;top:22px;color:#fff;background:#302e24c9;border-radius:20px;padding:6px 12px;letter-spacing:.1em;}
+.preview-caption {position:absolute;bottom:22px;background:#fff7e8ef;color:#4b4636;padding:8px 16px;border-radius:20px;font:12px/1.4 sans-serif;}
+#preview {width:300px!important;height:300px!important;cursor:default;filter:drop-shadow(0 16px 14px #22180f40);}
+#previewText {font-size:1.2rem!important;}
+.composer-panel {text-align:left;min-width:0;}
+.composer-panel h2 {font-size:1.7rem;letter-spacing:-.03em;margin-bottom:10px;}
+.composer-panel .intro {margin-bottom:24px;}
+.input-wrapper {width:100%;max-width:none;}
+.input-wrapper label {background:none;padding:0;margin-bottom:8px;font:700 12px sans-serif;}
+textarea {background:#fffcf5;border:1px solid #b5ad99;border-radius:14px;min-height:136px;padding:18px 18px 36px;font-size:1.1rem;color:#302e24;}
+.char-counter,.char-counter.limit {color:#635c45;font:12px sans-serif;bottom:14px;right:16px;}
+.composer-actions {display:flex;gap:12px;flex-direction:column;margin-top:16px;}
+button {background:#47563c;border-radius:12px;min-height:44px;}
+button:hover {background:#34432c;}
+button#submitBtn {max-width:none;width:100%;padding:16px;}
+.explore-valley-btn {width:100%;max-width:none;height:auto;padding:12px;background:transparent;color:#454e38;border:1px solid #b4b49c;font-size:.95rem;}
+.explore-valley-btn:hover {background:#e3e3d1;}
+.composer-panel .error {margin:12px 0;}
+.experience-footer {border-top:1px solid #d6cfbf;padding:18px 0;width:100%;display:flex;justify-content:space-between;gap:16px;text-align:left;color:#625e50;font:12px/1.6 sans-serif;}
+.experience-footer strong {color:#414631;}
+.valley-container {width:100%;max-width:1120px;border-radius:22px;background:#e2dfcf;padding:28px 44px;min-height:220px;}
+.valley {gap:16px;padding:0;}
+.valley-row {gap:18px;flex-wrap:wrap;margin-top:0!important;}
+.rock-item {margin:0;}
+.valley-container.scroll-mode {background:#fffcf5;border:1px solid #d6cfbf;box-shadow:none;padding:20px;}
+.valley-container.scroll-mode .scroll-header,.valley-container.scroll-mode .stats-box {display:none;}
+.valley-container.scroll-mode .valley {height:auto;max-height:none;overflow:visible;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+.valley-container.scroll-mode .rock-item {margin:0;width:100%;}
+.valley-container.scroll-mode .rock {background:#eeeadd;border:1px solid #d6cfbf;border-radius:14px;width:100%!important;height:auto!important;min-height:115px;transform:none;padding:18px 18px 44px;}
+.valley-container.scroll-mode .rock-text {margin:0;padding:0;width:100%;max-height:none;font-size:1rem!important;line-height:1.5;text-align:left;display:block;}
+.valley-container.scroll-mode .pebble-badge {bottom:8px;left:16px;}
+.valley-container.scroll-mode .rock.echoed {border-color:#606b38;background:#e7ebd5;}
+.nav-arrow {background:#47563c;}
+.valley-toolbar {display:flex;gap:12px;width:100%;justify-content:space-between;align-items:center;}
+.toggle-view-btn {width:auto;max-width:none;padding:10px 16px;gap:8px;background:#fffcf5;color:#414631;border:1px solid #b5ad99;}
+.toggle-view-btn:hover {background:#e3e3d1;}
+.toggle-view-btn img {display:none;}
+.empty-valley {padding:34px 12px;max-width:420px;}
+.empty-valley h2 {font-size:1.5rem;margin-bottom:12px;}
+.empty-valley p {font:14px/1.6 sans-serif;color:#625e50;margin-bottom:18px;}
+#pageStatus {font-size:12px;}
+#shareCardWrapper {border:6px solid #fff6e4;}
+@media(max-width:700px) {
+ .phase {padding:18px 18px 28px;gap:16px;}
+ .site-header {padding-bottom:16px;}.brand {font-size:1rem;}.brand small {font-size:9px;}
+ .section-nav button {padding:10px 15px;}
+ .daily-heading {padding-top:12px;}
+ .composer-layout {grid-template-columns:1fr;gap:22px;}
+ .preview-stage {min-height:280px;}
+ #preview {width:240px!important;height:240px!important;}
+ #previewText {font-size:1rem!important;}
+ .preview-stage .eyebrow {top:12px;}.preview-caption {bottom:12px;}
+ .composer-panel h2 {font-size:1.4rem;}.composer-panel .intro {margin-bottom:18px;}
+ .experience-footer {flex-direction:column;gap:6px;}
+ .valley-container {padding:22px 30px;}.valley-row {gap:12px;}
+ .valley-container.scroll-mode .valley {grid-template-columns:1fr;}
+ .valley-toolbar {align-items:stretch;flex-direction:column;}
+ .valley-toolbar button {max-width:none;width:100%;}
+}
+
   </style>
   
 
@@ -782,23 +861,7 @@ button:focus-visible, textarea:focus-visible, .rock[role="button"]:focus-visible
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
-  <div id="phase1" class="phase active">
-    <div class="banner-title">
-      <h1>OPINION ROCKS</h1>
-    </div>
-    <div class="prompt-banner">
-      <div class="prompt daily-question" role="status">Loading today's question...</div>
-    </div>
-    <p class="intro">One daily question. One short take on a rock. Explore the valley and echo the takes you agree with.</p>
-    <p class="day-notice">A new question clears the valley. There is no archive.</p>
-    <button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button>
-    <div class="rock-wrapper">
-      <div class="rock" id="preview">
-        <div class="rock-text" id="previewText"></div>
-      </div>
-      <div class="dust" id="dustEffect"></div>
-    </div>
-    <div class="input-wrapper">
+<main id="phase1" class="phase active"><header class="site-header"><div class="brand">OPINION ROCKS<small>Small takes. Fresh daily.</small></div><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" aria-current="page">Write</button><button onclick="goToValley()" >Explore</button></nav></header><div class="daily-heading"><p class="eyebrow">The daily question</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">Here for today. A new question clears the valley. No archive.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><div class="composer-layout"><div class="preview-stage"><p class="eyebrow">Your rock · Live preview</p><div class="rock-wrapper"><div class="rock" id="preview"><div class="rock-text" id="previewText"></div></div><div class="dust" id="dustEffect"></div></div><p class="preview-caption">A little rock. A point of view.</p></div><section class="composer-panel" aria-labelledby="composerTitle"><h2 id="composerTitle">What’s your take?</h2><p class="intro">40 characters. Make them yours.<br>Your opinion joins today’s valley of rocks.</p>    <div class="input-wrapper">
       <label for="input">Your opinion</label>
       <textarea id="input" rows="3" aria-describedby="charCounter draftStatus" placeholder="Type your opinion here..."></textarea>
       <div class="char-counter" id="charCounter" aria-live="polite">0/40</div>
@@ -809,23 +872,12 @@ button:focus-visible, textarea:focus-visible, .rock[role="button"]:focus-visible
       <button class="upgrade-btn" onclick="upgradeRock()">About XL rocks</button>
       <p class="checkout-notice">XL checkout is temporarily unavailable.</p>
     </div>
-    <div style="display: flex; gap: 10px; width: 100%; max-width: 400px; justify-content: center;">
-      <button class="explore-valley-btn" onclick="goToValley()" title="Explore today’s valley" aria-label="Explore today’s valley">
-        <img src="art/button_rock.png" alt="" style="width: 65px; height: 65px;" />
+<div class="composer-actions"><button id="submitBtn" disabled onclick="submitOpinion()">Drop your rock ↗</button><button class="explore-valley-btn" onclick="goToValley()">Explore today’s valley →</button></div></section></div><footer class="experience-footer"><strong>One question. A valley of perspectives.</strong><span>Write a short take. Echo what resonates. Start fresh tomorrow.</span></footer></main><main id="phase2" class="phase"><header class="site-header"><div class="brand">OPINION ROCKS<small>Small takes. Fresh daily.</small></div><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" >Write</button><button onclick="goToValley()" aria-current="page">Explore</button></nav></header><div class="daily-heading"><p class="eyebrow">Explore the valley</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">Here for today. A new question clears the valley. No archive.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><p class="day-notice">Tap a rock to echo it. Hold to undo. Keyboard: Enter or Space toggles your echo.</p>    <div class="valley-toolbar">
+      <button id="toggleViewBtn" class="toggle-view-btn" onclick="toggleView()" title="Switch to list view" aria-label="Switch to list view" aria-pressed="false">
+        <img src="art/button_window.png" alt="" /><span id="viewLabel">List view</span>
       </button>
-      <button id="submitBtn" disabled onclick="submitOpinion()" style="flex: 1;">SUBMIT</button>
+      <button onclick="restart()" style="flex: 1;">Write a take ↗</button>
     </div>
-  </div>
-  
-  <div id="phase2" class="phase">
-    <div class="banner-title">
-      <h1>VALLEY OF OPINIONS</h1>
-    </div>
-    <div class="prompt-banner">
-      <div class="prompt daily-question" role="status">Loading today's question...</div>
-    </div>
-    <p class="day-notice">Today’s rocks only. Tap to echo. Hold to remove your echo. With a keyboard, use Enter or Space to toggle.</p>
-    <button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button>
     <div id="loadingMessage" class="loading" role="status" style="display: none;">Loading opinions...</div>
     <div id="errorMessage" class="error" role="status" style="display: none;"></div>
     <button id="retryOpinionsBtn" onclick="loadOpinions()" hidden>Try loading the valley again</button>
@@ -843,14 +895,8 @@ button:focus-visible, textarea:focus-visible, .rock[role="button"]:focus-visible
       <button class="nav-arrow next" onclick="navigateRocks(1)" id="nextBtn" aria-label="Next opinions">›</button>
     </div>
     <p id="pageStatus" class="day-notice" role="status"></p>
-    <div style="display: flex; gap: 10px; width: 100%; max-width: 400px; justify-content: center;">
-      <button id="toggleViewBtn" class="toggle-view-btn" onclick="toggleView()" title="Switch to list view" aria-label="Switch to list view" aria-pressed="false">
-        <img src="art/button_window.png" alt="" style="width: 55px; height: 55px;" />
-      </button>
-      <button onclick="restart()" style="flex: 1;">ADD ANOTHER OPINION</button>
-    </div>
-  </div>
-  
+
+<footer class="experience-footer"><strong>One question. A valley of perspectives.</strong><span>Write a short take. Echo what resonates. Start fresh tomorrow.</span></footer></main>
   <div id="shareSection" role="dialog" aria-modal="true" aria-labelledby="shareTopic" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 9999;">
     <div id="shareCardWrapper" style="position: relative; background: url('art/cave.png') center/cover no-repeat; padding: 20px; border-radius: 20px; width: 340px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center;">
       
@@ -1038,7 +1084,7 @@ function spawnFloatingText(targetEl) {
     function refreshPreview() {
       updateCharCounter();
       updateSubmitButton();
-      previewText.textContent = input.value.trim();
+      previewText.textContent = input.value.trim() || 'Your take goes here';
       const { width, height, fontSize } = getRockSize(characterCount(input.value.trim()));
       Object.assign(preview.style, { width, height });
       previewText.style.fontSize = fontSize;
@@ -1053,6 +1099,9 @@ function spawnFloatingText(targetEl) {
     function goToValley() {
       document.getElementById('phase1').classList.remove('active');
       document.getElementById('phase2').classList.add('active');
+      const heading = document.querySelector('#phase2 h1');
+      heading.tabIndex = -1;
+      heading.focus({ preventScroll: true });
       loadOpinions();
     }
 
@@ -1064,6 +1113,7 @@ function spawnFloatingText(targetEl) {
       button.setAttribute('aria-label', scrollView ? 'Switch to rock view' : 'Switch to list view');
       button.setAttribute('aria-pressed', String(scrollView));
       button.title = button.getAttribute('aria-label');
+      document.getElementById('viewLabel').textContent = scrollView ? 'Rock view' : 'List view';
       renderValley();
     }
 
@@ -1161,7 +1211,7 @@ function startPressGrow(el, maxScale = 1.35, growMs = 600) {
     // Share the current app home; no unimplemented /o/:id route is advertised.
     const shareUrl = new URL(window.location.pathname, window.location.origin).href;
     
-    document.getElementById('shareStatus').textContent = '';
+    document.getElementById('shareStatus').textContent = 'Your rock is in today’s valley. Share it, or close to explore.';
     document.getElementById('shareText').textContent = savedOpinion.text;
     document.getElementById('shareTopic').textContent = promptText;
     document.getElementById('shareCard').style.backgroundPosition = '0% 0%';
@@ -1196,7 +1246,7 @@ if (sel && sel.removeAllRanges) sel.removeAllRanges();
       hideEls.forEach(el => { if (el) el.style.visibility = 'hidden'; });
 
       try {
-      document.getElementById('shareStatus').textContent = '';
+      document.getElementById('shareStatus').textContent = 'Your rock is in today’s valley. Share it, or close to explore.';
       await document.fonts.ready;
       const canvas = await html2canvas(wrapper, {
   backgroundColor: null,
@@ -1249,7 +1299,7 @@ if (sel && sel.removeAllRanges) sel.removeAllRanges();
   } finally {
     isSubmitting = false;
     input.readOnly = false;
-    submitBtn.textContent = 'SUBMIT';
+    submitBtn.textContent = 'Drop your rock ↗';
     updateSubmitButton();
   }
 }
@@ -1469,6 +1519,14 @@ function renderValley() {
     }
   }
 
+  if (!visibleOpinions.length) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-valley';
+    const title = document.createElement('h2'); title.textContent = 'A quiet valley. For now.';
+    const message = document.createElement('p'); message.textContent = 'No rocks here yet. Leave the first take on today’s question and give someone something to echo.';
+    const action = document.createElement('button'); action.textContent = 'Be the first to write ↗'; action.onclick = restart;
+    empty.append(title, message, action); valley.appendChild(empty);
+  }
   updateNavigationButtons();
 }
 
@@ -1720,6 +1778,7 @@ async function loadDailyTopic() {
     window.addEventListener('DOMContentLoaded', async () => {
   await loadDailyTopic(); // Add await here
   loadStateFromUrl();
+  refreshPreview();
   
   const preview = document.getElementById('preview');
   const previewText = document.getElementById('previewText');
