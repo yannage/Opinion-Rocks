@@ -54,6 +54,57 @@
 .fx-ring-gold { border-color: #ae7d2e; }
 .fx-ring-gold::after { color: #b8914e; }
 
+/* Actual painted art, with a quick arc and a little squash on contact. */
+.fx-pebble {
+  position:absolute;width:31px;height:32px;margin:-16px 0 0 -15px;
+  background:url('art/echo-gold.webp') center/contain no-repeat;
+  filter:drop-shadow(1px 3px 1px #6f4e3450);
+  animation:fx-pebble-hop 680ms cubic-bezier(.2,.65,.3,1) both;
+}
+@keyframes fx-pebble-hop {
+  0% {opacity:0;transform:translate(var(--fx-from),-22px) rotate(-40deg) scale(.55);}
+  16% {opacity:1;}
+  44% {transform:translate(calc(var(--fx-from) * .35),-54px) rotate(12deg) scale(1.1);}
+  70% {opacity:1;transform:translate(0,2px) rotate(0deg) scale(1.2,.75);}
+  84% {opacity:1;transform:translate(0,-4px) scale(.9,1.08);}
+  100% {opacity:0;transform:translate(0,0) scale(.65);}
+}
+.fx-impact {
+  position:absolute;width:var(--fx-size,160px);height:var(--fx-size,160px);
+  margin-left:calc(var(--fx-size,160px) * -.5);margin-top:calc(var(--fx-size,160px) * -.5);
+  background:repeating-conic-gradient(from 5deg,#d6a24a00 0deg 21deg,#d6a24a80 23deg 25deg,#d6a24a00 28deg 45deg);
+  -webkit-mask-image:radial-gradient(circle,transparent 28%,#000 31%,#000 49%,transparent 64%);
+  mask-image:radial-gradient(circle,transparent 28%,#000 31%,#000 49%,transparent 64%);
+  animation:fx-impact-open 820ms ease-out both;
+}
+@keyframes fx-impact-open {
+  0% {opacity:0;transform:scale(.3) rotate(-12deg);}
+  22% {opacity:.75;}
+  100% {opacity:0;transform:scale(1.2) rotate(7deg);}
+}
+.fx-glint {
+  position:absolute;width:var(--fx-size,32px);height:var(--fx-size,32px);margin:-16px;
+  background:#ffedb6;
+  clip-path:polygon(49% 0,59% 40%,100% 50%,60% 60%,50% 100%,40% 61%,0 50%,40% 40%);
+  animation:fx-etch-glint 430ms ease-out both;
+}
+@keyframes fx-etch-glint {
+  0% {opacity:0;transform:scale(.2) rotate(-20deg);}
+  30% {opacity:.9;transform:scale(.75) rotate(0deg);}
+  100% {opacity:0;transform:scale(.1) rotate(28deg);}
+}
+
+.etch-trail {position:absolute;left:15px;bottom:16px;display:flex;gap:4px;pointer-events:none;}
+.etch-trail i {display:block;width:8px;height:6px;border:1px solid #b6a285;background:#e9dfca;border-radius:48% 37% 41% 32%;transform:rotate(-12deg);}
+.etch-trail i:nth-child(2n) {transform:rotate(11deg);height:7px;}
+.etch-trail i.is-filled {background:#73815a;border-color:#596848;box-shadow:inset 0 1px #c7cfaa;}
+.etch-trail.is-full i.is-filled {background:#a77d36;border-color:#805a29;box-shadow:inset 0 1px #e5c68a;}
+html[data-motion="full"] .etch-trail i {transition:background-color 140ms,box-shadow 140ms;}
+html[data-motion="full"] .rock.fx-pressed {scale:.975;translate:0 2px;rotate:0deg;}
+html[data-motion="full"] .rock {transition:scale 90ms ease-out,translate 90ms ease-out;}
+html[data-motion="calm"] .rock.fx-pressed {scale:1;translate:none;}
+@media(max-width:350px) { .etch-trail {gap:3px;}.etch-trail i {width:6px;} }
+
 @keyframes fx-fleck-flight {
   0% { transform: translate(-50%, -50%) rotate(0deg) scale(.5); opacity: 0; }
   14% { opacity: .9; }
@@ -83,7 +134,7 @@ html[data-motion="full"] button:active:not(:disabled) { scale: .98; }
 /* The individual rotate property composes with the art's existing transform. */
 @media (hover: hover) and (pointer: fine) {
   html[data-motion="full"] .rock.fx-hover { rotate: var(--fx-tilt, 0deg); }
-  html[data-motion="full"] .rock { transition: transform 100ms ease-out, rotate 170ms ease-out; }
+  html[data-motion="full"] .rock { transition: transform 100ms ease-out, rotate 170ms ease-out,scale 90ms ease-out,translate 90ms ease-out; }
 }
 
 /* The app's explicit motion control also silences older animation rules. */

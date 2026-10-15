@@ -11,6 +11,7 @@ node check.cjs
 node mobile-tests.cjs
 node sharing-tests.cjs
 node motion-tests.cjs
+node encore-tests.cjs
 node store-tests.cjs
 ```
 
@@ -21,6 +22,8 @@ If Chromium is already installed, set `OPINION_BROWSER_PATH` to its executable. 
 - `sharing-tests.cjs`: actual 1080×1350 PNG download; native file/link capability branches and activation; cancellation/errors; clipboard denial fallback; X/Facebook URLs; image failure/retry and cleanup.
 - `motion-tests.cjs`: full/reduced motion; all three screen motion controls, local preference persistence and live OS preference changes; feedback only after successful saves; bounded particle cleanup after repeated typing/echo/navigation; real touch scrolling without echoes; controls during animation; integrated PNG download/native-file handoff; phone and desktop screenshots. Backend writes and OS sharing remain mocked. Optional `/tmp/opinion-fredoka.ttf` loads the real display font for visual review; the tests run without it.
 - `store-tests.cjs`: Write/Explore/Store navigation, direct `#store` links and browser history; preserved drafts and same-day sharing; all nine XS–5XL size/price combinations; shirt/artwork preview controls; keyboard interaction and reduced motion; 320/390/768/1440px layouts at normal and 200% root text size; backend failure and daily reset. Delayed daily-question/submission responses and Back with a share dialog open check navigation, focus, and modal cleanup. The suite also removes the purchase button's `disabled` attribute and spoofs payment return parameters to confirm those actions cannot create a checkout, entitlement, order, popup, or network request. Every external request is intercepted and blocked; all database calls are mocked. Store screenshots are written to the operating system's temporary directory; the same optional Fredoka font is used when present.
+
+- `encore-tests.cjs`: touch press release, drag/cancel, window blur and navigation cleanup; keyboard repeat guard; decorative etching progress with emoji/deletion and retained drafts; live reduced-motion cancellation; all particle variants under the shared 34-node cap; hidden-scene pending echo completion; once-only scroll reveals with observer cleanup on calm mode/navigation; 320/390/1440px screenshots. All external requests are blocked and all backend content is mocked.
 
 Screenshots and the downloaded PNG are temporary QA outputs. Native share APIs are mocked: these checks do not establish that an installed iOS/Android app accepted or published a post. Before a broad launch, manually check Android Chrome and iOS Safari, download location/Photos save, and the desired installed social apps. File sharing depends on OS/browser support; links open the current valley and never a permanent opinion page.
 
