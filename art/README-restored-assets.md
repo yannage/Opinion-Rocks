@@ -15,6 +15,8 @@ Method: Pillow RGBA decode; decorative cutouts crop to visible-alpha bounding bo
 
 The original `button_window.png` is intentionally not reused: its illustration contains a baked submission count, which could be mistaken for real activity.
 
+The second animation pass adds `valley-foreground.svg`, an original lightweight vector drawing of layered dunes, contour marks and grasses. It is decorative scenery drawn to coordinate with the existing sunset, not recovered raster art. The original painted gold pebble also supplies the short, confirmed-echo flight effect. Neither asset contains visitor content or engagement counts.
+
 ## Source SHA-256
 
 - `banner.png`: `43e648c9867e43b1925140fe10458ba5a47737c58807932344e6f785d97450c3`

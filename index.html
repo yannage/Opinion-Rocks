@@ -1029,6 +1029,7 @@ textarea::placeholder {color:#8a775f;opacity:1;}
 <main id="phase1" class="phase active"><header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OPINION ROCKS<small>Small takes. Fresh daily.</small></span></div><button class="motion-toggle" data-motion-toggle aria-pressed="false" aria-label="Reduce motion"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 16 3-8 7-2 5 8-3 6-9-1Z"/><path d="M2 7 4 5m15-2 2 2M1 15h2"/></svg><span data-motion-label>Motion on</span></button><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" data-view="write" aria-current="page"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M4 17 7 7l9-3 7 9-3 9-12 1Z"/><path d="m11 15 7-7m-8 8 1-4 3 3-4 1Z"/></svg><span>Write</span></button><button onclick="goToValley()" data-view="explore"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="m2 22 5-11 5 7 5-14 7 18Z"/><path d="m14 12 3 2 3-2"/><path d="m4 22 5-2 5 2 5-2"/></svg><span>Explore</span></button><button onclick="goToStore()" data-view="store"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="m5 10 2-6h12l2 6v3a3 3 0 0 1-5 2 4 4 0 0 1-6 0 3 3 0 0 1-5-2v-3Z"/><path d="M6 16v7h14v-7M10 23v-5h6v5M5 10h16M10 4l-1 6m7-6 1 6"/></svg><span>Store</span></button></nav></header><div class="daily-heading"><p class="eyebrow">The daily question</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">A new question every day. Today’s rocks disappear at reset.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><div class="composer-layout"><div class="preview-stage"><div class="scene-props" aria-hidden="true"><span class="scene-stone scene-stone--round"></span><span class="scene-stone scene-stone--peak"></span><span class="scene-cairn"></span><span class="scene-spark scene-spark--one">✦</span><span class="scene-spark scene-spark--two">✧</span><span class="scene-spark scene-spark--three">✦</span></div><p class="eyebrow">The etching spot</p><div class="rock-wrapper"><div class="rock" id="preview" role="button" tabindex="0" aria-label="Write on your rock" onclick="input.focus()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();input.focus()}"><div class="rock-text" id="previewText"></div></div><div class="dust" id="dustEffect"></div></div><p class="preview-caption">Small rock. Big energy.</p></div><section class="composer-panel" aria-labelledby="composerTitle"><h2 id="composerTitle">What’s your take?</h2><p class="intro">40 characters. Zero overthinking.</p>    <div class="input-wrapper">
       <label for="input">Your opinion</label>
       <textarea id="input" rows="2" aria-describedby="charCounter draftStatus" placeholder="Etch your take…"></textarea>
+      <span class="etch-trail" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
       <div class="char-counter" id="charCounter" aria-live="polite">0/40</div>
     </div>
     <p id="draftStatus" class="error" role="status" hidden></p>
@@ -1279,6 +1280,7 @@ function spawnFloatingText(targetEl) {
     function updateCharCounter() {
       const length = characterCount(input.value);
       charCounter.textContent = `${length}/${charLimit}`;
+      window.RockFX?.progress(length, charLimit);
       
       // Update counter styling
       if (length >= charLimit) {
@@ -1963,6 +1965,7 @@ function closeShareCard(explore = true) {
   const dialog = document.getElementById('shareSection');
   const wasOpen = dialog.style.display === 'flex';
   cleanupOpinionShare();
+  window.RockFX?.clear();
   dialog.style.display = 'none';
   document.getElementById('phase1').inert = false;
   document.getElementById('phase2').inert = false;

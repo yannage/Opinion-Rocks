@@ -16,6 +16,8 @@
   let hoverFrame = 0;
   let hovered = null;
   let hoverPoint = null;
+  let pressed = null;
+  let revealObserver;
   try { if (localStorage.getItem('opinion_motion') === 'calm') preference = 'calm'; } catch { /* Private browsing is fine. */ }
 
   const isCalm = () => Boolean(reduced?.matches) || preference === 'calm';
@@ -36,6 +38,9 @@
 
   function clearEffects() {
     clearHover();
+    releasePress(false);
+    revealObserver?.disconnect();
+    revealObserver = null;
     for (const entry of [...animations]) entry.animation.cancel();
     animations.clear();
     for (const item of [...particles]) item.remove();
@@ -128,13 +133,48 @@
     }, 900);
   }
 
+  function impact(x, y, size = 160) {
+    particle('fx-impact', x, y, { '--fx-size': `${size}px` }, 1000);
+  }
+
+  function pebble(x, y) {
+    // A painted pebble arcs into the real echo badge only after a confirmed save.
+    const direction = x > window.innerWidth / 2 ? -1 : 1;
+    particle('fx-pebble', x, y, { '--fx-from': `${direction * 48}px` }, 850);
+  }
+
+  function progress(length, limit) {
+    const trail = document.querySelector('.etch-trail');
+    if (!trail) return;
+    const filled = Math.min(8, Math.ceil(Math.max(0, length) / Math.max(1, limit) * 8));
+    trail.querySelectorAll('i').forEach((chip, index) => chip.classList.toggle('is-filled', index < filled));
+    trail.classList.toggle('is-full', length >= limit);
+  }
+
+  function releasePress(rebound = false) {
+    if (!pressed) return;
+    const element = pressed.element;
+    pressed = null;
+    element.classList.remove('fx-pressed');
+    if (rebound) animate(element, [
+      { scale: '.975', translate: '0 2px' },
+      { scale: '1.012', translate: '0 -2px', offset: .55 },
+      { scale: '1', translate: '0 0' }
+    ], { duration: 260 }, 'press');
+  }
+
   function etch(element) {
     if (!canMove() || !visible(element)) return;
     const now = performance.now();
     if (now - (etchTimes.get(element) ?? -Infinity) < 640) return;
     etchTimes.set(element, now);
     const box = element.getBoundingClientRect();
-    flecks(box.left + box.width * .72, box.top + box.height * .58, 3, 22, false);
+    const text = element.querySelector('.rock-text');
+    const writing = text?.getBoundingClientRect() || box;
+    const x = writing.right - 5;
+    const y = writing.bottom - 6;
+    flecks(x, y, 4, 25, false);
+    particle('fx-glint', x - 9, y - 5, { '--fx-size': '32px' }, 500);
     // The writing remains still; only a barely perceptible stone response.
     animate(element, [{ scale: '1' }, { scale: '.995', offset: .3 }, { scale: '1' }], { duration: 200 }, 'etch');
   }
@@ -145,6 +185,7 @@
     const box = (badge || element).getBoundingClientRect();
     const x = box.left + box.width * .5;
     const y = box.top + box.height * .5;
+    releasePress(false);
     if (hovered === element) clearHover();
     animate(element, add ? [
       { scale: '1', rotate: '0deg', translate: '0 0' },
@@ -158,6 +199,10 @@
     if (badge) animate(badge, [{ scale: '1' }, { scale: '1.13', offset: .45 }, { scale: '1' }], { duration: 330 }, 'badge');
     ring(x, y, add ? 80 : 55, add ? 48 : 32, add);
     flecks(x, y, add ? 8 : 3, add ? 57 : 26, add);
+    if (add) {
+      pebble(x, y);
+      impact(x, y, 100);
+    }
   }
 
   function enterValley(element) {
@@ -165,29 +210,46 @@
     const now = performance.now();
     if (now - (revealTimes.get(element) ?? -Infinity) < 220) return;
     revealTimes.set(element, now);
-    const items = [...element.querySelectorAll('.rock-item, .empty-valley')].filter(item => {
+    revealObserver?.disconnect();
+    for (const entry of [...animations]) if (!entry.element.isConnected) entry.animation.cancel();
+    const allItems = [...element.querySelectorAll('.rock-item, .empty-valley')];
+    const items = allItems.filter(item => {
       const box = item.getBoundingClientRect();
       return box.bottom > 0 && box.top < window.innerHeight;
     }).slice(0, 8);
-    items.forEach((item, index) => animate(item, [
-      { opacity: .45, translate: '0 16px', rotate: `${index % 2 ? 1.5 : -1.5}deg`, scale: '.97' },
+    const reveal = (item, index = 0) => animate(item, [
+      { opacity: .4, translate: '0 26px', rotate: `${index % 2 ? 2 : -2}deg`, scale: '.94' },
       { opacity: 1, translate: '0 -2px', rotate: '0deg', scale: '1.005', offset: .72 },
       { opacity: 1, translate: '0 0', rotate: '0deg', scale: '1' }
-    ], { duration: 430, delay: index * 48 }, 'reveal'));
+    ], { duration: 480, delay: index * 48 }, 'reveal');
+    items.forEach(reveal);
+    // Reveal newly discovered list rocks once. Never hide content awaiting JS.
+    if (typeof IntersectionObserver === 'function') {
+      revealObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          revealObserver?.unobserve(entry.target);
+          reveal(entry.target);
+        });
+      }, { threshold: .12 });
+      allItems.filter(item => !items.includes(item)).slice(0, 48).forEach(item => revealObserver.observe(item));
+    }
   }
 
   function landed(element) {
     if (!canMove() || !visible(element)) return;
+    clearEffects();
     animate(element, [
-      { translate: '0 18px', scale: '.96', opacity: .75 },
-      { translate: '0 -3px', scale: '1.01', opacity: 1, offset: .62 },
-      { translate: '0 0', scale: '1', opacity: 1 }
+      { translate: '0 32px', rotate: '-1.3deg', scale: '.94', opacity: .75 },
+      { translate: '0 -4px', rotate: '.4deg', scale: '1.015', opacity: 1, offset: .62 },
+      { translate: '0 0', rotate: '0deg', scale: '1', opacity: 1 }
     ], { duration: 540 }, 'landing');
     const target = element.querySelector('.share-preview') || element;
     const box = target.getBoundingClientRect();
     const x = box.left + box.width * .5;
     const y = Math.min(box.top + box.height * .78, window.innerHeight - 56);
     ring(x, y, Math.min(box.width * .75, 220), 50);
+    impact(x, y - 20, Math.min(box.width, 260));
     flecks(x, y, 15, Math.min(box.width * .45, 115), true);
     const heading = element.querySelector('.share-heading');
     if (heading) animate(heading, [{ translate: '0 3px', rotate: '-1deg' }, { translate: '0 0', rotate: '0deg' }], { duration: 390, delay: 100 }, 'heading');
@@ -195,6 +257,15 @@
 
   function phase(element) {
     if (!canMove() || !visible(element)) return;
+    const scene = element.querySelector('.scene-props');
+    if (scene) animate(scene, [
+      { translate: '0 12px', scale: '1.045', opacity: .65 },
+      { translate: '0 0', scale: '1', opacity: 1 }
+    ], { duration: 800 }, 'depth');
+    const panel = element.querySelector('.composer-panel, .store-product-info');
+    if (panel) animate(panel, [
+      { opacity: .7, translate: '0 9px' }, { opacity: 1, translate: '0 0' }
+    ], { duration: 380, delay: 70 }, 'panel');
     const heading = element.querySelector('.daily-heading');
     if (heading) animate(heading, [
       { opacity: .65, translate: '0 7px' }, { opacity: 1, translate: '0 0' }
@@ -228,7 +299,7 @@
   const optional = fn => (...args) => { try { return fn(...args); } catch { /* Effects never own application state. */ } };
   window.RockFX = Object.freeze({
     etch: optional(etch), echo: optional(echo), enterValley: optional(enterValley),
-    landed: optional(landed), phase: optional(phase), clear: optional(clearEffects)
+    landed: optional(landed), phase: optional(phase), progress: optional(progress), clear: optional(clearEffects)
   });
 
   document.addEventListener('click', event => {
@@ -259,10 +330,34 @@
   document.addEventListener('pointerout', event => {
     if (hovered && !hovered.contains(event.relatedTarget)) clearHover();
   }, { passive: true });
-  document.addEventListener('pointerdown', clearHover, { passive: true });
+  document.addEventListener('pointerdown', event => {
+    clearHover();
+    releasePress(false);
+    if (!canMove() || event.button !== 0 || event.isPrimary === false) return;
+    const rock = event.target.closest?.('.rock[role="button"]');
+    if (!rock || rock.closest('[inert]') || rock.getAttribute('aria-busy') === 'true') return;
+    pressed = { element: rock, x: event.clientX, y: event.clientY, id: event.pointerId };
+    rock.classList.add('fx-pressed');
+  }, { passive: true });
+  document.addEventListener('pointermove', event => {
+    if (pressed && (event.pointerId !== pressed.id || Math.hypot(event.clientX - pressed.x, event.clientY - pressed.y) > 10)) releasePress(false);
+  }, { passive: true });
+  document.addEventListener('pointerup', () => releasePress(true), { passive: true });
+  document.addEventListener('pointercancel', () => releasePress(false), { passive: true });
+  document.addEventListener('scroll', () => { releasePress(false); clearHover(); }, { passive: true, capture: true });
+  document.addEventListener('keydown', event => {
+    if (!canMove() || event.repeat || !['Enter', ' '].includes(event.key)) return;
+    const rock = event.target.closest?.('.rock[role="button"]');
+    if (!rock || rock !== document.activeElement || rock.getAttribute('aria-busy') === 'true') return;
+    releasePress(false);
+    pressed = { element: rock };
+    rock.classList.add('fx-pressed');
+  });
+  document.addEventListener('keyup', event => { if (['Enter', ' '].includes(event.key)) releasePress(true); });
+  document.addEventListener('focusout', () => releasePress(false));
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') clearEffects(); });
   window.addEventListener('pagehide', clearEffects);
-  window.addEventListener('blur', clearHover);
+  window.addEventListener('blur', () => { clearHover(); releasePress(false); });
   if (reduced?.addEventListener) reduced.addEventListener('change', syncPreference);
   else reduced?.addListener?.(syncPreference);
   syncPreference();
