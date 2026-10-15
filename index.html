@@ -3,7 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rock Your Opinion</title>
+  <title>Opinion Rocks · Small takes. Fresh daily.</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Opinion Rocks · What’s your take?" />
+  <meta property="og:description" content="One daily question. Your take on a rock. Echo what resonates. Start fresh tomorrow." />
+  <meta property="og:url" content="https://opinionrocks.com/" />
+  <meta property="og:image" content="https://opinionrocks.com/art/cave.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#f5f0e6" />
+  <meta name="description" content="One daily question. Your take on a rock. Drop an opinion, echo what resonates, and start fresh tomorrow." />
   <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600&display=swap');
 
@@ -769,84 +777,172 @@ button:focus-visible, textarea:focus-visible, .rock[role="button"]:focus-visible
   *, *::before, *::after { animation-delay: 0ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition: none !important; }
 }
 
-/* Daily experience: warm paper, generous writing space, and a readable valley. */
-body {background: #efe9dc; color:#302e24; justify-content:flex-start;}
-.phase {padding:28px max(24px,calc((100vw - 1120px)/2)); gap:20px;}
+/* A pocket-sized valley: mobile first, one clear action at a time. */
+:root { --ink:#302838; --muted:#6c6174; --paper:#fffaf1; --purple:#6543a4; --line:#e3daca; }
+body {background:#f5f0e6;color:var(--ink);justify-content:flex-start;font-family:'Fredoka',system-ui,sans-serif;}
+.phase {height:100dvh;min-height:0;padding:20px max(24px,calc((100vw - 1080px)/2)) 28px;gap:18px;scroll-padding-block:20px 100px;}
 .phase::before,.phase::after {display:none;}
-.site-header {width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;border-bottom:1px solid #d6cfbf;padding-bottom:22px;}
-.brand {font-size:1.2rem;letter-spacing:-.04em;text-align:left;}
-.brand small {display:block;font:11px/1.6 sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#686654;}
-.section-nav {display:flex;gap:4px;background:#e1dacb;padding:5px;border-radius:30px;}
-.section-nav button {width:auto;padding:10px 22px;background:transparent;color:#4b493b;border-radius:24px;font-size:.9rem;}
-.section-nav button[aria-current="page"] {background:#fffaf0;box-shadow:0 2px 5px #302e2410;}
-.daily-heading {width:100%;padding:22px 0 6px;text-align:left;}
-.eyebrow {font:700 11px/1.5 sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#6a6c44;margin-bottom:12px;}
-.prompt-banner {background:none;border:0;box-shadow:none;padding:0;margin:0;display:block;text-transform:none;letter-spacing:-.035em;}
-.prompt {font-size:clamp(1.8rem,3.5vw,3rem);line-height:1.12;max-width:850px;}
-.intro,.day-notice {background:none;padding:0;max-width:none;color:#625e50;font:14px/1.6 sans-serif;}
-.daily-heading .day-notice {margin-top:12px;}
-.composer-layout {display:grid;grid-template-columns:1.1fr 1fr;gap:36px;align-items:center;width:100%;padding-bottom:18px;}
-.preview-stage {min-height:390px;background:linear-gradient(#0001,#0003),url('art/cave.png') center/cover;border-radius:24px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;box-shadow:inset 0 0 0 1px #302e241a;}
-.preview-stage .eyebrow {position:absolute;top:22px;color:#fff;background:#302e24c9;border-radius:20px;padding:6px 12px;letter-spacing:.1em;}
-.preview-caption {position:absolute;bottom:22px;background:#fff7e8ef;color:#4b4636;padding:8px 16px;border-radius:20px;font:12px/1.4 sans-serif;}
-#preview {width:300px!important;height:300px!important;cursor:default;filter:drop-shadow(0 16px 14px #22180f40);}
+.site-header {width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--line);}
+.brand {display:flex;align-items:center;gap:10px;font-size:1.1rem;letter-spacing:-.04em;text-align:left;line-height:1.1;}
+.brand-mark {width:38px;height:38px;background:url('art/rock_sprite.png') 0 0/300% 300%;transform:rotate(-10deg);}
+.brand small {display:block;font:11px/1.8 system-ui,sans-serif;letter-spacing:.02em;color:var(--muted);}
+.section-nav {display:flex;gap:5px;background:#e8e0d2;padding:5px;border-radius:18px;}
+button,a { -webkit-tap-highlight-color:transparent;touch-action:manipulation; }
+button {background:var(--purple);border-radius:14px;min-height:48px;color:#fff;font-family:inherit;}
+button:hover {background:#503181;}
+button:active:not(:disabled) {transform:translateY(2px);}
+button:disabled {opacity:.5;}
+a:focus-visible,button:focus-visible,textarea:focus-visible,.rock[role="button"]:focus-visible {outline:3px solid #295ab5;outline-offset:3px;}
+.section-nav button {min-height:44px;width:auto;padding:10px 24px;background:transparent;color:#51455e;border-radius:13px;font-size:.95rem;}
+.section-nav button[aria-current="page"] {background:var(--paper);color:#4b287b;box-shadow:0 2px 6px #30283812;}
+.section-nav button:hover {background:#f8f2e8;}
+.daily-heading {width:100%;padding:10px 0 0;text-align:left;}
+.eyebrow {font:750 11px/1.4 system-ui,sans-serif;letter-spacing:.11em;text-transform:uppercase;color:#6d5689;margin-bottom:10px;}
+.daily-heading .eyebrow {display:flex;align-items:center;gap:8px;}
+.daily-heading .eyebrow::before {content:'';width:8px;height:8px;background:#7b5ca5;border-radius:50%;box-shadow:0 0 0 4px #e9dff4;}
+.prompt-banner {background:none;border:0;box-shadow:none;padding:0;margin:0;display:block;text-transform:none;letter-spacing:-.035em;color:var(--ink);}
+.prompt {font-size:clamp(1.8rem,3.4vw,2.8rem);line-height:1.14;max-width:850px;overflow-wrap:anywhere;}
+.intro,.day-notice {background:none;padding:0;max-width:none;color:var(--muted);font:14px/1.5 system-ui,sans-serif;}
+.daily-heading .day-notice {margin-top:10px;font-size:12px;}
+.composer-layout {display:grid;grid-template-columns:1.1fr 1fr;gap:34px;align-items:center;width:100%;}
+.preview-stage {min-height:365px;background:url('art/cave.png') center 57%/cover;border-radius:26px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;box-shadow:inset 0 0 0 1px #30283816;}
+.preview-stage .eyebrow {position:absolute;top:18px;color:#4d3b66;background:#fffaf1ed;border-radius:20px;padding:6px 12px;letter-spacing:.08em;z-index:1;}
+.preview-caption {position:absolute;bottom:16px;background:#fffaf1e8;color:#554566;padding:7px 14px;border-radius:20px;font:12px/1.4 system-ui,sans-serif;pointer-events:none;}
+#preview {width:290px!important;height:290px!important;cursor:text;filter:drop-shadow(0 12px 10px #38204d30);}
 #previewText {font-size:1.2rem!important;}
+.rock-text {margin-left:12%;margin-top:2%;width:60%;max-height:56%;padding:4px;line-height:1.25;}
 .composer-panel {text-align:left;min-width:0;}
-.composer-panel h2 {font-size:1.7rem;letter-spacing:-.03em;margin-bottom:10px;}
-.composer-panel .intro {margin-bottom:24px;}
+.composer-panel h2 {font-size:1.65rem;letter-spacing:-.025em;margin-bottom:6px;}
+.composer-panel .intro {margin-bottom:18px;}
 .input-wrapper {width:100%;max-width:none;}
-.input-wrapper label {background:none;padding:0;margin-bottom:8px;font:700 12px sans-serif;}
-textarea {background:#fffcf5;border:1px solid #b5ad99;border-radius:14px;min-height:136px;padding:18px 18px 36px;font-size:1.1rem;color:#302e24;}
-.char-counter,.char-counter.limit {color:#635c45;font:12px sans-serif;bottom:14px;right:16px;}
-.composer-actions {display:flex;gap:12px;flex-direction:column;margin-top:16px;}
-button {background:#47563c;border-radius:12px;min-height:44px;}
-button:hover {background:#34432c;}
-.section-nav button:hover {background:#d5cebd;}
-.upgrade-btn:hover {background:#e3e3d1;}
-button#submitBtn {max-width:none;width:100%;padding:16px;}
-.explore-valley-btn {width:100%;max-width:none;height:auto;padding:12px;background:transparent;color:#454e38;border:1px solid #b4b49c;font-size:.95rem;}
-.explore-valley-btn:hover {background:#e3e3d1;}
-.composer-panel .error {margin:12px 0;}
-.experience-footer {border-top:1px solid #d6cfbf;padding:18px 0;width:100%;display:flex;justify-content:space-between;gap:16px;text-align:left;color:#625e50;font:12px/1.6 sans-serif;}
-.experience-footer strong {color:#414631;}
-.valley-container {width:100%;max-width:1120px;border-radius:22px;background:#e2dfcf;padding:28px 44px;min-height:220px;}
-.valley {gap:16px;padding:0;}
+.input-wrapper label {background:none;padding:0;margin-bottom:6px;font:700 12px system-ui,sans-serif;}
+textarea {background:#fffcf7;border:2px solid #c6b6d3;border-radius:16px;min-height:116px;padding:14px 14px 30px;font-size:1.08rem;color:var(--ink);line-height:1.4;}
+textarea:focus {border-color:#7856a8;}
+textarea.limit-reached {border-color:#8463ae;animation:none;}
+.char-counter,.char-counter.limit,.char-counter.warning {color:#6b557e;font:650 12px system-ui,sans-serif;bottom:13px;right:14px;}
+.composer-actions {display:flex;gap:8px;flex-direction:column;margin-top:12px;}
+button#submitBtn {max-width:none;width:100%;padding:14px;box-shadow:0 4px 0 #43256f;font-size:1rem;}
+.explore-valley-btn {width:100%;max-width:none;height:auto;padding:10px;background:transparent;color:#5d427e;border:0;font-size:.9rem;}
+.explore-valley-btn:hover {background:#ece3f3;}
+.upgrade-prompt {background:#eee4f5;color:#554068;box-shadow:none;font:12px/1.5 system-ui,sans-serif;padding:10px 12px;margin-top:8px;animation:none;}
+.upgrade-prompt .coin,.upgrade-btn,.checkout-notice {display:none;}
+.composer-panel .error {margin:10px 0;}
+.error {color:#773d36;background:#fff1e8;border-radius:12px;padding:10px 12px;font:14px/1.5 system-ui,sans-serif;}
+.experience-footer {border-top:1px solid var(--line);padding:16px 0;width:100%;display:flex;justify-content:space-between;gap:16px;text-align:left;color:var(--muted);font:12px/1.6 system-ui,sans-serif;}
+.experience-footer strong {color:#645570;}
+.valley-container {width:100%;max-width:1080px;border-radius:26px;background:#eae3f0;padding:22px 54px 68px;min-height:220px;}
+.valley {gap:16px;padding:0;max-height:none;}
 .valley-row {gap:18px;flex-wrap:wrap;margin-top:0!important;}
 .rock-item {margin:0;}
-.valley-container.scroll-mode {background:#fffcf5;border:1px solid #d6cfbf;box-shadow:none;padding:20px;}
+.rock[role="button"] {touch-action:pan-y;}
+.rock[role="button"]:active {--scale:.96;}
+.pebble-badge {background:#fff9ef;border:1px solid #d9c7a9;border-radius:24px;bottom:4px;left:50%;transform:translateX(-50%);width:auto;min-width:66px;padding:6px 12px;aspect-ratio:auto;gap:5px;}
+.pebble-badge::before {content:'♡';font-size:16px;line-height:1;}
+.rock.echoed .pebble-badge {background:#6543a4;color:white;border-color:#6543a4;animation:none;}
+.rock.echoed .badge {color:white;}
+.rock.echoed .pebble-badge::before {content:'♥';}
+.badge {font:700 12px system-ui,sans-serif;}
+.valley-container.scroll-mode {background:transparent;border:0;box-shadow:none;padding:0;}
 .valley-container.scroll-mode .scroll-header,.valley-container.scroll-mode .stats-box {display:none;}
 .valley-container.scroll-mode .valley {height:auto;max-height:none;overflow:visible;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
 .valley-container.scroll-mode .rock-item {margin:0;width:100%;}
-.valley-container.scroll-mode .rock {background:#eeeadd;border:1px solid #d6cfbf;border-radius:14px;width:100%!important;height:auto!important;min-height:115px;transform:none;padding:18px 18px 44px;}
-.valley-container.scroll-mode .rock-text {margin:0;padding:0;width:100%;max-height:none;font-size:1rem!important;line-height:1.5;text-align:left;display:block;}
-.valley-container.scroll-mode .pebble-badge {bottom:8px;left:16px;}
-.valley-container.scroll-mode .rock.echoed {border-color:#606b38;background:#e7ebd5;}
-.nav-arrow {background:#47563c;}
-.valley-toolbar {display:flex;gap:12px;width:100%;justify-content:space-between;align-items:center;}
-.toggle-view-btn {width:auto;max-width:none;padding:10px 16px;gap:8px;background:#fffcf5;color:#414631;border:1px solid #b5ad99;}
-.toggle-view-btn:hover {background:#e3e3d1;}
+.valley-container.scroll-mode .rock {background:var(--paper);border:1px solid #ded2e4;border-radius:18px;width:100%!important;height:auto!important;min-height:130px;transform:none;padding:20px 20px 50px;}
+.valley-container.scroll-mode .rock-text {margin:0;padding:0;width:100%;max-height:none;font-size:1.05rem!important;line-height:1.5;text-align:left;display:block;}
+.valley-container.scroll-mode .pebble-badge {bottom:12px;left:20px;transform:none;}
+.valley-container.scroll-mode .rock.echoed {border-color:#9975b7;background:#f0e8f7;}
+.nav-arrow {border-radius:14px;background:var(--paper);color:#513674;top:auto;bottom:14px;transform:none;width:calc(50% - 22px);height:44px;font-size:14px;border:1px solid #d6c9e1;}
+.nav-arrow.prev {left:14px;}.nav-arrow.next {right:14px;}
+.nav-arrow:hover {background:#ded0ec;color:#38264b;}
+.nav-arrow:disabled {opacity:.4;}
+.valley-toolbar {display:flex;gap:10px;width:100%;justify-content:space-between;align-items:center;}
+.valley-toolbar button {width:auto;max-width:none;padding:10px 18px;font-size:.9rem;}
+.toggle-view-btn {gap:8px;background:var(--paper);color:#5d427e;border:1px solid #cbbbda;}
+.toggle-view-btn:hover {background:#ece3f3;}
 .toggle-view-btn img {display:none;}
-.empty-valley {padding:34px 12px;max-width:420px;}
-.empty-valley h2 {font-size:1.5rem;margin-bottom:12px;}
-.empty-valley p {font:14px/1.6 sans-serif;color:#625e50;margin-bottom:18px;}
-#pageStatus {font-size:12px;}
-#shareCardWrapper {border:6px solid #fff6e4;}
+.empty-valley {padding:28px 12px;max-width:420px;}
+.empty-valley::before {content:'';display:block;width:95px;height:95px;background:url('art/rock_sprite.png') 0 0/300% 300%;margin:0 auto 10px;transform:rotate(-12deg);}
+.empty-valley h2 {font-size:1.5rem;margin-bottom:10px;}
+.empty-valley p {font:14px/1.6 system-ui,sans-serif;color:var(--muted);margin-bottom:16px;}
+#pageStatus {font:12px system-ui,sans-serif;}
+#shareSection {position:fixed;inset:0;height:100dvh;background:#21152c99;align-items:center;justify-content:center;z-index:9999;padding:20px;overflow:auto;}
+#shareCardWrapper {position:relative;background:var(--paper);border:1px solid #e2d5ec;border-radius:26px;width:430px;max-width:100%;max-height:calc(100dvh - 40px);overflow:auto;padding:24px;box-shadow:0 20px 80px #21152c55;display:flex;flex-direction:column;align-items:stretch;gap:12px;text-align:center;}
+#closeShareCard {position:absolute;right:8px;top:8px;min-width:44px;min-height:44px;width:44px;padding:0;background:transparent;color:#5d427e;font-size:24px;z-index:2;}
+#closeShareCard:hover {background:#ede1f6;}
+#shareCardWrapper > * {flex-shrink:0;}
+.share-heading {font-size:1.65rem;margin:8px 20px 0;letter-spacing:-.025em;}
+.share-subtitle {font:13px/1.4 system-ui,sans-serif;color:var(--muted);}
+.share-preview {background:#e7def1;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;align-items:center;}
+#shareImagePreview {display:block;width:100%;height:auto;max-height:290px;object-fit:contain;}
+#shareCard {width:210px;height:210px;flex-shrink:0;cursor:default;}
+#shareText {font-size:1rem;}
+#shareTopic {font-size:1rem;line-height:1.35;padding:12px 12px 0;}
+#shareStatus {font:12px/1.45 system-ui,sans-serif;color:#5d4e6c;min-height:18px;}
+.share-actions {display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.share-actions #nativeShareBtn {grid-column:1/-1;}
+.share-actions button {padding:10px;font-size:.95rem;}
+#downloadBtn,#copyShareLinkBtn,#retryShareImageBtn {background:#ede4f4;color:#573879;}
+#downloadBtn:hover,#copyShareLinkBtn:hover,#retryShareImageBtn:hover {background:#dfcdec;}
+#shareBtns {display:flex;gap:12px;justify-content:center;align-items:center;font:12px system-ui,sans-serif;flex-wrap:wrap;}
+#shareBtns a {display:inline-flex;min-width:44px;min-height:44px;align-items:center;justify-content:center;color:#5b397f;text-underline-offset:3px;padding:0 8px;}
+.share-help {font:11px/1.5 system-ui,sans-serif;color:var(--muted);}
+.share-link-fallback {font:12px/1.5 system-ui,sans-serif;text-align:left;}
+.share-link-fallback input {display:block;width:100%;font-size:16px;padding:12px;border:1px solid #b9a3ca;border-radius:10px;margin-top:5px;}
+#shareSection :focus-visible {outline-offset:2px;}
+@keyframes rockHello {0%,100%{transform:rotate(0)}35%{transform:rotate(-6deg)}70%{transform:rotate(4deg)}}
+#preview.animate-in {animation:rockHello .65s ease-out;}
+#previewText.animate-in {animation:none;opacity:1;}
 @media(max-width:700px) {
- .phase {padding:18px 18px 28px;gap:16px;}
- .site-header {padding-bottom:16px;}.brand {font-size:1rem;}.brand small {font-size:9px;}
- .section-nav button {padding:10px 15px;}
- .daily-heading {padding-top:12px;}
- .composer-layout {grid-template-columns:1fr;gap:22px;}
- .preview-stage {min-height:280px;}
- #preview {width:240px!important;height:240px!important;}
- #previewText {font-size:1rem!important;}
- .preview-stage .eyebrow {top:12px;}.preview-caption {bottom:12px;}
- .composer-panel h2 {font-size:1.4rem;}.composer-panel .intro {margin-bottom:18px;}
- .experience-footer {flex-direction:column;gap:6px;}
- .valley-container {padding:22px 30px;}.valley-row {gap:12px;}
+ .phase {padding:14px 16px calc(94px + env(safe-area-inset-bottom));gap:12px;}
+ .site-header {padding:0 0 10px;min-height:46px;}.brand {font-size:1rem;}.brand small {font-size:10px;}.brand-mark {width:32px;height:32px;}
+ .section-nav {position:fixed;z-index:20;bottom:0;left:0;right:0;gap:8px;padding:9px 16px calc(9px + env(safe-area-inset-bottom));border-radius:20px 20px 0 0;background:#fdf9f1f7;border-top:1px solid #ded3c5;box-shadow:0 -4px 20px #39233d08;}
+ .section-nav button {flex:1;min-height:46px;padding:10px 14px;}
+ .section-nav button[aria-current="page"] {background:#e9ddf4;box-shadow:none;}
+ .daily-heading {padding-top:2px;}.eyebrow {margin-bottom:8px;font-size:10px;}
+ .prompt {font-size:clamp(1.55rem,6.3vw,2rem);line-height:1.12;}
+ .daily-heading .day-notice {margin-top:8px;font-size:11px;}
+ .composer-layout {grid-template-columns:1fr;gap:14px;}
+ .preview-stage {min-height:180px;height:180px;border-radius:20px;}
+ #preview {width:204px!important;height:204px!important;}
+ #previewText {font-size:.85rem!important;}
+ .preview-stage .eyebrow {top:10px;left:10px;padding:4px 8px;font-size:9px;}
+ .preview-caption {right:10px;bottom:8px;font-size:10px;padding:4px 8px;}
+ .rock-wrapper {margin:0;}
+ .composer-panel h2 {font-size:1.2rem;margin-bottom:3px;}.composer-panel .intro {font-size:12px;margin-bottom:10px;}
+ .input-wrapper label {position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);}
+ textarea {min-height:88px;height:88px;font-size:16px;padding:12px 12px 28px;}
+ .composer-actions {margin-top:8px;gap:5px;}.composer-actions .explore-valley-btn {display:none;}
+ button#submitBtn {min-height:48px;padding:12px;}
+ .experience-footer {font-size:11px;flex-direction:column;gap:2px;padding:12px 0;}
+ .experience-footer span {display:none;}
+ .valley-container {padding:10px 18px 68px;min-height:310px;}.valley-row {gap:10px;}
+ .valley-container:not(.scroll-mode) .rock {width:260px!important;height:260px!important;}
+ .valley-container:not(.scroll-mode) .rock-text {font-size:1.08rem!important;}
+ .valley-container:not(.scroll-mode) .rock-text.long-take {font-size:.9rem!important;}
  .valley-container.scroll-mode .valley {grid-template-columns:1fr;}
- .valley-toolbar {align-items:stretch;flex-direction:column;}
- .valley-toolbar button {max-width:none;width:100%;}
+ .valley-toolbar {align-items:center;flex-direction:row;gap:8px;}
+ .valley-toolbar button {min-width:0;padding:10px 12px;font-size:.85rem;}
+ .echo-instruction {font-size:12px;text-align:left;width:100%;}
+ #shareSection {padding:10px;}
+ #shareCardWrapper {border-radius:24px;max-height:calc(100dvh - 20px);padding:20px;gap:9px;}
+ #shareImagePreview {max-height:250px;}
+ .share-heading {font-size:1.45rem;}
+}
+@media(max-width:350px) {
+ .phase {padding-inline:12px;}.preview-stage {height:170px;min-height:170px;}
+ .valley-container:not(.scroll-mode) .rock {width:240px!important;height:240px!important;}
+ .valley-container:not(.scroll-mode) .rock-text {font-size:1rem!important;}
+ .valley-container:not(.scroll-mode) .rock-text.long-take {font-size:.75rem!important;}
+}
+@media(max-height:650px) { #shareImagePreview {max-height:180px;} }
+@media(max-height:550px) and (max-width:700px) {
+ .preview-stage {height:140px;min-height:140px;}#preview {width:180px!important;height:180px!important;}
+ .preview-caption {display:none;}
+ .phase {scroll-padding-bottom:90px;}
+ #shareImagePreview {max-height:170px;}
+}
+@media(prefers-reduced-motion:reduce) {
+ .rock,.rock-text {animation:none!important;transition:none!important;}
+ #previewText {opacity:1!important;}
 }
 
   </style>
@@ -859,24 +955,23 @@ button#submitBtn {max-width:none;width:100%;padding:16px;}
   
   
 
-  <!-- html2canvas for generating image -->
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
 </head>
 <body>
-<main id="phase1" class="phase active"><header class="site-header"><div class="brand">OPINION ROCKS<small>Small takes. Fresh daily.</small></div><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" aria-current="page">Write</button><button onclick="goToValley()" >Explore</button></nav></header><div class="daily-heading"><p class="eyebrow">The daily question</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">Here for today. A new question clears the valley. No archive.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><div class="composer-layout"><div class="preview-stage"><p class="eyebrow">Your rock · Live preview</p><div class="rock-wrapper"><div class="rock" id="preview"><div class="rock-text" id="previewText"></div></div><div class="dust" id="dustEffect"></div></div><p class="preview-caption">A little rock. A point of view.</p></div><section class="composer-panel" aria-labelledby="composerTitle"><h2 id="composerTitle">What’s your take?</h2><p class="intro">40 characters. Make them yours.<br>Your opinion joins today’s valley of rocks.</p>    <div class="input-wrapper">
+<main id="phase1" class="phase active"><header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OPINION ROCKS<small>Small takes. Fresh daily.</small></span></div><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" aria-current="page">Write</button><button onclick="goToValley()" >Explore</button></nav></header><div class="daily-heading"><p class="eyebrow">The daily question</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">A new question every day. Today’s rocks disappear at reset.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><div class="composer-layout"><div class="preview-stage"><p class="eyebrow">Your rock · Live</p><div class="rock-wrapper"><div class="rock" id="preview" role="button" tabindex="0" aria-label="Write on your rock" onclick="input.focus()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();input.focus()}"><div class="rock-text" id="previewText"></div></div><div class="dust" id="dustEffect"></div></div><p class="preview-caption">Tiny rock. Big opinion.</p></div><section class="composer-panel" aria-labelledby="composerTitle"><h2 id="composerTitle">What’s your take?</h2><p class="intro">40 characters. Zero overthinking.</p>    <div class="input-wrapper">
       <label for="input">Your opinion</label>
-      <textarea id="input" rows="3" aria-describedby="charCounter draftStatus" placeholder="Type your opinion here..."></textarea>
+      <textarea id="input" rows="2" aria-describedby="charCounter draftStatus" placeholder="Etch your take…"></textarea>
       <div class="char-counter" id="charCounter" aria-live="polite">0/40</div>
     </div>
     <p id="draftStatus" class="error" role="status" hidden></p>
     <div class="upgrade-prompt" id="upgradePrompt">
-      <span class="coin" aria-hidden="true">🪙</span> You've reached your rock's limit.
+      <span class="coin" aria-hidden="true">🪙</span> That’s a full rock. Short and mighty!
       <button class="upgrade-btn" onclick="upgradeRock()">About XL rocks</button>
       <p class="checkout-notice">XL checkout is temporarily unavailable.</p>
     </div>
-<div class="composer-actions"><button id="submitBtn" disabled onclick="submitOpinion()">Drop your rock ↗</button><button class="explore-valley-btn" onclick="goToValley()">Explore today’s valley →</button></div></section></div><footer class="experience-footer"><strong>One question. A valley of perspectives.</strong><span>Write a short take. Echo what resonates. Start fresh tomorrow.</span></footer></main><main id="phase2" class="phase"><header class="site-header"><div class="brand">OPINION ROCKS<small>Small takes. Fresh daily.</small></div><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" >Write</button><button onclick="goToValley()" aria-current="page">Explore</button></nav></header><div class="daily-heading"><p class="eyebrow">Explore the valley</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">Here for today. A new question clears the valley. No archive.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><p class="day-notice">Tap a rock to echo it. Hold to undo. Keyboard: Enter or Space toggles your echo.</p>    <div class="valley-toolbar">
+<div class="composer-actions"><button id="submitBtn" disabled onclick="submitOpinion()">Drop your rock ↗</button><button class="explore-valley-btn" onclick="goToValley()">Explore today’s valley →</button></div></section></div><footer class="experience-footer"><strong>One question. A valley of perspectives.</strong><span>Write a short take. Echo what resonates. Start fresh tomorrow.</span></footer></main><main id="phase2" class="phase"><header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OPINION ROCKS<small>Small takes. Fresh daily.</small></span></div><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" >Write</button><button onclick="goToValley()" aria-current="page">Explore</button></nav></header><div class="daily-heading"><p class="eyebrow">Explore the valley</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">A new question every day. Today’s rocks disappear at reset.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><p class="day-notice echo-instruction">A take you feel? Tap the rock to echo it. Tap again to undo.</p>    <div class="valley-toolbar">
       <button id="toggleViewBtn" class="toggle-view-btn" onclick="toggleView()" title="Switch to list view" aria-label="Switch to list view" aria-pressed="false">
-        <img src="art/button_window.png" alt="" /><span id="viewLabel">List view</span>
+        <span id="viewLabel">List view</span>
       </button>
       <button onclick="restart()" style="flex: 1;">Write a take ↗</button>
     </div>
@@ -892,34 +987,37 @@ button#submitBtn {max-width:none;width:100%;padding:16px;}
         <div id="dailyStats">Loading stats...</div>
         <canvas id="statsChart" width="220" height="120" aria-label="Submissions per hour, in UTC" role="img"></canvas>
       </div>
-      <button class="nav-arrow prev" onclick="navigateRocks(-1)" id="prevBtn" aria-label="Previous opinions">‹</button>
+      <button class="nav-arrow prev" onclick="navigateRocks(-1)" id="prevBtn" aria-label="Previous opinions">← Previous</button>
       <div class="valley" id="opinionValley"></div>
-      <button class="nav-arrow next" onclick="navigateRocks(1)" id="nextBtn" aria-label="Next opinions">›</button>
+      <button class="nav-arrow next" onclick="navigateRocks(1)" id="nextBtn" aria-label="Next opinions">Next rock →</button>
     </div>
     <p id="pageStatus" class="day-notice" role="status"></p>
+    <button id="shareLastRockBtn" class="toggle-view-btn" onclick="reopenMyRock()" hidden>Share my rock ↗</button>
 
 <footer class="experience-footer"><strong>One question. A valley of perspectives.</strong><span>Write a short take. Echo what resonates. Start fresh tomorrow.</span></footer></main>
-  <div id="shareSection" role="dialog" aria-modal="true" aria-labelledby="shareTopic" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 9999;">
-    <div id="shareCardWrapper" style="position: relative; background: url('art/cave.png') center/cover no-repeat; padding: 20px; border-radius: 20px; width: 340px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center;">
-      
-      <button id="closeShareCard" aria-label="Close share card and explore the valley" style="position: absolute; top: 10px; right: 10px; background: white; color: #2F1B14; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">✖</button>
-      
-      <div id="shareTopic" class="prompt-banner prompt">Today's Topic</div>
-      
-      <div id="shareCard" class="rock">
-        <div id="shareText" class="rock-text"></div>
+  <div id="shareSection" role="dialog" aria-modal="true" aria-labelledby="shareHeading" aria-describedby="shareDescription" style="display:none">
+    <div id="shareCardWrapper">
+      <button id="closeShareCard" aria-label="Close share card and explore the valley">×</button>
+      <h2 id="shareHeading" class="share-heading">Your rock has landed!</h2>
+      <p id="shareDescription" class="share-subtitle">Take a little piece of today with you.</p>
+      <div class="share-preview">
+        <div id="shareTopic" class="prompt-banner prompt"></div>
+        <div id="shareCard" class="rock"><div id="shareText" class="rock-text"></div></div>
+        <img id="shareImagePreview" alt="Your downloadable opinion rock card" hidden />
       </div>
-      
-      <p id="shareStatus" role="status"></p>
-      <button id="downloadBtn" style="margin-top: 10px;">Download Image</button>
-
-      <div id="shareBtns" style="display: flex; gap: 10px; margin-top: 10px;">
-        <button id="shareXBtn">Share to X</button>
-        <button id="shareFBBtn">Share to Facebook</button>
+      <p id="shareStatus" role="status" aria-live="polite"></p>
+      <div class="share-actions">
+        <button id="nativeShareBtn" disabled>Share image</button>
+        <button id="downloadBtn" disabled>Download image</button>
+        <button id="copyShareLinkBtn">Copy link</button>
       </div>
-      
+      <button id="retryShareImageBtn" hidden>Retry image</button>
+      <div id="shareBtns"><span>Share a link:</span><a id="shareXBtn" target="_blank" rel="noopener noreferrer">X ↗</a><a id="shareFBBtn" target="_blank" rel="noopener noreferrer">Facebook ↗</a></div>
+      <p class="share-help">For Instagram or Stories, share or download the image, then choose it in your app. Shared links open today’s valley.</p>
+      <button class="explore-valley-btn" onclick="closeShareCard()">Meet the other rocks →</button>
     </div>
   </div>
+  <script src="sharing.js"></script>
   <script>
     // IMPORTANT: Replace these with your actual Supabase credentials
     const SUPABASE_URL = 'https://vqtmoptfigcwjuxszzat.supabase.co';
@@ -954,6 +1052,7 @@ button#submitBtn {max-width:none;width:100%;padding:16px;}
     let topicRequest = 0;
     let opinionRequest = 0;
     let isSubmitting = false;
+    let lastSubmittedRock = null;
     let upgradeInFlight = false;
     let restoredLongDraft = false;
     const pendingEchoes = new Set();
@@ -1109,8 +1208,6 @@ function spawnFloatingText(targetEl) {
 
     function toggleView() {
       scrollView = !scrollView;
-      const btnImg = document.querySelector('#toggleViewBtn img');
-      btnImg.src = scrollView ? 'art/button_valley.png' : 'art/button_window.png';
       const button = document.getElementById('toggleViewBtn');
       button.setAttribute('aria-label', scrollView ? 'Switch to rock view' : 'Switch to list view');
       button.setAttribute('aria-pressed', String(scrollView));
@@ -1206,76 +1303,18 @@ function startPressGrow(el, maxScale = 1.35, growMs = 600) {
     }
     if (error) throw error;
     
-    // 5️⃣ Build & show the share card
     const savedOpinion = data?.[0];
     if (!savedOpinion) throw new Error('No saved opinion returned');
     const promptText = dailyState.current_topic;
-    // Share the current app home; no unimplemented /o/:id route is advertised.
-    const shareUrl = new URL(window.location.pathname, window.location.origin).href;
-    
-    document.getElementById('shareStatus').textContent = 'Your rock is in today’s valley. Share it, or close to explore.';
-    document.getElementById('shareText').textContent = savedOpinion.text;
-    document.getElementById('shareTopic').textContent = promptText;
-    document.getElementById('shareCard').style.backgroundPosition = '0% 0%';
+    lastSubmittedRock = { opinion: savedOpinion, prompt: promptText, cycle: dailyCycleKey() };
+    document.getElementById('shareLastRockBtn').hidden = false;
+    input.blur();
     document.getElementById('shareSection').style.display = 'flex';
     document.getElementById('phase1').inert = true;
     document.getElementById('phase2').inert = true;
     document.getElementById('closeShareCard').focus();
-    
-    document.getElementById('shareXBtn').onclick = () => {
-      const msg = encodeURIComponent(
-        `🪨 OPINION ROCKS 🪨\nEvery day, a new stone.\nEvery day, a new take.\n\nToday's question:\n${promptText}\n\n> ${savedOpinion.text}\n\nEtch yours:\n${shareUrl}`
-      );
-      window.open(`https://twitter.com/intent/tweet?text=${msg}`, '_blank', 'noopener,noreferrer');
-    };
-    
-    document.getElementById('shareFBBtn').onclick = () => {
-      const quote = encodeURIComponent(
-        `🪨 OPINION ROCKS 🪨\nEvery day, a new stone.\nEvery day, a new take.\n\nToday's question:\n${promptText}\n\n> ${savedOpinion.text}\n\nEtch yours:`
-      );
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${quote}`, '_blank', 'noopener,noreferrer');
-    };
-    
-    document.getElementById('downloadBtn').onclick = async () => {
-      const sel = window.getSelection?.();
-if (sel && sel.removeAllRanges) sel.removeAllRanges();
-      const wrapper = document.getElementById('shareCardWrapper');
-      const shareBtns = document.getElementById('shareBtns');
-      const downloadBtn = document.getElementById('downloadBtn');
-      const closeBtn = document.getElementById('closeShareCard');
+    showOpinionShare(savedOpinion, promptText, dailyCycleKey());
 
-      const hideEls = [downloadBtn, shareBtns, closeBtn, document.getElementById('shareStatus')];
-      hideEls.forEach(el => { if (el) el.style.visibility = 'hidden'; });
-
-      try {
-      document.getElementById('shareStatus').textContent = 'Your rock is in today’s valley. Share it, or close to explore.';
-      await document.fonts.ready;
-      const canvas = await html2canvas(wrapper, {
-  backgroundColor: null,
-  useCORS: true,
-  scale: 2,
-  // Capture the full card even on a short mobile viewport.
-  onclone: clonedDocument => {
-    const card = clonedDocument.getElementById('shareCardWrapper');
-    card.style.maxHeight = 'none';
-    card.style.overflow = 'visible';
-  }
-});
-
-      hideEls.forEach(el => { if (el) el.style.visibility = ''; });
-
-      const link = document.createElement('a');
-      link.download = `opinion-rock-${savedOpinion.id}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-      } catch (error) {
-        console.error('Image export failed:', error);
-        document.getElementById('shareStatus').textContent = 'Image download failed. Please try again.';
-      } finally {
-        hideEls.forEach(el => { if (el) el.style.visibility = ''; });
-      }
-    };
-    
     // Clear only the submitted draft; never discard a newer edit.
     if (input.value.trim() === text) {
     input.value = '';
@@ -1389,7 +1428,7 @@ if (sel && sel.removeAllRanges) sel.removeAllRanges();
       }, 1800);
     }
 
-function getLayerPattern() { return window.innerWidth <= 768 ? [1, 2, 1] : [2, 3, 2]; }
+function getLayerPattern() { return window.innerWidth <= 700 ? [1] : [2, 3, 2]; }
 function getRocksPerPage() { return getLayerPattern().reduce((sum, count) => sum + count, 0); }
 function maxPageIndex(count) { return Math.max(0, (Math.ceil(count / getRocksPerPage()) - 1) * getRocksPerPage()); }
 function navigateRocks(direction) {
@@ -1399,8 +1438,8 @@ function navigateRocks(direction) {
 }
 function updateNavigationButtons() {
   const count = opinions.filter(op => !brokenOpinionIds.has(op.id)).length;
-  prevBtn.style.display = scrollView ? 'none' : '';
-  nextBtn.style.display = scrollView ? 'none' : '';
+  prevBtn.style.display = scrollView || count <= getRocksPerPage() ? 'none' : '';
+  nextBtn.style.display = scrollView || count <= getRocksPerPage() ? 'none' : '';
   prevBtn.disabled = currentIndex === 0;
   nextBtn.disabled = currentIndex >= maxPageIndex(count);
   document.getElementById('pageStatus').textContent = count
@@ -1575,6 +1614,7 @@ rock.style.setProperty('--tilt', `${rotation}deg`);
   const textDiv = document.createElement('div');
   textDiv.className = 'rock-text';
   textDiv.textContent = opinion.text;
+  textDiv.classList.toggle('long-take', characterCount(opinion.text) > 40);
   
   const { width, height, fontSize } = getRockSize(characterCount(opinion.text));
   Object.assign(rock.style, { width, height });
@@ -1644,45 +1684,28 @@ async function changeEcho(add) {
     }
   }
 }
-const LONG = 600;
-let timerId, stopGrow;
-let pressActive = false;
-let longPressHandled = false;
-function cancelPress() {
-  clearTimeout(timerId);
-  if (stopGrow) stopGrow();
-  pressActive = false;
-}
+// Let the browser scroll naturally; a drag must never count as an echo.
+let pointerStart = null;
+let dragged = false;
 rock.addEventListener('pointerdown', event => {
-  if (event.button !== 0 || pendingEchoes.has(opinion.id)) return;
-  event.preventDefault();
-  rock.focus({ preventScroll: true });
-  pressActive = true;
-  longPressHandled = false;
-  stopGrow = startPressGrow(rock);
-  timerId = setTimeout(async () => {
-    if (!rock.isConnected) { cancelPress(); return; }
-    longPressHandled = true;
-    if (stopGrow) stopGrow();
-    if (await changeEcho(false)) rock.classList.add('echo-removed');
-  }, LONG);
+  if (event.button !== 0) return;
+  pointerStart = { x: event.clientX, y: event.clientY };
+  dragged = false;
 });
-rock.addEventListener('pointerup', async () => {
-  if (!pressActive) return;
-  cancelPress();
-  if (!longPressHandled && await changeEcho(true)) rock.classList.add('echo-added');
+rock.addEventListener('pointermove', event => {
+  if (pointerStart && Math.hypot(event.clientX - pointerStart.x, event.clientY - pointerStart.y) > 10) dragged = true;
 });
-rock.addEventListener('pointerleave', cancelPress);
-rock.addEventListener('pointercancel', cancelPress);
-rock.addEventListener('click', event => {
-  // Assistive technology can activate a button without pointer or key events.
-  if (event.detail === 0) changeEcho(!echoedRocks.includes(opinion.id));
+rock.addEventListener('pointercancel', () => { dragged = true; pointerStart = null; });
+rock.addEventListener('click', async event => {
+  if (event.detail !== 0 && dragged) return;
+  const add = !echoedRocks.includes(opinion.id);
+  if (await changeEcho(add)) rock.classList.add(add ? 'echo-added' : 'echo-removed');
+  pointerStart = null;
 });
-rock.addEventListener('keydown', async event => {
+rock.addEventListener('keydown', event => {
   if (event.key !== 'Enter' && event.key !== ' ') return;
   event.preventDefault();
-  if (event.repeat) return;
-  await changeEcho(!echoedRocks.includes(opinion.id));
+  if (!event.repeat) rock.click();
 });
 
 rock.addEventListener('animationend', e => {
@@ -1761,6 +1784,8 @@ async function loadDailyTopic() {
       saveEchoCache(echoedRocks);
       currentIndex = 0;
       renderValley();
+      lastSubmittedRock = null;
+      document.getElementById('shareLastRockBtn').hidden = true;
       closeShareCard(false);
       showDraftStatus('A new daily question is here. Your draft is kept so you can check it before submitting.');
       if (document.getElementById('phase2').classList.contains('active')) await loadOpinions();
@@ -1792,15 +1817,6 @@ async function loadDailyTopic() {
     preview.classList.add('animate-in');
     previewText.classList.add('animate-in');
     
-    setTimeout(() => {
-      document.body.classList.add('shake');
-      dust.style.animation = 'dustPuff 0.6s ease-out forwards';
-      
-      setTimeout(() => {
-        document.body.classList.remove('shake');
-        dust.style.animation = '';
-      }, 600);
-    }, 1000);
   }
 });
 
@@ -1815,9 +1831,18 @@ async function loadDailyTopic() {
       loadOpinions();
     }
     
+function reopenMyRock() {
+  if (!lastSubmittedRock || lastSubmittedRock.cycle !== dailyCycleKey()) return;
+  document.getElementById('shareSection').style.display = 'flex';
+  document.getElementById('phase1').inert = true;
+  document.getElementById('phase2').inert = true;
+  document.getElementById('closeShareCard').focus();
+  showOpinionShare(lastSubmittedRock.opinion, lastSubmittedRock.prompt, lastSubmittedRock.cycle);
+}
 function closeShareCard(explore = true) {
   const dialog = document.getElementById('shareSection');
   const wasOpen = dialog.style.display === 'flex';
+  cleanupOpinionShare();
   dialog.style.display = 'none';
   document.getElementById('phase1').inert = false;
   document.getElementById('phase2').inert = false;
@@ -1834,7 +1859,7 @@ document.addEventListener('keydown', event => {
   if (document.getElementById('shareSection').style.display !== 'flex') return;
   if (event.key === 'Escape') closeShareCard();
   if (event.key === 'Tab') {
-    const buttons = [...document.querySelectorAll('#shareSection button')].filter(button => !button.disabled);
+    const buttons = [...document.querySelectorAll('#shareSection button, #shareSection a[href], #shareSection input')].filter(button => !button.disabled && button.getClientRects().length);
     if (event.shiftKey && document.activeElement === buttons[0]) {
       event.preventDefault(); buttons.at(-1).focus();
     } else if (!event.shiftKey && document.activeElement === buttons.at(-1)) {
