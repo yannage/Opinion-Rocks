@@ -1013,6 +1013,7 @@ textarea::placeholder {color:#8a775f;opacity:1;}
   </style>
   <link rel="stylesheet" href="rock-world.css" />
   <link rel="stylesheet" href="rock-effects.css" />
+  <link rel="stylesheet" href="store.css" />
   
 
   <!-- Supabase SDK -->
@@ -1025,7 +1026,7 @@ textarea::placeholder {color:#8a775f;opacity:1;}
 
 </head>
 <body>
-<main id="phase1" class="phase active"><header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OPINION ROCKS<small>Small takes. Fresh daily.</small></span></div><button class="motion-toggle" data-motion-toggle aria-pressed="false" aria-label="Reduce motion"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 16 3-8 7-2 5 8-3 6-9-1Z"/><path d="M2 7 4 5m15-2 2 2M1 15h2"/></svg><span data-motion-label>Motion on</span></button><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" aria-current="page"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M4 17 7 7l9-3 7 9-3 9-12 1Z"/><path d="m11 15 7-7m-8 8 1-4 3 3-4 1Z"/></svg><span>Write</span></button><button onclick="goToValley()" ><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="m2 22 5-11 5 7 5-14 7 18Z"/><path d="m14 12 3 2 3-2"/><path d="m4 22 5-2 5 2 5-2"/></svg><span>Explore</span></button></nav></header><div class="daily-heading"><p class="eyebrow">The daily question</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">A new question every day. Today’s rocks disappear at reset.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><div class="composer-layout"><div class="preview-stage"><div class="scene-props" aria-hidden="true"><span class="scene-stone scene-stone--round"></span><span class="scene-stone scene-stone--peak"></span><span class="scene-cairn"></span><span class="scene-spark scene-spark--one">✦</span><span class="scene-spark scene-spark--two">✧</span><span class="scene-spark scene-spark--three">✦</span></div><p class="eyebrow">The etching spot</p><div class="rock-wrapper"><div class="rock" id="preview" role="button" tabindex="0" aria-label="Write on your rock" onclick="input.focus()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();input.focus()}"><div class="rock-text" id="previewText"></div></div><div class="dust" id="dustEffect"></div></div><p class="preview-caption">Small rock. Big energy.</p></div><section class="composer-panel" aria-labelledby="composerTitle"><h2 id="composerTitle">What’s your take?</h2><p class="intro">40 characters. Zero overthinking.</p>    <div class="input-wrapper">
+<main id="phase1" class="phase active"><header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OPINION ROCKS<small>Small takes. Fresh daily.</small></span></div><button class="motion-toggle" data-motion-toggle aria-pressed="false" aria-label="Reduce motion"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 16 3-8 7-2 5 8-3 6-9-1Z"/><path d="M2 7 4 5m15-2 2 2M1 15h2"/></svg><span data-motion-label>Motion on</span></button><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" data-view="write" aria-current="page"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M4 17 7 7l9-3 7 9-3 9-12 1Z"/><path d="m11 15 7-7m-8 8 1-4 3 3-4 1Z"/></svg><span>Write</span></button><button onclick="goToValley()" data-view="explore"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="m2 22 5-11 5 7 5-14 7 18Z"/><path d="m14 12 3 2 3-2"/><path d="m4 22 5-2 5 2 5-2"/></svg><span>Explore</span></button><button onclick="goToStore()" data-view="store"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="m5 10 2-6h12l2 6v3a3 3 0 0 1-5 2 4 4 0 0 1-6 0 3 3 0 0 1-5-2v-3Z"/><path d="M6 16v7h14v-7M10 23v-5h6v5M5 10h16M10 4l-1 6m7-6 1 6"/></svg><span>Store</span></button></nav></header><div class="daily-heading"><p class="eyebrow">The daily question</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">A new question every day. Today’s rocks disappear at reset.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><div class="composer-layout"><div class="preview-stage"><div class="scene-props" aria-hidden="true"><span class="scene-stone scene-stone--round"></span><span class="scene-stone scene-stone--peak"></span><span class="scene-cairn"></span><span class="scene-spark scene-spark--one">✦</span><span class="scene-spark scene-spark--two">✧</span><span class="scene-spark scene-spark--three">✦</span></div><p class="eyebrow">The etching spot</p><div class="rock-wrapper"><div class="rock" id="preview" role="button" tabindex="0" aria-label="Write on your rock" onclick="input.focus()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();input.focus()}"><div class="rock-text" id="previewText"></div></div><div class="dust" id="dustEffect"></div></div><p class="preview-caption">Small rock. Big energy.</p></div><section class="composer-panel" aria-labelledby="composerTitle"><h2 id="composerTitle">What’s your take?</h2><p class="intro">40 characters. Zero overthinking.</p>    <div class="input-wrapper">
       <label for="input">Your opinion</label>
       <textarea id="input" rows="2" aria-describedby="charCounter draftStatus" placeholder="Etch your take…"></textarea>
       <div class="char-counter" id="charCounter" aria-live="polite">0/40</div>
@@ -1036,7 +1037,7 @@ textarea::placeholder {color:#8a775f;opacity:1;}
       <button class="upgrade-btn" onclick="upgradeRock()">About XL rocks</button>
       <p class="checkout-notice">XL checkout is temporarily unavailable.</p>
     </div>
-<div class="composer-actions"><button id="submitBtn" disabled onclick="submitOpinion()">Drop your rock ↗</button><button class="explore-valley-btn" onclick="goToValley()">Explore today’s valley →</button></div></section></div><footer class="experience-footer"><strong>One question. A valley of perspectives.</strong><span>Write a short take. Echo what resonates. Start fresh tomorrow.</span></footer></main><main id="phase2" class="phase"><header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OPINION ROCKS<small>Small takes. Fresh daily.</small></span></div><button class="motion-toggle" data-motion-toggle aria-pressed="false" aria-label="Reduce motion"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 16 3-8 7-2 5 8-3 6-9-1Z"/><path d="M2 7 4 5m15-2 2 2M1 15h2"/></svg><span data-motion-label>Motion on</span></button><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" ><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M4 17 7 7l9-3 7 9-3 9-12 1Z"/><path d="m11 15 7-7m-8 8 1-4 3 3-4 1Z"/></svg><span>Write</span></button><button onclick="goToValley()" aria-current="page"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="m2 22 5-11 5 7 5-14 7 18Z"/><path d="m14 12 3 2 3-2"/><path d="m4 22 5-2 5 2 5-2"/></svg><span>Explore</span></button></nav></header><div class="daily-heading"><p class="eyebrow">Explore the valley</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">A new question every day. Today’s rocks disappear at reset.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><p class="day-notice echo-instruction">A take you feel? Tap the rock to echo it. Tap again to undo.</p>    <div class="valley-toolbar">
+<div class="composer-actions"><button id="submitBtn" disabled onclick="submitOpinion()">Drop your rock ↗</button><button class="explore-valley-btn" onclick="goToValley()">Explore today’s valley →</button></div></section></div><footer class="experience-footer"><strong>One question. A valley of perspectives.</strong><span>Write a short take. Echo what resonates. Start fresh tomorrow.</span></footer></main><main id="phase2" class="phase"><header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OPINION ROCKS<small>Small takes. Fresh daily.</small></span></div><button class="motion-toggle" data-motion-toggle aria-pressed="false" aria-label="Reduce motion"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 16 3-8 7-2 5 8-3 6-9-1Z"/><path d="M2 7 4 5m15-2 2 2M1 15h2"/></svg><span data-motion-label>Motion on</span></button><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" data-view="write"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M4 17 7 7l9-3 7 9-3 9-12 1Z"/><path d="m11 15 7-7m-8 8 1-4 3 3-4 1Z"/></svg><span>Write</span></button><button onclick="goToValley()" data-view="explore" aria-current="page"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="m2 22 5-11 5 7 5-14 7 18Z"/><path d="m14 12 3 2 3-2"/><path d="m4 22 5-2 5 2 5-2"/></svg><span>Explore</span></button><button onclick="goToStore()" data-view="store"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="m5 10 2-6h12l2 6v3a3 3 0 0 1-5 2 4 4 0 0 1-6 0 3 3 0 0 1-5-2v-3Z"/><path d="M6 16v7h14v-7M10 23v-5h6v5M5 10h16M10 4l-1 6m7-6 1 6"/></svg><span>Store</span></button></nav></header><div class="daily-heading"><p class="eyebrow">Explore the valley</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">A new question every day. Today’s rocks disappear at reset.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><p class="day-notice echo-instruction">A take you feel? Tap the rock to echo it. Tap again to undo.</p>    <div class="valley-toolbar">
       <button id="toggleViewBtn" class="toggle-view-btn" onclick="toggleView()" title="Switch to list view" aria-label="Switch to list view" aria-pressed="false">
         <span id="viewLabel">List view</span>
       </button>
@@ -1062,6 +1063,57 @@ textarea::placeholder {color:#8a775f;opacity:1;}
     <button id="shareLastRockBtn" class="share-my-rock" onclick="reopenMyRock()" hidden>Share my rock <span aria-hidden="true">↗</span></button></div>
 
 <footer class="experience-footer"><strong>One question. A valley of perspectives.</strong><span>Write a short take. Echo what resonates. Start fresh tomorrow.</span></footer></main>
+
+<main id="phase3" class="phase store-phase" aria-labelledby="storeHeading">
+  <header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OPINION ROCKS<small>Small takes. Fresh daily.</small></span></div><button class="motion-toggle" data-motion-toggle aria-pressed="false" aria-label="Reduce motion"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 16 3-8 7-2 5 8-3 6-9-1Z"/><path d="M2 7 4 5m15-2 2 2M1 15h2"/></svg><span data-motion-label>Motion on</span></button><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" data-view="write"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M4 17 7 7l9-3 7 9-3 9-12 1Z"/><path d="m11 15 7-7m-8 8 1-4 3 3-4 1Z"/></svg><span>Write</span></button><button onclick="goToValley()" data-view="explore"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="m2 22 5-11 5 7 5-14 7 18Z"/><path d="m14 12 3 2 3-2"/><path d="m4 22 5-2 5 2 5-2"/></svg><span>Explore</span></button><button onclick="goToStore()" data-view="store" aria-current="page"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="m5 10 2-6h12l2 6v3a3 3 0 0 1-5 2 4 4 0 0 1-6 0 3 3 0 0 1-5-2v-3Z"/><path d="M6 16v7h14v-7M10 23v-5h6v5M5 10h16M10 4l-1 6m7-6 1 6"/></svg><span>Store</span></button></nav></header>
+  <section class="store-heading" aria-labelledby="storeHeading">
+    <div><p class="eyebrow">The Opinion Rocks store</p><h1 id="storeHeading" tabindex="-1">Small takes.<br><span>Real keepsakes.</span></h1><p>A little piece of the valley, out in the world.</p></div>
+    <div class="store-stamp"><img src="art/cairn.webp" width="90" height="70" alt="" /><span>Store preview</span></div>
+  </section>
+  <article class="store-product" aria-labelledby="storeProductTitle">
+    <div class="store-gallery">
+      <div class="store-stage" aria-describedby="storePreviewNote">
+        <span class="store-sample-label">A small take, made wearable</span>
+        <div id="storeShirtPreview" class="store-shirt-preview">
+          <svg viewBox="0 0 440 450" role="img" aria-label="Illustrative black T-shirt silhouette" class="store-shirt">
+            <defs><linearGradient id="shirtFabric" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#303431"/><stop offset=".5" stop-color="#1b211f"/><stop offset="1" stop-color="#2d322e"/></linearGradient><linearGradient id="shirtFold" x1="0" x2="1"><stop stop-color="#ffffff" stop-opacity=".04"/><stop offset="1" stop-color="#000000" stop-opacity=".2"/></linearGradient></defs>
+            <path d="M150 39 100 54 24 125 75 192 112 165 104 405Q220 422 336 405L328 165 365 192 416 125 340 54 290 39Q220 72 150 39Z" fill="url(#shirtFabric)" stroke="#18201b" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M150 40Q220 103 290 40L279 38Q220 64 161 38Z" fill="#101814" stroke="#414740" stroke-width="2"/>
+            <path d="M102 57 119 150 112 165M338 57 321 150 328 165M35 125l43 55m327-55-43 55M109 392q111 17 222 0" fill="none" stroke="#4c5047" stroke-width="2" opacity=".62"/>
+            <path d="m120 170-9 217 22-84-2-146m188 13 10 217-23-84 2-146" fill="url(#shirtFold)"/>
+          </svg>
+          <img class="store-shirt-art" src="art/middle-seat-design.webp" alt="The Middle Seat artwork placed on the front of the illustrative shirt" width="1254" height="1254" />
+        </div>
+        <div id="storeArtworkPreview" class="store-artwork-preview" hidden>
+          <img src="art/middle-seat-design.webp" alt="The Middle Seat artwork: THE MIDDLE SEAT DESERVES BOTH ARMRESTS" width="1254" height="1254" />
+        </div>
+        <span class="store-stage-pebble store-stage-pebble-one" aria-hidden="true"></span><span class="store-stage-pebble store-stage-pebble-two" aria-hidden="true"></span>
+      </div>
+      <fieldset class="store-preview-toggle"><legend class="store-sr-only">Product preview</legend><label><input type="radio" name="store-preview" value="shirt" checked /><span>Shirt preview</span></label><label><input type="radio" name="store-preview" value="artwork" /><span>Artwork</span></label></fieldset>
+      <p id="storePreviewNote" class="store-preview-note">Illustrative placement. Final garment may differ.</p>
+    </div>
+    <div class="store-product-info">
+      <p class="store-status"><span aria-hidden="true"></span>Not open for orders yet</p>
+      <p class="eyebrow store-product-kind">Opinion Rocks original · Sample design</p>
+      <h2 id="storeProductTitle">The Middle Seat</h2>
+      <p class="store-slogan">“THE MIDDLE SEAT DESERVES<br class="store-desktop-break"> BOTH ARMRESTS”</p>
+      <p class="store-product-description">For the person stuck between two very comfortable people. A small hill worth wearing.</p>
+      <div class="store-price-line"><span id="storePrice" aria-live="polite" aria-atomic="true">$29</span><div><span>Planned price · USD</span><small>Shipping and tax not included</small></div></div>
+      <div class="store-color"><span class="store-color-swatch" aria-hidden="true"></span><span>Black <span>· Front print</span></span></div>
+      <fieldset class="store-sizes"><legend>Explore a size <span id="storeSelectedSize">M</span></legend><div class="store-size-options">
+        <label><input type="radio" name="store-size" value="XS" /><span>XS</span></label><label><input type="radio" name="store-size" value="S" /><span>S</span></label><label><input type="radio" name="store-size" value="M" checked /><span>M</span></label><label><input type="radio" name="store-size" value="L" /><span>L</span></label><label><input type="radio" name="store-size" value="XL" /><span>XL</span></label><label><input type="radio" name="store-size" value="2XL" /><span>2XL</span></label><label><input type="radio" name="store-size" value="3XL" /><span>3XL</span></label><label><input type="radio" name="store-size" value="4XL" /><span>4XL</span></label><label><input type="radio" name="store-size" value="5XL" /><span>5XL</span></label>
+      </div></fieldset>
+      <button id="storeOrderBtn" type="button" disabled aria-describedby="storeLaunchNote"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="6" y="10" width="12" height="10" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Not open for orders yet</button>
+      <p id="storeLaunchNote" class="store-launch-note">Just a preview for now. Final product details, sizing and checkout will be available at launch.</p>
+      <div class="store-details">
+        <details><summary>What’s planned for this shirt?<span aria-hidden="true">+</span></summary><p>A black Gildan 64000 with the design printed on the front. Planned prices are $29 for XS–XL, $31 for 2XL, $33 for 3XL, $35 for 4XL and $37 for 5XL, in USD. Shipping and tax are additional. Garment, print and size availability will be confirmed before orders open.</p></details>
+        <details><summary>Is this one of today’s opinions?<span aria-hidden="true">+</span></summary><p>This is original Opinion Rocks sample artwork. This preview is separate from today’s question and doesn’t display saved visitor opinions. The valley still starts fresh each day, with no public archive of previous opinions.</p></details>
+        <details><summary>When can I order?<span aria-hidden="true">+</span></summary><p>We haven’t set a launch date. Orders will open when product details, secure payment and fulfillment are ready. There’s nothing to pay or reserve here.</p></details>
+      </div>
+    </div>
+  </article>
+  <footer class="store-footer"><div><img src="art/cairn.webp" width="52" height="44" alt="" /><p>Got a take of your own?<span>There’s a rock waiting for it.</span></p></div><button type="button" onclick="restart()">Back to today’s question <span aria-hidden="true">↗</span></button></footer>
+</main>
   <div id="shareSection" role="dialog" aria-modal="true" aria-labelledby="shareHeading" aria-describedby="shareDescription" style="display:none">
     <div id="shareCardWrapper">
       <button id="closeShareCard" aria-label="Close share card and explore the valley">×</button>
@@ -1267,13 +1319,7 @@ function spawnFloatingText(targetEl) {
     
         // Function to go to valley
     function goToValley() {
-      document.getElementById('phase1').classList.remove('active');
-      document.getElementById('phase2').classList.add('active');
-      const heading = document.querySelector('#phase2 h1');
-      heading.tabIndex = -1;
-      heading.focus({ preventScroll: true });
-      window.RockFX?.phase(document.getElementById('phase2'));
-      loadOpinions();
+      window.OpinionStore.navigate('explore');
     }
 
     function toggleView() {
@@ -1383,6 +1429,7 @@ function startPressGrow(el, maxScale = 1.35, growMs = 600) {
     document.getElementById('shareSection').style.display = 'flex';
     document.getElementById('phase1').inert = true;
     document.getElementById('phase2').inert = true;
+    document.getElementById('phase3').inert = true;
     document.getElementById('closeShareCard').focus();
     showOpinionShare(savedOpinion, promptText, dailyCycleKey());
     window.RockFX?.landed(document.getElementById('shareCardWrapper'));
@@ -1880,6 +1927,7 @@ async function loadDailyTopic() {
   await loadDailyTopic(); // Add await here
   loadStateFromUrl();
   refreshPreview();
+  if (document.getElementById('phase2').classList.contains('active')) loadOpinions();
   
   const preview = document.getElementById('preview');
   const previewText = document.getElementById('previewText');
@@ -1887,17 +1935,14 @@ async function loadDailyTopic() {
   
   // Only animate if we're not returning from checkout
   const urlParams = new URLSearchParams(window.location.search);
-  if (!urlParams.get('state') && !urlParams.get('success')) {
+  if (document.getElementById('phase1').classList.contains('active') && !urlParams.get('state') && !urlParams.get('success')) {
     window.RockFX?.phase(document.getElementById('phase1'));
     
   }
 });
 
     function restart() {
-      document.getElementById('phase2').classList.remove('active');
-      document.getElementById('phase1').classList.add('active');
-      input.focus();
-      window.RockFX?.phase(document.getElementById('phase1'));
+      window.OpinionStore.navigate('write');
     }
 
     // Load opinions when page loads (in case user navigates directly to phase 2)
@@ -1910,6 +1955,7 @@ function reopenMyRock() {
   document.getElementById('shareSection').style.display = 'flex';
   document.getElementById('phase1').inert = true;
   document.getElementById('phase2').inert = true;
+    document.getElementById('phase3').inert = true;
   document.getElementById('closeShareCard').focus();
   showOpinionShare(lastSubmittedRock.opinion, lastSubmittedRock.prompt, lastSubmittedRock.cycle);
 }
@@ -1920,6 +1966,7 @@ function closeShareCard(explore = true) {
   dialog.style.display = 'none';
   document.getElementById('phase1').inert = false;
   document.getElementById('phase2').inert = false;
+  document.getElementById('phase3').inert = false;
   if (wasOpen && explore) {
     goToValley();
     document.getElementById('toggleViewBtn').focus();
@@ -1955,5 +2002,6 @@ window.setInterval(() => {
 }, 60000);
     
   </script>
+  <script src="store.js"></script>
 </body>
 </html>

@@ -122,10 +122,11 @@ async function settled(page) {
 async function main() {
   await scenario('motion control sync, persistence and OS preference changes', {}, async page => {
     await page.waitForFunction(() => document.documentElement.dataset.motion === 'full');
-    assert.equal(await page.locator('[data-motion-toggle]').count(), 2);
+    const motionControlCount = 3;
+    assert.equal(await page.locator('[data-motion-toggle]').count(), motionControlCount);
     await page.locator('[data-motion-toggle]:visible').click();
     assert.equal(await page.locator('html').getAttribute('data-motion'), 'calm');
-    assert.deepEqual(await page.locator('[data-motion-toggle]').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-pressed'))), ['true', 'true']);
+    assert.deepEqual(await page.locator('[data-motion-toggle]').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-pressed'))), Array(motionControlCount).fill('true'));
     assert.equal(await page.evaluate(() => localStorage.getItem('opinion_motion')), 'calm');
     await page.locator('#input').fill('Still lovely without motion.');
     await settled(page);
@@ -137,14 +138,18 @@ async function main() {
     assert.equal(await page.evaluate(() => localStorage.getItem('opinion_motion')), 'full');
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.waitForFunction(() => document.documentElement.dataset.motion === 'calm');
-    assert.deepEqual(await page.locator('[data-motion-toggle]').evaluateAll(buttons => buttons.map(button => ({ disabled: button.disabled, text: button.querySelector('[data-motion-label]').textContent }))), [{ disabled: true, text: 'Motion off' }, { disabled: true, text: 'Motion off' }]);
+    assert.deepEqual(await page.locator('[data-motion-toggle]').evaluateAll(buttons => buttons.map(button => ({ disabled: button.disabled, text: button.querySelector('[data-motion-label]').textContent }))), Array.from({ length: motionControlCount }, () => ({ disabled: true, text: 'Motion off' })));
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.waitForFunction(() => document.documentElement.dataset.motion === 'full');
-    assert.deepEqual(await page.locator('[data-motion-toggle]').evaluateAll(buttons => buttons.map(button => button.disabled)), [false, false]);
+    assert.deepEqual(await page.locator('[data-motion-toggle]').evaluateAll(buttons => buttons.map(button => button.disabled)), Array(motionControlCount).fill(false));
     await page.locator('[data-motion-toggle]:visible').click();
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     assert.equal(await page.locator('html').getAttribute('data-motion'), 'calm', 'Stored calm choice survives OS preference round trip');
+    await page.getByRole('button', { name: 'Store', exact: true }).click();
+    await page.locator('#phase3 [data-motion-toggle]').click();
+    assert.equal(await page.locator('html').getAttribute('data-motion'), 'full', 'Store motion toggle updates the shared preference');
+    assert.deepEqual(await page.locator('[data-motion-toggle]').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-pressed'))), Array(motionControlCount).fill('false'));
   });
 
   await scenario('initial reduced-motion keeps all interaction readable and effect-free', { reducedMotion: 'reduce' }, async page => {
