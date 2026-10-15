@@ -1011,6 +1011,8 @@ textarea::placeholder {color:#8a775f;opacity:1;}
 }
 
   </style>
+  <link rel="stylesheet" href="rock-world.css" />
+  <link rel="stylesheet" href="rock-effects.css" />
   
 
   <!-- Supabase SDK -->
@@ -1023,7 +1025,7 @@ textarea::placeholder {color:#8a775f;opacity:1;}
 
 </head>
 <body>
-<main id="phase1" class="phase active"><header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OPINION ROCKS<small>Small takes. Fresh daily.</small></span></div><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" aria-current="page"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M4 17 7 7l9-3 7 9-3 9-12 1Z"/><path d="m11 15 7-7m-8 8 1-4 3 3-4 1Z"/></svg><span>Write</span></button><button onclick="goToValley()" ><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="m2 22 5-11 5 7 5-14 7 18Z"/><path d="m14 12 3 2 3-2"/><path d="m4 22 5-2 5 2 5-2"/></svg><span>Explore</span></button></nav></header><div class="daily-heading"><p class="eyebrow">The daily question</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">A new question every day. Today’s rocks disappear at reset.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><div class="composer-layout"><div class="preview-stage"><p class="eyebrow">Your rock · Live</p><div class="rock-wrapper"><div class="rock" id="preview" role="button" tabindex="0" aria-label="Write on your rock" onclick="input.focus()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();input.focus()}"><div class="rock-text" id="previewText"></div></div><div class="dust" id="dustEffect"></div></div><p class="preview-caption">Tiny rock. Big opinion.</p></div><section class="composer-panel" aria-labelledby="composerTitle"><h2 id="composerTitle">What’s your take?</h2><p class="intro">40 characters. Zero overthinking.</p>    <div class="input-wrapper">
+<main id="phase1" class="phase active"><header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OPINION ROCKS<small>Small takes. Fresh daily.</small></span></div><button class="motion-toggle" data-motion-toggle aria-pressed="false" aria-label="Reduce motion"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 16 3-8 7-2 5 8-3 6-9-1Z"/><path d="M2 7 4 5m15-2 2 2M1 15h2"/></svg><span data-motion-label>Motion on</span></button><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" aria-current="page"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M4 17 7 7l9-3 7 9-3 9-12 1Z"/><path d="m11 15 7-7m-8 8 1-4 3 3-4 1Z"/></svg><span>Write</span></button><button onclick="goToValley()" ><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="m2 22 5-11 5 7 5-14 7 18Z"/><path d="m14 12 3 2 3-2"/><path d="m4 22 5-2 5 2 5-2"/></svg><span>Explore</span></button></nav></header><div class="daily-heading"><p class="eyebrow">The daily question</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">A new question every day. Today’s rocks disappear at reset.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><div class="composer-layout"><div class="preview-stage"><div class="scene-props" aria-hidden="true"><span class="scene-stone scene-stone--round"></span><span class="scene-stone scene-stone--peak"></span><span class="scene-cairn"></span><span class="scene-spark scene-spark--one">✦</span><span class="scene-spark scene-spark--two">✧</span><span class="scene-spark scene-spark--three">✦</span></div><p class="eyebrow">The etching spot</p><div class="rock-wrapper"><div class="rock" id="preview" role="button" tabindex="0" aria-label="Write on your rock" onclick="input.focus()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();input.focus()}"><div class="rock-text" id="previewText"></div></div><div class="dust" id="dustEffect"></div></div><p class="preview-caption">Small rock. Big energy.</p></div><section class="composer-panel" aria-labelledby="composerTitle"><h2 id="composerTitle">What’s your take?</h2><p class="intro">40 characters. Zero overthinking.</p>    <div class="input-wrapper">
       <label for="input">Your opinion</label>
       <textarea id="input" rows="2" aria-describedby="charCounter draftStatus" placeholder="Etch your take…"></textarea>
       <div class="char-counter" id="charCounter" aria-live="polite">0/40</div>
@@ -1034,7 +1036,7 @@ textarea::placeholder {color:#8a775f;opacity:1;}
       <button class="upgrade-btn" onclick="upgradeRock()">About XL rocks</button>
       <p class="checkout-notice">XL checkout is temporarily unavailable.</p>
     </div>
-<div class="composer-actions"><button id="submitBtn" disabled onclick="submitOpinion()">Drop your rock ↗</button><button class="explore-valley-btn" onclick="goToValley()">Explore today’s valley →</button></div></section></div><footer class="experience-footer"><strong>One question. A valley of perspectives.</strong><span>Write a short take. Echo what resonates. Start fresh tomorrow.</span></footer></main><main id="phase2" class="phase"><header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OPINION ROCKS<small>Small takes. Fresh daily.</small></span></div><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" ><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M4 17 7 7l9-3 7 9-3 9-12 1Z"/><path d="m11 15 7-7m-8 8 1-4 3 3-4 1Z"/></svg><span>Write</span></button><button onclick="goToValley()" aria-current="page"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="m2 22 5-11 5 7 5-14 7 18Z"/><path d="m14 12 3 2 3-2"/><path d="m4 22 5-2 5 2 5-2"/></svg><span>Explore</span></button></nav></header><div class="daily-heading"><p class="eyebrow">Explore the valley</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">A new question every day. Today’s rocks disappear at reset.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><p class="day-notice echo-instruction">A take you feel? Tap the rock to echo it. Tap again to undo.</p>    <div class="valley-toolbar">
+<div class="composer-actions"><button id="submitBtn" disabled onclick="submitOpinion()">Drop your rock ↗</button><button class="explore-valley-btn" onclick="goToValley()">Explore today’s valley →</button></div></section></div><footer class="experience-footer"><strong>One question. A valley of perspectives.</strong><span>Write a short take. Echo what resonates. Start fresh tomorrow.</span></footer></main><main id="phase2" class="phase"><header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OPINION ROCKS<small>Small takes. Fresh daily.</small></span></div><button class="motion-toggle" data-motion-toggle aria-pressed="false" aria-label="Reduce motion"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 16 3-8 7-2 5 8-3 6-9-1Z"/><path d="M2 7 4 5m15-2 2 2M1 15h2"/></svg><span data-motion-label>Motion on</span></button><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" ><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M4 17 7 7l9-3 7 9-3 9-12 1Z"/><path d="m11 15 7-7m-8 8 1-4 3 3-4 1Z"/></svg><span>Write</span></button><button onclick="goToValley()" aria-current="page"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="m2 22 5-11 5 7 5-14 7 18Z"/><path d="m14 12 3 2 3-2"/><path d="m4 22 5-2 5 2 5-2"/></svg><span>Explore</span></button></nav></header><div class="daily-heading"><p class="eyebrow">Explore the valley</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">A new question every day. Today’s rocks disappear at reset.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><p class="day-notice echo-instruction">A take you feel? Tap the rock to echo it. Tap again to undo.</p>    <div class="valley-toolbar">
       <button id="toggleViewBtn" class="toggle-view-btn" onclick="toggleView()" title="Switch to list view" aria-label="Switch to list view" aria-pressed="false">
         <span id="viewLabel">List view</span>
       </button>
@@ -1043,7 +1045,7 @@ textarea::placeholder {color:#8a775f;opacity:1;}
     <div id="loadingMessage" class="loading" role="status" style="display: none;">Loading opinions...</div>
     <div id="errorMessage" class="error" role="status" style="display: none;"></div>
     <button id="retryOpinionsBtn" onclick="loadOpinions()" hidden>Try loading the valley again</button>
-    <div class="valley-container">
+    <div class="valley-container"><div class="scene-props" aria-hidden="true"><span class="scene-stone scene-stone--round"></span><span class="scene-stone scene-stone--peak"></span><span class="scene-cairn"></span><span class="scene-spark scene-spark--one">✦</span><span class="scene-spark scene-spark--two">✧</span><span class="scene-spark scene-spark--three">✦</span></div>
       <div class="scroll-header">
         <span>valley_of_opinions.exe</span>
         <button class="close-btn" aria-label="Return to rock view" onclick="toggleView()">✖</button>
@@ -1083,6 +1085,7 @@ textarea::placeholder {color:#8a775f;opacity:1;}
     </div>
   </div>
   <script src="sharing.js"></script>
+  <script src="rock-effects.js"></script>
   <script>
     // IMPORTANT: Replace these with your actual Supabase credentials
     const SUPABASE_URL = 'https://vqtmoptfigcwjuxszzat.supabase.co';
@@ -1259,6 +1262,7 @@ function spawnFloatingText(targetEl) {
       if (!restoredLongDraft) input.value = limitText(input.value, charLimit);
       if (characterCount(input.value) <= charLimit) restoredLongDraft = false;
       refreshPreview();
+      window.RockFX?.etch(preview);
     });
     
         // Function to go to valley
@@ -1268,6 +1272,7 @@ function spawnFloatingText(targetEl) {
       const heading = document.querySelector('#phase2 h1');
       heading.tabIndex = -1;
       heading.focus({ preventScroll: true });
+      window.RockFX?.phase(document.getElementById('phase2'));
       loadOpinions();
     }
 
@@ -1335,7 +1340,8 @@ function startPressGrow(el, maxScale = 1.35, growMs = 600) {
   
   // 2️⃣ Lock UI
   submitBtn.disabled = true;
-  submitBtn.textContent = 'SUBMITTING…';
+  submitBtn.textContent = 'Placing your rock…';
+  submitBtn.setAttribute('aria-busy', 'true');
   
   try {
     if (!await loadDailyTopic()) {
@@ -1379,6 +1385,7 @@ function startPressGrow(el, maxScale = 1.35, growMs = 600) {
     document.getElementById('phase2').inert = true;
     document.getElementById('closeShareCard').focus();
     showOpinionShare(savedOpinion, promptText, dailyCycleKey());
+    window.RockFX?.landed(document.getElementById('shareCardWrapper'));
 
     // Clear only the submitted draft; never discard a newer edit.
     if (input.value.trim() === text) {
@@ -1406,6 +1413,7 @@ function startPressGrow(el, maxScale = 1.35, growMs = 600) {
     isSubmitting = false;
     input.readOnly = false;
     submitBtn.textContent = 'Drop your rock ↗';
+    submitBtn.removeAttribute('aria-busy');
     updateSubmitButton();
   }
 }
@@ -1634,6 +1642,7 @@ function renderValley() {
     empty.append(title, message, action); valley.appendChild(empty);
   }
   updateNavigationButtons();
+  window.RockFX?.enterValley(valley);
 }
 
 /** ------------------------------------------------------------------
@@ -1729,7 +1738,7 @@ async function changeEcho(add) {
     opinions.filter(item => item.id === opinion.id).forEach(item => item.echo_count = next);
     echoedRocks = add ? [...echoedRocks, opinion.id] : echoedRocks.filter(id => id !== opinion.id);
     saveEchoCache(echoedRocks);
-    if (add && rock.isConnected) spawnFloatingText(rock);
+    if (rock.isConnected) window.RockFX?.echo(rock, add);
     return true;
   } catch (error) {
     console.error('Echo could not be saved:', error);
@@ -1764,7 +1773,7 @@ rock.addEventListener('pointercancel', () => { dragged = true; pointerStart = nu
 rock.addEventListener('click', async event => {
   if (event.detail !== 0 && dragged) return;
   const add = !echoedRocks.includes(opinion.id);
-  if (await changeEcho(add)) rock.classList.add(add ? 'echo-added' : 'echo-removed');
+  await changeEcho(add);
   pointerStart = null;
 });
 rock.addEventListener('keydown', event => {
@@ -1879,8 +1888,7 @@ async function loadDailyTopic() {
   // Only animate if we're not returning from checkout
   const urlParams = new URLSearchParams(window.location.search);
   if (!urlParams.get('state') && !urlParams.get('success')) {
-    preview.classList.add('animate-in');
-    previewText.classList.add('animate-in');
+    window.RockFX?.phase(document.getElementById('phase1'));
     
   }
 });
@@ -1889,6 +1897,7 @@ async function loadDailyTopic() {
       document.getElementById('phase2').classList.remove('active');
       document.getElementById('phase1').classList.add('active');
       input.focus();
+      window.RockFX?.phase(document.getElementById('phase1'));
     }
 
     // Load opinions when page loads (in case user navigates directly to phase 2)
