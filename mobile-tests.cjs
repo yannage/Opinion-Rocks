@@ -15,7 +15,7 @@ async function fixture(page) {
     if (url.hostname !== 'test.local') return route.abort();
     const file = path.join(appRoot, url.pathname === '/' ? 'index.html' : decodeURIComponent(url.pathname));
     if (!file.startsWith(appRoot) || !fs.existsSync(file)) return route.fulfill({ status: 404, body: '' });
-    const types = { '.png': 'image/png', '.html': 'text/html', '.js': 'application/javascript', '.css': 'text/css' };
+    const types = { '.png': 'image/png', '.svg': 'image/svg+xml', '.html': 'text/html', '.js': 'application/javascript', '.css': 'text/css' };
     return route.fulfill({ body: fs.readFileSync(file), contentType: types[path.extname(file)] || 'application/octet-stream' });
   });
   await page.addInitScript(() => {
@@ -206,6 +206,48 @@ async function main() {
     assert(await page.locator('#shareSection').isVisible(), 'Can reopen this session’s rock for sharing');
     await page.keyboard.press('Escape');
   });
+
+  for (const width of [320, 390]) {
+    for (const textScale of [1, 2]) {
+      await check(`share my rock fits at ${width}px with ${textScale * 100}% text`, { width, height: 844 }, async page => {
+        await page.locator('#input').fill('A little rock. A point of view.');
+        await page.locator('#submitBtn').click();
+        await page.locator('#shareSection').waitFor({ state: 'visible' });
+        await page.locator('#closeShareCard').click();
+        // Root text enlargement exercises rem-based text reflow without
+        // changing the viewport or pretending to emulate a physical phone.
+        if (textScale !== 1) await page.addStyleTag({ content: `html { font-size: ${textScale * 100}% !important; }` });
+        const button = page.locator('#shareLastRockBtn');
+        await button.scrollIntoViewIfNeeded();
+        const geometry = await button.evaluate(el => {
+          const rect = el.getBoundingClientRect();
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          const text = range.getBoundingClientRect();
+          const overlap = other => {
+            const box = other.getBoundingClientRect();
+            return Math.min(rect.right, box.right) > Math.max(rect.left, box.left) + 1 &&
+              Math.min(rect.bottom, box.bottom) > Math.max(rect.top, box.top) + 1;
+          };
+          return {
+            width: rect.width, height: rect.height,
+            fitsViewport: rect.left >= 0 && rect.right <= innerWidth && rect.top >= 0 && rect.bottom <= innerHeight,
+            textFits: text.left >= rect.left - 1 && text.right <= rect.right + 1 && text.top >= rect.top - 1 && text.bottom <= rect.bottom + 1,
+            overflow: el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1,
+            overlaps: ['#pageStatus', '#phase2 .experience-footer', '#phase2 .section-nav'].filter(selector => overlap(document.querySelector(selector))),
+            phaseOverflows: document.querySelector('#phase2').scrollWidth > innerWidth,
+          };
+        });
+        assert(geometry.width >= 44 && geometry.height >= 44, 'Share my rock has a 44px touch target');
+        assert(geometry.fitsViewport, 'Share my rock is reachable within the phone viewport');
+        assert(geometry.textFits && !geometry.overflow, `Share my rock text stays inside its button: ${JSON.stringify(geometry)}`);
+        assert.deepEqual(geometry.overlaps, [], 'Share my rock does not overlap status, footer, or fixed navigation');
+        assert(!geometry.phaseOverflows, 'Enlarged share control does not overflow the page horizontally');
+        await button.tap();
+        assert(await page.locator('#shareSection').isVisible(), 'Share my rock still reopens the share dialog');
+      });
+    }
+  }
 
   await check('daily reset hides old rocks and stale share; keeps current draft', { width: 390, height: 844 }, async page => {
     await page.locator('#input').fill('Today gets a fresh start.');
