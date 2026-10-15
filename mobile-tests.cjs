@@ -15,7 +15,7 @@ async function fixture(page) {
     if (url.hostname !== 'test.local') return route.abort();
     const file = path.join(appRoot, url.pathname === '/' ? 'index.html' : decodeURIComponent(url.pathname));
     if (!file.startsWith(appRoot) || !fs.existsSync(file)) return route.fulfill({ status: 404, body: '' });
-    const types = { '.png': 'image/png', '.svg': 'image/svg+xml', '.html': 'text/html', '.js': 'application/javascript', '.css': 'text/css' };
+    const types = { '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.html': 'text/html', '.js': 'application/javascript', '.css': 'text/css' };
     return route.fulfill({ body: fs.readFileSync(file), contentType: types[path.extname(file)] || 'application/octet-stream' });
   });
   await page.addInitScript(() => {
