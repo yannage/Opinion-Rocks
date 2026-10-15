@@ -140,59 +140,99 @@
     if (!ctx) throw new Error('Image creation is unavailable in this browser.');
     const family = document.fonts?.check('600 24px Fredoka') ? 'Fredoka, sans-serif' : 'Arial, sans-serif';
 
-    ctx.fillStyle = '#fffaf1';
+    ctx.fillStyle = '#f7efdf';
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    ctx.fillStyle = '#eae3f0';
-    ctx.beginPath(); ctx.arc(1040, 90, 210, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#eae3f0';
-    ctx.beginPath(); ctx.arc(40, 1160, 215, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#6543a4';
+    // Quiet, deterministic paper grain keeps each export warm and reproducible.
+    ctx.fillStyle = 'rgba(118, 101, 83, .12)';
+    for (let i = 0; i < 480; i++) {
+      const x = (i * 137 + 31) % WIDTH;
+      const y = (i * 229 + 17) % HEIGHT;
+      ctx.beginPath(); ctx.ellipse(x, y, i % 3 === 0 ? 1.8 : 1, .8, i, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.strokeStyle = '#c9b69b'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(72, 164); ctx.bezierCurveTo(372, 160, 724, 169, 1008, 162); ctx.stroke();
+    // A small cairn echoes the illustrated rock without competing with the take.
+    ctx.save(); ctx.translate(932, 72); ctx.rotate(-.08);
+    ctx.fillStyle = '#dfc29a'; ctx.strokeStyle = '#766553'; ctx.lineWidth = 2;
+    [[-36, 38, 72, 25], [-26, 15, 53, 25], [-15, -8, 32, 25]].forEach(([x, y, w, h]) => {
+      roundRect(ctx, x, y, w, h, h / 2); ctx.fill(); ctx.stroke();
+    });
+    ctx.restore();
+    ctx.fillStyle = '#403329';
     ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
     ctx.font = `600 37px ${family}`;
     ctx.fillText('OPINION ROCKS', 72, 80);
     ctx.font = '600 21px Arial, sans-serif';
-    ctx.fillStyle = '#6a5745';
+    ctx.fillStyle = '#766553';
     ctx.fillText("ONE DAY. ONE QUESTION. YOUR TAKE.", 72, 135);
 
-    fitText(ctx, session.prompt, { x: 76, y: 187, width: 928, height: 212 }, 62, 26, '#30251f', family);
+    fitText(ctx, session.prompt, { x: 76, y: 187, width: 928, height: 212 }, 62, 26, '#403329', family);
 
     // Use the intact (top-left) frame of the existing 3x3 animation sprite.
     // A canvas mask follows its outline so the original rock can sit centrally.
     ctx.save();
-    roundRect(ctx, 72, 438, 936, 650, 44);
+    // An uneven sandstone clearing replaces the glossy, purple panel.
+    ctx.beginPath();
+    ctx.moveTo(140, 441);
+    ctx.bezierCurveTo(371, 431, 751, 449, 947, 438);
+    ctx.bezierCurveTo(998, 438, 1009, 465, 1005, 516);
+    ctx.bezierCurveTo(995, 689, 1017, 905, 1004, 1024);
+    ctx.bezierCurveTo(1001, 1070, 980, 1088, 930, 1084);
+    ctx.bezierCurveTo(701, 1077, 373, 1095, 133, 1085);
+    ctx.bezierCurveTo(85, 1082, 70, 1059, 75, 1014);
+    ctx.bezierCurveTo(85, 845, 66, 626, 76, 505);
+    ctx.bezierCurveTo(80, 460, 98, 443, 140, 441);
+    ctx.closePath();
+    ctx.fillStyle = '#eee0c6'; ctx.fill();
+    ctx.strokeStyle = '#c7b292'; ctx.lineWidth = 3; ctx.stroke();
     ctx.clip();
     const frameWidth = sprite.naturalWidth / 3;
     const frameHeight = sprite.naturalHeight / 3;
     const glow = ctx.createRadialGradient(540, 765, 80, 540, 765, 590);
-    glow.addColorStop(0, '#f2edf7');
-    glow.addColorStop(1, '#d9cce9');
+    glow.addColorStop(0, '#f7efdf');
+    glow.addColorStop(1, '#e8d5b3');
     ctx.fillStyle = glow; ctx.fillRect(72, 438, 936, 650);
+    // Low hills and ground marks give the rock a place in the valley.
+    ctx.strokeStyle = '#bda582'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(72, 997);
+    ctx.bezierCurveTo(197, 949, 281, 1009, 417, 990);
+    ctx.bezierCurveTo(613, 959, 795, 1024, 1008, 983); ctx.stroke();
+    ctx.fillStyle = 'rgba(118, 101, 83, .10)';
+    ctx.beginPath(); ctx.ellipse(548, 1031, 302, 22, -.015, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#7d8667'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+    [[147, 976], [906, 986]].forEach(([x, y]) => {
+      ctx.beginPath(); ctx.moveTo(x - 12, y - 13); ctx.quadraticCurveTo(x - 2, y - 10, x, y);
+      ctx.moveTo(x + 2, y); ctx.quadraticCurveTo(x + 4, y - 22, x + 12, y - 25);
+      ctx.moveTo(x + 5, y); ctx.quadraticCurveTo(x + 15, y - 12, x + 22, y - 12); ctx.stroke();
+    });
     ctx.translate(25, 322.5);
     ctx.scale(2.5, 2.5);
     ctx.beginPath();
-    ctx.moveTo(77, 250);
-    ctx.bezierCurveTo(84, 220, 83, 177, 101, 137);
-    ctx.bezierCurveTo(119, 92, 145, 75, 198, 73);
-    ctx.bezierCurveTo(233, 71, 274, 85, 292, 112);
-    ctx.bezierCurveTo(309, 138, 312, 190, 331, 231);
-    ctx.bezierCurveTo(348, 267, 313, 283, 269, 287);
-    ctx.bezierCurveTo(219, 294, 197, 288, 157, 287);
-    ctx.bezierCurveTo(111, 286, 68, 280, 77, 250);
+    ctx.moveTo(76, 230);
+    ctx.bezierCurveTo(80, 204, 98, 182, 105, 151);
+    ctx.bezierCurveTo(111, 121, 113, 102, 140, 85);
+    ctx.bezierCurveTo(172, 65, 228, 61, 270, 79);
+    ctx.bezierCurveTo(304, 93, 310, 121, 314, 151);
+    ctx.bezierCurveTo(318, 176, 332, 200, 333, 222);
+    ctx.bezierCurveTo(335, 254, 316, 275, 282, 285);
+    ctx.bezierCurveTo(254, 294, 230, 293, 209, 289);
+    ctx.bezierCurveTo(180, 286, 149, 292, 121, 285);
+    ctx.bezierCurveTo(88, 280, 72, 260, 76, 230);
     ctx.closePath();
     ctx.clip();
     ctx.drawImage(sprite, 0, 0, frameWidth, frameHeight, 0, 0, 1024 / 3, 1024 / 3);
     ctx.restore();
 
     fitText(ctx, session.opinion.text, { x: 314, y: 671, width: 452, height: 264 }, 72, 26, '#342319', family);
-    ctx.fillStyle = '#77624d';
+    ctx.fillStyle = '#766553';
     ctx.font = '500 25px Arial, sans-serif'; ctx.textAlign = 'center';
     const date = dailyDate(session);
     ctx.fillText(date ? `A TAKE FROM ${date}` : 'A TAKE FROM TODAY’S VALLEY', WIDTH / 2, 1136);
-    ctx.fillStyle = '#6543a4'; ctx.font = `600 51px ${family}`;
+    ctx.fillStyle = '#3e5036'; ctx.font = `600 51px ${family}`;
     ctx.fillText('What’s your take?', WIDTH / 2, 1201);
-    ctx.fillStyle = '#6543a4'; ctx.font = '600 31px Arial, sans-serif';
+    ctx.fillStyle = '#526348'; ctx.font = '600 31px Arial, sans-serif';
     ctx.fillText('opinionrocks.com', WIDTH / 2, 1255);
-    ctx.fillStyle = '#77624d'; ctx.font = '500 22px Arial, sans-serif';
+    ctx.fillStyle = '#766553'; ctx.font = '500 22px Arial, sans-serif';
     ctx.fillText('The valley resets daily. This image is your keepsake.', WIDTH / 2, 1310);
     return new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('PNG export failed.')), 'image/png'));
   }

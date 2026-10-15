@@ -10,7 +10,7 @@
   <meta property="og:url" content="https://opinionrocks.com/" />
   <meta property="og:image" content="https://opinionrocks.com/art/cave.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="theme-color" content="#f5f0e6" />
+  <meta name="theme-color" content="#f7efdf" />
   <meta name="description" content="One daily question. Your take on a rock. Drop an opinion, echo what resonates, and start fresh tomorrow." />
   <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600&display=swap');
@@ -777,38 +777,38 @@ button:focus-visible, textarea:focus-visible, .rock[role="button"]:focus-visible
   *, *::before, *::after { animation-delay: 0ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition: none !important; }
 }
 
-/* A pocket-sized valley: mobile first, one clear action at a time. */
-:root { --ink:#302838; --muted:#6c6174; --paper:#fffaf1; --purple:#6543a4; --line:#e3daca; }
-body {background:#f5f0e6;color:var(--ink);justify-content:flex-start;font-family:'Fredoka',system-ui,sans-serif;}
+/* A pocket-sized valley: warm paper, sandstone and hand-drawn details. */
+:root { --ink:#403329; --muted:#766553; --paper:#fff9ee; --moss:#526348; --line:#d5c5aa; }
+body {background:#f7efdf;color:var(--ink);justify-content:flex-start;font-family:'Fredoka',system-ui,sans-serif;}
 .phase {height:100dvh;min-height:0;padding:20px max(24px,calc((100vw - 1080px)/2)) 28px;gap:18px;scroll-padding-block:20px 100px;}
 .phase::before,.phase::after {display:none;}
 .site-header {width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--line);}
 .brand {display:flex;align-items:center;gap:10px;font-size:1.1rem;letter-spacing:-.04em;text-align:left;line-height:1.1;}
 .brand-mark {width:38px;height:38px;background:url('art/rock_sprite.png') 0 0/300% 300%;transform:rotate(-10deg);}
 .brand small {display:block;font:11px/1.8 system-ui,sans-serif;letter-spacing:.02em;color:var(--muted);}
-.section-nav {display:flex;gap:5px;background:#e8e0d2;padding:5px;border-radius:18px;}
+.section-nav {display:flex;gap:5px;background:#e8dcc6;padding:5px;border-radius:18px;}
 button,a { -webkit-tap-highlight-color:transparent;touch-action:manipulation; }
-button {background:var(--purple);border-radius:14px;min-height:48px;color:#fff;font-family:inherit;}
-button:hover {background:#503181;}
+button {background:var(--moss);border:1.5px solid #3e5036;border-radius:17px 14px 18px 13px / 14px 18px 14px 17px;min-height:48px;color:#fff;font-family:inherit;}
+button:hover {background:#3e5036;}
 button:active:not(:disabled) {transform:translateY(2px);}
 button:disabled {opacity:.5;}
-a:focus-visible,button:focus-visible,textarea:focus-visible,.rock[role="button"]:focus-visible {outline:3px solid #295ab5;outline-offset:3px;}
-.section-nav button {min-height:44px;width:auto;padding:10px 24px;background:transparent;color:#51455e;border-radius:13px;font-size:.95rem;}
-.section-nav button[aria-current="page"] {background:var(--paper);color:#4b287b;box-shadow:0 2px 6px #30283812;}
-.section-nav button:hover {background:#f8f2e8;}
+a:focus-visible,button:focus-visible,textarea:focus-visible,.rock[role="button"]:focus-visible {outline:3px solid #526348;outline-offset:3px;}
+.section-nav button {min-height:44px;width:auto;padding:10px 24px;background:transparent;color:#695843;border-color:transparent;border-radius:13px;font-size:.95rem;}
+.section-nav button[aria-current="page"] {background:var(--paper);color:#3e5036;border-color:#b9a181;box-shadow:0 2px 6px #40332912;}
+.section-nav button:hover {background:#f4e7ce;}
 .daily-heading {width:100%;padding:10px 0 0;text-align:left;}
-.eyebrow {font:750 11px/1.4 system-ui,sans-serif;letter-spacing:.11em;text-transform:uppercase;color:#6d5689;margin-bottom:10px;}
+.eyebrow {font:750 11px/1.4 system-ui,sans-serif;letter-spacing:.11em;text-transform:uppercase;color:#6a7050;margin-bottom:10px;}
 .daily-heading .eyebrow {display:flex;align-items:center;gap:8px;}
-.daily-heading .eyebrow::before {content:'';width:8px;height:8px;background:#7b5ca5;border-radius:50%;box-shadow:0 0 0 4px #e9dff4;}
+.daily-heading .eyebrow::before {content:'';width:8px;height:8px;background:#6b7955;border-radius:50%;box-shadow:0 0 0 4px #e2e5d0;}
 .prompt-banner {background:none;border:0;box-shadow:none;padding:0;margin:0;display:block;text-transform:none;letter-spacing:-.035em;color:var(--ink);}
 .prompt {font-size:clamp(1.8rem,3.4vw,2.8rem);line-height:1.14;max-width:850px;overflow-wrap:anywhere;}
 .intro,.day-notice {background:none;padding:0;max-width:none;color:var(--muted);font:14px/1.5 system-ui,sans-serif;}
 .daily-heading .day-notice {margin-top:10px;font-size:12px;}
 .composer-layout {display:grid;grid-template-columns:1.1fr 1fr;gap:34px;align-items:center;width:100%;}
-.preview-stage {min-height:365px;background:url('art/cave.png') center 57%/cover;border-radius:26px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;box-shadow:inset 0 0 0 1px #30283816;}
-.preview-stage .eyebrow {position:absolute;top:18px;color:#4d3b66;background:#fffaf1ed;border-radius:20px;padding:6px 12px;letter-spacing:.08em;z-index:1;}
-.preview-caption {position:absolute;bottom:16px;background:#fffaf1e8;color:#554566;padding:7px 14px;border-radius:20px;font:12px/1.4 system-ui,sans-serif;pointer-events:none;}
-#preview {width:290px!important;height:290px!important;cursor:text;filter:drop-shadow(0 12px 10px #38204d30);}
+.preview-stage {min-height:365px;background:#efe4cc url('art/valley-scene.svg') center bottom/cover no-repeat;border-radius:26px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;border:1.5px solid #b9a181;box-shadow:0 3px 0 #b9a18130;}
+.preview-stage .eyebrow {position:absolute;top:18px;color:#5d4b35;background:#fff9eeed;border-radius:20px;padding:6px 12px;letter-spacing:.08em;z-index:1;}
+.preview-caption {position:absolute;bottom:16px;background:#fff9eee8;color:#695843;padding:7px 14px;border-radius:20px;font:12px/1.4 system-ui,sans-serif;pointer-events:none;}
+#preview {width:290px!important;height:290px!important;cursor:text;filter:drop-shadow(0 12px 10px #62442128);}
 #previewText {font-size:1.2rem!important;}
 .rock-text {margin-left:12%;margin-top:2%;width:60%;max-height:56%;padding:4px;line-height:1.25;}
 .composer-panel {text-align:left;min-width:0;}
@@ -816,29 +816,29 @@ a:focus-visible,button:focus-visible,textarea:focus-visible,.rock[role="button"]
 .composer-panel .intro {margin-bottom:18px;}
 .input-wrapper {width:100%;max-width:none;}
 .input-wrapper label {background:none;padding:0;margin-bottom:6px;font:700 12px system-ui,sans-serif;}
-textarea {background:#fffcf7;border:2px solid #c6b6d3;border-radius:16px;min-height:116px;padding:14px 14px 30px;font-size:1.08rem;color:var(--ink);line-height:1.4;}
-textarea:focus {border-color:#7856a8;}
-textarea.limit-reached {border-color:#8463ae;animation:none;}
-.char-counter,.char-counter.limit,.char-counter.warning {color:#6b557e;font:650 12px system-ui,sans-serif;bottom:13px;right:14px;}
+textarea {background:#fffaf0;border:2px solid #b8a07d;border-radius:13px 17px 12px 16px;min-height:116px;padding:14px 14px 30px;font-size:1.08rem;color:var(--ink);line-height:1.4;}
+textarea:focus {border-color:#687b50;}
+textarea.limit-reached {border-color:#8d6539;animation:none;}
+.char-counter,.char-counter.limit,.char-counter.warning {color:#756145;font:650 12px system-ui,sans-serif;bottom:13px;right:14px;}
 .composer-actions {display:flex;gap:8px;flex-direction:column;margin-top:12px;}
-button#submitBtn {max-width:none;width:100%;padding:14px;box-shadow:0 4px 0 #43256f;font-size:1rem;}
-.explore-valley-btn {width:100%;max-width:none;height:auto;padding:10px;background:transparent;color:#5d427e;border:0;font-size:.9rem;}
-.explore-valley-btn:hover {background:#ece3f3;}
-.upgrade-prompt {background:#eee4f5;color:#554068;box-shadow:none;font:12px/1.5 system-ui,sans-serif;padding:10px 12px;margin-top:8px;animation:none;}
+button#submitBtn {max-width:none;width:100%;padding:14px;box-shadow:0 4px 0 #35452d;font-size:1rem;}
+.explore-valley-btn {width:100%;max-width:none;height:auto;padding:10px;background:transparent;color:#4f6343;border:0;font-size:.9rem;}
+.explore-valley-btn:hover {background:#e8e7d4;}
+.upgrade-prompt {background:#eee1c4;color:#695132;box-shadow:none;font:12px/1.5 system-ui,sans-serif;padding:10px 12px;margin-top:8px;animation:none;}
 .upgrade-prompt .coin,.upgrade-btn,.checkout-notice {display:none;}
 .composer-panel .error {margin:10px 0;}
 .error {color:#773d36;background:#fff1e8;border-radius:12px;padding:10px 12px;font:14px/1.5 system-ui,sans-serif;}
 .experience-footer {border-top:1px solid var(--line);padding:16px 0;width:100%;display:flex;justify-content:space-between;gap:16px;text-align:left;color:var(--muted);font:12px/1.6 system-ui,sans-serif;}
-.experience-footer strong {color:#645570;}
-.valley-container {width:100%;max-width:1080px;border-radius:26px;background:#eae3f0;padding:22px 54px 68px;min-height:220px;}
+.experience-footer strong {color:#6d5d45;}
+.valley-container {width:100%;max-width:1080px;border-radius:26px;background:#eadcc0;padding:22px 54px 68px;min-height:220px;background:#efe4cc url('art/valley-scene.svg') center bottom/cover no-repeat;border:1.5px solid #b9a181;isolation:isolate;}
 .valley {gap:16px;padding:0;max-height:none;}
 .valley-row {gap:18px;flex-wrap:wrap;margin-top:0!important;}
 .rock-item {margin:0;}
 .rock[role="button"] {touch-action:pan-y;}
 .rock[role="button"]:active {--scale:.96;}
-.pebble-badge {background:#fff9ef;border:1px solid #d9c7a9;border-radius:24px;bottom:4px;left:50%;transform:translateX(-50%);width:auto;min-width:66px;padding:6px 12px;aspect-ratio:auto;gap:5px;}
+.pebble-badge {background:#fff9ef;border:1px solid #bda580;border-radius:24px;bottom:4px;left:50%;transform:translateX(-50%);width:auto;min-width:66px;padding:6px 12px;aspect-ratio:auto;gap:5px;}
 .pebble-badge::before {content:'♡';font-size:16px;line-height:1;}
-.rock.echoed .pebble-badge {background:#6543a4;color:white;border-color:#6543a4;animation:none;}
+.rock.echoed .pebble-badge {background:#526348;color:white;border-color:#526348;animation:none;}
 .rock.echoed .badge {color:white;}
 .rock.echoed .pebble-badge::before {content:'♥';}
 .badge {font:700 12px system-ui,sans-serif;}
@@ -846,57 +846,90 @@ button#submitBtn {max-width:none;width:100%;padding:14px;box-shadow:0 4px 0 #432
 .valley-container.scroll-mode .scroll-header,.valley-container.scroll-mode .stats-box {display:none;}
 .valley-container.scroll-mode .valley {height:auto;max-height:none;overflow:visible;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
 .valley-container.scroll-mode .rock-item {margin:0;width:100%;}
-.valley-container.scroll-mode .rock {background:var(--paper);border:1px solid #ded2e4;border-radius:18px;width:100%!important;height:auto!important;min-height:130px;transform:none;padding:20px 20px 50px;}
+.valley-container.scroll-mode .rock {background:var(--paper);border:1px solid #b9a181;border-radius:23px 19px 27px 17px / 19px 24px 19px 25px;width:100%!important;height:auto!important;min-height:130px;transform:none;padding:20px 22px 60px;box-shadow:0 3px 0 #c4ad8540;}
 .valley-container.scroll-mode .rock-text {margin:0;padding:0;width:100%;max-height:none;font-size:1.05rem!important;line-height:1.5;text-align:left;display:block;}
 .valley-container.scroll-mode .pebble-badge {bottom:12px;left:20px;transform:none;}
-.valley-container.scroll-mode .rock.echoed {border-color:#9975b7;background:#f0e8f7;}
-.nav-arrow {border-radius:14px;background:var(--paper);color:#513674;top:auto;bottom:14px;transform:none;width:calc(50% - 22px);height:44px;font-size:14px;border:1px solid #d6c9e1;}
+.valley-container.scroll-mode .rock.echoed {border-color:#7a875a;background:#e6e8d1;}
+.nav-arrow {border-radius:14px;background:var(--paper);color:#54472f;top:auto;bottom:14px;transform:none;width:calc(50% - 22px);height:auto;min-height:44px;padding:10px 6px;font-size:14px;border:1px solid #b9a181;}
 .nav-arrow.prev {left:14px;}.nav-arrow.next {right:14px;}
-.nav-arrow:hover {background:#ded0ec;color:#38264b;}
+.nav-arrow:hover {background:#e5d4b4;color:#403329;}
 .nav-arrow:disabled {opacity:.4;}
 .valley-toolbar {display:flex;gap:10px;width:100%;justify-content:space-between;align-items:center;}
 .valley-toolbar button {width:auto;max-width:none;padding:10px 18px;font-size:.9rem;}
-.toggle-view-btn {gap:8px;background:var(--paper);color:#5d427e;border:1px solid #cbbbda;}
-.toggle-view-btn:hover {background:#ece3f3;}
+.toggle-view-btn {gap:8px;background:var(--paper);color:#4f6343;border:1px solid #b9a181;}
+.toggle-view-btn:hover {background:#e8e7d4;}
 .toggle-view-btn img {display:none;}
 .empty-valley {padding:28px 12px;max-width:420px;}
 .empty-valley::before {content:'';display:block;width:95px;height:95px;background:url('art/rock_sprite.png') 0 0/300% 300%;margin:0 auto 10px;transform:rotate(-12deg);}
 .empty-valley h2 {font-size:1.5rem;margin-bottom:10px;}
 .empty-valley p {font:14px/1.6 system-ui,sans-serif;color:var(--muted);margin-bottom:16px;}
 #pageStatus {font:12px system-ui,sans-serif;}
-#shareSection {position:fixed;inset:0;height:100dvh;background:#21152c99;align-items:center;justify-content:center;z-index:9999;padding:20px;overflow:auto;}
-#shareCardWrapper {position:relative;background:var(--paper);border:1px solid #e2d5ec;border-radius:26px;width:430px;max-width:100%;max-height:calc(100dvh - 40px);overflow:auto;padding:24px;box-shadow:0 20px 80px #21152c55;display:flex;flex-direction:column;align-items:stretch;gap:12px;text-align:center;}
-#closeShareCard {position:absolute;right:8px;top:8px;min-width:44px;min-height:44px;width:44px;padding:0;background:transparent;color:#5d427e;font-size:24px;z-index:2;}
-#closeShareCard:hover {background:#ede1f6;}
+#shareSection {position:fixed;inset:0;height:100dvh;background:#30281999;align-items:center;justify-content:center;z-index:9999;padding:20px;overflow:auto;}
+#shareCardWrapper {position:relative;background:var(--paper);border:1px solid #b9a181;border-radius:26px;width:430px;max-width:100%;max-height:calc(100dvh - 40px);overflow:auto;padding:24px;box-shadow:0 20px 80px #30281955;display:flex;flex-direction:column;align-items:stretch;gap:12px;text-align:center;}
+#closeShareCard {position:absolute;right:8px;top:8px;min-width:44px;min-height:44px;width:44px;padding:0;background:transparent;color:#4f6343;font-size:24px;z-index:2;}
+#closeShareCard:hover {background:#eadbbd;}
 #shareCardWrapper > * {flex-shrink:0;}
 .share-heading {font-size:1.65rem;margin:8px 20px 0;letter-spacing:-.025em;}
 .share-subtitle {font:13px/1.4 system-ui,sans-serif;color:var(--muted);}
-.share-preview {background:#e7def1;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;align-items:center;}
+.share-preview {background:#e9dec8;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;align-items:center;}
 #shareImagePreview {display:block;width:100%;height:auto;max-height:290px;object-fit:contain;}
 #shareCard {width:210px;height:210px;flex-shrink:0;cursor:default;}
 #shareText {font-size:1rem;}
 #shareTopic {font-size:1rem;line-height:1.35;padding:12px 12px 0;}
-#shareStatus {font:12px/1.45 system-ui,sans-serif;color:#5d4e6c;min-height:18px;}
+#shareStatus {font:12px/1.45 system-ui,sans-serif;color:#695843;min-height:18px;}
 .share-actions {display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .share-actions #nativeShareBtn {grid-column:1/-1;}
 .share-actions button {padding:10px;font-size:.95rem;}
-#downloadBtn,#copyShareLinkBtn,#retryShareImageBtn {background:#ede4f4;color:#573879;}
-#downloadBtn:hover,#copyShareLinkBtn:hover,#retryShareImageBtn:hover {background:#dfcdec;}
+#downloadBtn,#copyShareLinkBtn,#retryShareImageBtn {background:#e8dfc9;color:#4c5639;}
+#downloadBtn:hover,#copyShareLinkBtn:hover,#retryShareImageBtn:hover {background:#d9cba9;}
 #shareBtns {display:flex;gap:12px;justify-content:center;align-items:center;font:12px system-ui,sans-serif;flex-wrap:wrap;}
-#shareBtns a {display:inline-flex;min-width:44px;min-height:44px;align-items:center;justify-content:center;color:#5b397f;text-underline-offset:3px;padding:0 8px;}
+#shareBtns a {display:inline-flex;min-width:44px;min-height:44px;align-items:center;justify-content:center;color:#4f6343;text-underline-offset:3px;padding:0 8px;}
 .share-help {font:11px/1.5 system-ui,sans-serif;color:var(--muted);}
 .share-link-fallback {font:12px/1.5 system-ui,sans-serif;text-align:left;}
-.share-link-fallback input {display:block;width:100%;font-size:16px;padding:12px;border:1px solid #b9a3ca;border-radius:10px;margin-top:5px;}
+.share-link-fallback input {display:block;width:100%;font-size:16px;padding:12px;border:1px solid #b9a181;border-radius:10px;margin-top:5px;}
 #shareSection :focus-visible {outline-offset:2px;}
+/* Small, repeated material details tie the controls to the illustrated rocks. */
+body {background-image:radial-gradient(#80654214 .7px,transparent .8px),radial-gradient(#8065420a .8px,transparent .9px);background-size:17px 23px,31px 37px;background-position:0 0,9px 11px;}
+.site-header {border-bottom-style:dashed;}
+.brand {color:#493823;}
+.section-nav {border:1px solid #c4ae88;border-radius:22px 18px 23px 17px;}
+.section-nav button {display:flex;align-items:center;justify-content:center;gap:8px;}
+.nav-doodle {width:23px;height:23px;flex:none;stroke:currentColor;stroke-width:1.65;stroke-linejoin:round;stroke-linecap:round;}
+.daily-heading .eyebrow::before {width:10px;height:9px;border-radius:45% 55% 36% 48%;box-shadow:0 0 0 3px #dee1c9;transform:rotate(-12deg);}
+.daily-heading .day-notice {color:#766553;}
+.preview-stage,.valley-container {border-radius:31px 23px 33px 24px / 25px 31px 23px 30px;}
+.preview-stage .eyebrow {background:#fff9eee6;border:1px solid #b9a18170;border-radius:9px 12px 8px 11px;transform:rotate(-2deg);}
+.preview-caption {background:#fff9eee6;border-radius:12px 9px 13px 8px;}
+.composer-panel h2 {color:#493823;}
+textarea {box-shadow:inset 0 2px 3px #68503408;}
+textarea::placeholder {color:#8a775f;opacity:1;}
+.char-counter {background:#f0e4cc;border-radius:7px 9px 6px 8px;padding:3px 6px;}
+.composer-actions #submitBtn {border-color:#3b4d32;box-shadow:0 4px 0 #35452d;}
+.composer-actions #submitBtn:active:not(:disabled) {box-shadow:0 1px 0 #35452d;}
+.composer-actions #submitBtn:disabled {opacity:1;background:#d7c9aa;border-color:#b7a484;color:#6d604a;box-shadow:0 3px 0 #b7a484;}
+.pebble-badge {border-radius:45% 39% 43% 38% / 44% 48% 42% 45%;box-shadow:0 2px 0 #9d80552b;}
+.valley-container.scroll-mode .rock {background-image:radial-gradient(#8f704b17 .7px,transparent .8px);background-size:19px 23px;}
+.valley-container.scroll-mode .rock-item:nth-child(even) .rock {border-radius:17px 27px 20px 25px / 25px 19px 27px 20px;}
+.valley-container.scroll-mode .rock.echoed {box-shadow:0 3px 0 #7a875a38;}
+.toggle-view-btn {height:auto;min-height:48px;}
+.valley-footer {width:100%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;min-height:24px;}
+.share-my-rock {display:inline-flex;align-items:center;justify-content:center;gap:10px;width:auto;max-width:100%;height:auto;min-height:48px;padding:10px 18px;font-size:.95rem;line-height:1.4;color:#4f6343;background:var(--paper);border:1.5px solid #a29170;white-space:normal;}
+.share-my-rock:hover {background:#e8e7d4;}
+.share-my-rock span {flex:none;}
+.experience-footer {border-top-style:dashed;}
+#shareCardWrapper {border-radius:28px 23px 30px 22px;}
+.share-preview {border:1px solid #c2ab84;border-radius:17px 14px 20px 13px;}
+#downloadBtn,#copyShareLinkBtn,#retryShareImageBtn {border-color:#b9a181;}
+#closeShareCard {border-color:transparent;}
 @keyframes rockHello {0%,100%{transform:rotate(0)}35%{transform:rotate(-6deg)}70%{transform:rotate(4deg)}}
 #preview.animate-in {animation:rockHello .65s ease-out;}
 #previewText.animate-in {animation:none;opacity:1;}
 @media(max-width:700px) {
  .phase {padding:14px 16px calc(94px + env(safe-area-inset-bottom));gap:12px;}
  .site-header {padding:0 0 10px;min-height:46px;}.brand {font-size:1rem;}.brand small {font-size:10px;}.brand-mark {width:32px;height:32px;}
- .section-nav {position:fixed;z-index:20;bottom:0;left:0;right:0;gap:8px;padding:9px 16px calc(9px + env(safe-area-inset-bottom));border-radius:20px 20px 0 0;background:#fdf9f1f7;border-top:1px solid #ded3c5;box-shadow:0 -4px 20px #39233d08;}
+ .section-nav {position:fixed;z-index:20;bottom:0;left:0;right:0;gap:8px;padding:9px 16px calc(9px + env(safe-area-inset-bottom));border-radius:20px 20px 0 0;background:#faf3e5;border-top:1px solid #b9a181;box-shadow:0 -4px 20px #47322214;}
  .section-nav button {flex:1;min-height:46px;padding:10px 14px;}
- .section-nav button[aria-current="page"] {background:#e9ddf4;box-shadow:none;}
+ .section-nav button[aria-current="page"] {background:#e4d4ae;box-shadow:none;}
  .daily-heading {padding-top:2px;}.eyebrow {margin-bottom:8px;font-size:10px;}
  .prompt {font-size:clamp(1.55rem,6.3vw,2rem);line-height:1.12;}
  .daily-heading .day-notice {margin-top:8px;font-size:11px;}
@@ -958,7 +991,7 @@ button#submitBtn {max-width:none;width:100%;padding:14px;box-shadow:0 4px 0 #432
 
 </head>
 <body>
-<main id="phase1" class="phase active"><header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OPINION ROCKS<small>Small takes. Fresh daily.</small></span></div><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" aria-current="page">Write</button><button onclick="goToValley()" >Explore</button></nav></header><div class="daily-heading"><p class="eyebrow">The daily question</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">A new question every day. Today’s rocks disappear at reset.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><div class="composer-layout"><div class="preview-stage"><p class="eyebrow">Your rock · Live</p><div class="rock-wrapper"><div class="rock" id="preview" role="button" tabindex="0" aria-label="Write on your rock" onclick="input.focus()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();input.focus()}"><div class="rock-text" id="previewText"></div></div><div class="dust" id="dustEffect"></div></div><p class="preview-caption">Tiny rock. Big opinion.</p></div><section class="composer-panel" aria-labelledby="composerTitle"><h2 id="composerTitle">What’s your take?</h2><p class="intro">40 characters. Zero overthinking.</p>    <div class="input-wrapper">
+<main id="phase1" class="phase active"><header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OPINION ROCKS<small>Small takes. Fresh daily.</small></span></div><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" aria-current="page"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M4 17 7 7l9-3 7 9-3 9-12 1Z"/><path d="m11 15 7-7m-8 8 1-4 3 3-4 1Z"/></svg><span>Write</span></button><button onclick="goToValley()" ><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="m2 22 5-11 5 7 5-14 7 18Z"/><path d="m14 12 3 2 3-2"/><path d="m4 22 5-2 5 2 5-2"/></svg><span>Explore</span></button></nav></header><div class="daily-heading"><p class="eyebrow">The daily question</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">A new question every day. Today’s rocks disappear at reset.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><div class="composer-layout"><div class="preview-stage"><p class="eyebrow">Your rock · Live</p><div class="rock-wrapper"><div class="rock" id="preview" role="button" tabindex="0" aria-label="Write on your rock" onclick="input.focus()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();input.focus()}"><div class="rock-text" id="previewText"></div></div><div class="dust" id="dustEffect"></div></div><p class="preview-caption">Tiny rock. Big opinion.</p></div><section class="composer-panel" aria-labelledby="composerTitle"><h2 id="composerTitle">What’s your take?</h2><p class="intro">40 characters. Zero overthinking.</p>    <div class="input-wrapper">
       <label for="input">Your opinion</label>
       <textarea id="input" rows="2" aria-describedby="charCounter draftStatus" placeholder="Etch your take…"></textarea>
       <div class="char-counter" id="charCounter" aria-live="polite">0/40</div>
@@ -969,7 +1002,7 @@ button#submitBtn {max-width:none;width:100%;padding:14px;box-shadow:0 4px 0 #432
       <button class="upgrade-btn" onclick="upgradeRock()">About XL rocks</button>
       <p class="checkout-notice">XL checkout is temporarily unavailable.</p>
     </div>
-<div class="composer-actions"><button id="submitBtn" disabled onclick="submitOpinion()">Drop your rock ↗</button><button class="explore-valley-btn" onclick="goToValley()">Explore today’s valley →</button></div></section></div><footer class="experience-footer"><strong>One question. A valley of perspectives.</strong><span>Write a short take. Echo what resonates. Start fresh tomorrow.</span></footer></main><main id="phase2" class="phase"><header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OPINION ROCKS<small>Small takes. Fresh daily.</small></span></div><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" >Write</button><button onclick="goToValley()" aria-current="page">Explore</button></nav></header><div class="daily-heading"><p class="eyebrow">Explore the valley</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">A new question every day. Today’s rocks disappear at reset.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><p class="day-notice echo-instruction">A take you feel? Tap the rock to echo it. Tap again to undo.</p>    <div class="valley-toolbar">
+<div class="composer-actions"><button id="submitBtn" disabled onclick="submitOpinion()">Drop your rock ↗</button><button class="explore-valley-btn" onclick="goToValley()">Explore today’s valley →</button></div></section></div><footer class="experience-footer"><strong>One question. A valley of perspectives.</strong><span>Write a short take. Echo what resonates. Start fresh tomorrow.</span></footer></main><main id="phase2" class="phase"><header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OPINION ROCKS<small>Small takes. Fresh daily.</small></span></div><nav class="section-nav" aria-label="Main navigation"><button onclick="restart()" ><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M4 17 7 7l9-3 7 9-3 9-12 1Z"/><path d="m11 15 7-7m-8 8 1-4 3 3-4 1Z"/></svg><span>Write</span></button><button onclick="goToValley()" aria-current="page"><svg class="nav-doodle" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="m2 22 5-11 5 7 5-14 7 18Z"/><path d="m14 12 3 2 3-2"/><path d="m4 22 5-2 5 2 5-2"/></svg><span>Explore</span></button></nav></header><div class="daily-heading"><p class="eyebrow">Explore the valley</p><div class="prompt-banner"><h1 class="prompt daily-question" role="status">Loading today's question...</h1></div><p class="day-notice">A new question every day. Today’s rocks disappear at reset.</p></div><button class="retry-topic" onclick="loadDailyTopic()" hidden>Retry today's question</button><p class="day-notice echo-instruction">A take you feel? Tap the rock to echo it. Tap again to undo.</p>    <div class="valley-toolbar">
       <button id="toggleViewBtn" class="toggle-view-btn" onclick="toggleView()" title="Switch to list view" aria-label="Switch to list view" aria-pressed="false">
         <span id="viewLabel">List view</span>
       </button>
@@ -991,8 +1024,8 @@ button#submitBtn {max-width:none;width:100%;padding:14px;box-shadow:0 4px 0 #432
       <div class="valley" id="opinionValley"></div>
       <button class="nav-arrow next" onclick="navigateRocks(1)" id="nextBtn" aria-label="Next opinions">Next rock →</button>
     </div>
-    <p id="pageStatus" class="day-notice" role="status"></p>
-    <button id="shareLastRockBtn" class="toggle-view-btn" onclick="reopenMyRock()" hidden>Share my rock ↗</button>
+    <div class="valley-footer"><p id="pageStatus" class="day-notice" role="status"></p>
+    <button id="shareLastRockBtn" class="share-my-rock" onclick="reopenMyRock()" hidden>Share my rock <span aria-hidden="true">↗</span></button></div>
 
 <footer class="experience-footer"><strong>One question. A valley of perspectives.</strong><span>Write a short take. Echo what resonates. Start fresh tomorrow.</span></footer></main>
   <div id="shareSection" role="dialog" aria-modal="true" aria-labelledby="shareHeading" aria-describedby="shareDescription" style="display:none">
