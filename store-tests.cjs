@@ -8,7 +8,8 @@ const assert = require('assert/strict');
 
 const root = __dirname;
 const failures = [];
-const prices = { XS: 29, S: 29, M: 29, L: 29, XL: 29, '2XL': 31, '3XL': 33, '4XL': 35, '5XL': 37 };
+const prices = { S: 25, M: 25, L: 25, XL: 25, '2XL': 27, '3XL': 29 };
+const embroideredPrices = { S: 35, M: 35, L: 35, XL: 35, '2XL': 37, '3XL': 39, '4XL': 41 };
 const launchOptions = {
   headless: true,
   executablePath: process.env.OPINION_BROWSER_PATH || undefined,
@@ -138,9 +139,64 @@ async function main() {
     assert(await page.locator('#storeShirtPreview').isVisible());
     await nav(page, 'write').click();
     await nav(page, 'store').click();
-    assert(await page.locator('input[name="store-size"][value="5XL"]').isChecked(), 'Selection survives screen navigation');
+    assert(await page.locator('input[name="store-size"][value="3XL"]').isChecked(), 'Selection survives screen navigation');
     const images = await page.locator('#phase3 img').evaluateAll(images => images.map(image => ({ src: image.getAttribute('src'), loaded: image.complete && image.naturalWidth > 0 })));
     assert(images.length >= 1 && images.every(image => image.loaded), `Store artwork loads: ${JSON.stringify(images)}`);
+  });
+
+  await scenario('Both products have exact prices, honest availability and independent selections', { suffix: '#store' }, async (page, context, requests) => {
+    for (const [product, productPrices] of Object.entries({ print: prices, embroidery: embroideredPrices })) {
+      await page.locator(`input[name="store-product"][value="${product}"]`).check();
+      assert.deepEqual(await page.locator('input[name="store-size"]').evaluateAll(inputs => inputs.map(input => input.value)), Object.keys(productPrices));
+      for (const [size, price] of Object.entries(productPrices)) {
+        await page.locator(`input[name="store-size"][value="${size}"]`).check();
+        assert.equal((await page.locator('#storePrice').textContent()).trim(), '$' + price);
+        assert.equal((await page.locator('#storeSelectedSize').textContent()).trim(), size);
+        assert(await page.locator('#storeOrderBtn').isDisabled());
+      }
+      assert.equal(await page.locator('.store-product').getAttribute('data-product'), product);
+      assert.match(await page.locator('#storeShirtArt').getAttribute('src'), new RegExp(product === 'print' ? 'everyday-print' : 'everyday-embroidery'));
+      assert.match(await page.locator('#storeProductDescription').textContent(), new RegExp(product === 'print' ? 'Natural Gildan 64000' : 'Moss Comfort Colors 1717'));
+    }
+    await page.locator('input[name="store-preview"][value="artwork"]').check();
+    assert.match(await page.locator('#storePreviewNote').textContent(), /not a stitch file/);
+    await page.locator('input[name="store-product"][value="print"]').check();
+    assert(await page.locator('input[name="store-size"][value="3XL"]').isChecked());
+    assert(await page.locator('#storeArtworkPreview').isVisible(), 'Preview mode survives product switching');
+    assert.match(await page.locator('#storePreviewNote').textContent(), /Original print artwork/);
+    await page.locator('input[name="store-product"][value="embroidery"]').check();
+    assert(await page.locator('input[name="store-size"][value="4XL"]').isChecked());
+    await page.locator('input[name="store-preview"][value="collection"]').check();
+    assert(await page.locator('#storeCollectionPreview').isVisible());
+    assert(await page.locator('#storeShirtPreview').isHidden());
+    assert(await page.locator('#storeArtworkPreview').isHidden());
+    assert.match(await page.locator('#storePreviewNote').textContent(), /not manufactured samples/);
+    assert.match(await page.locator('#storeLaunchNote').textContent(), /still hidden/);
+    assert.match(await page.locator('#storeExternalNote').textContent(), /No public products/);
+    assert.equal(await page.locator('#storeExternalLink').getAttribute('href'), 'https://opinionrocks.printful.me/');
+    assert.equal(await page.locator('#storeExternalLink').getAttribute('target'), '_blank');
+    assert.match(await page.locator('#storeExternalLink').getAttribute('rel'), /noopener/);
+    assert.deepEqual(await page.evaluate(() => writes), [], 'Browsing the catalog performs no backend writes');
+    assert(!requests.some(request => new URL(request.url).hostname.endsWith('printful.me')), 'There is no automatic external-store request');
+    assert(!(await page.locator('#phase3').textContent()).includes('Middle Seat'));
+  });
+
+  await scenario('External store handoff opens only the verified destination', { suffix: '#store' }, async (page, context) => {
+    const outbound = [];
+    await context.route('**/*', route => {
+      if (route.request().url() !== 'https://opinionrocks.printful.me/') return route.abort();
+      outbound.push(route.request().url());
+      return route.fulfill({ body: '<h1>Mock external store</h1>', contentType: 'text/html' });
+    });
+    const popupPromise = page.waitForEvent('popup');
+    await page.locator('#storeExternalLink').click();
+    const popup = await popupPromise;
+    await popup.waitForLoadState();
+    assert.equal(popup.url(), 'https://opinionrocks.printful.me/');
+    assert.equal(await popup.evaluate(() => window.opener), null);
+    assert.deepEqual(outbound, ['https://opinionrocks.printful.me/']);
+    await active(page, 'store');
+    assert.deepEqual(await page.evaluate(() => writes), []);
   });
 
   await scenario('Checkout is inert even after removing disabled or spoofing payment parameters', {
@@ -191,7 +247,7 @@ async function main() {
   await scenario('Backend outage still allows store preview without enabling purchases', { suffix: '#store', failBackend: true }, async page => {
     await active(page, 'store');
     await page.locator('input[name="store-size"][value="2XL"]').check();
-    assert.equal((await page.locator('#storePrice').textContent()).trim(), '$31');
+    assert.equal((await page.locator('#storePrice').textContent()).trim(), '$27');
     await page.locator('input[name="store-preview"][value="artwork"]').check();
     assert(await page.locator('#storeArtworkPreview').isVisible());
     assert(await page.locator('#storeOrderBtn').isDisabled());
@@ -230,6 +286,9 @@ async function main() {
 
   await scenario('Store controls work from the keyboard and respect reduced motion', { suffix: '#store' }, async page => {
     assert.equal(await page.locator('html').getAttribute('data-motion'), 'calm');
+    await page.locator('input[name="store-product"][value="print"]').focus();
+    await page.keyboard.press('ArrowRight');
+    assert(await page.locator('input[name="store-product"][value="embroidery"]').isChecked(), 'Native product radios support arrow keys');
     await page.locator('input[name="store-size"][value="M"]').focus();
     await page.keyboard.press('ArrowRight');
     assert(await page.locator('input[name="store-size"][value="L"]').isChecked(), 'Native size radios support arrow keys');
@@ -254,11 +313,12 @@ async function main() {
       }, async page => {
         await active(page, 'store');
         if (textScale !== 1) await page.addStyleTag({ content: `html { font-size: ${textScale * 100}% !important; }` });
+        await page.locator('input[name="store-product"][value="embroidery"]').check();
         const bounds = await page.locator('#phase3').evaluate(el => ({ scroll: el.scrollWidth, client: el.clientWidth, viewport: innerWidth }));
         assert(bounds.scroll <= bounds.client + 1 && bounds.scroll <= bounds.viewport + 1, `Store has no horizontal overflow: ${JSON.stringify(bounds)}`);
-        const controls = page.locator('#phase3 button, #phase3 label:has(input[name="store-size"]), #phase3 label:has(input[name="store-preview"]), #phase3 .store-details summary');
+        const controls = page.locator('#phase3 button, #phase3 label:has(input[name="store-size"]), #phase3 label:has(input[name="store-preview"]), #phase3 .store-details summary, #phase3 label:has(input[name="store-product"]), #storeExternalLink');
         const count = await controls.count();
-        assert(count >= 18, 'Navigation, all nine sizes, two previews, product details, motion, purchase, and return controls are present');
+        assert(count >= 18, 'Navigation, all seven embroidery sizes, three previews, two products, product details, motion, purchase, and return controls are present');
         for (let i = 0; i < count; i++) {
           const control = controls.nth(i);
           await control.scrollIntoViewIfNeeded();
@@ -272,9 +332,19 @@ async function main() {
           assert(geometry.top >= -1 && geometry.bottom <= geometry.viewport.height + 1, `Control reachable vertically: ${JSON.stringify(geometry)}`);
           assert(geometry.fitsText, `Control text does not clip: ${JSON.stringify(geometry)}`);
         }
-        if (textScale === 1 && [390, 1440].includes(width)) {
-          await page.locator('#phase3').evaluate(el => el.scrollTop = 0);
-          await page.screenshot({ path: path.join(os.tmpdir(), `opinion-store-${width}.png`) });
+        for (const product of ['print', 'embroidery']) {
+          await page.locator(`input[name="store-product"][value="${product}"]`).check();
+          for (const preview of ['shirt', 'artwork', 'collection']) {
+            await page.locator(`input[name="store-preview"][value="${preview}"]`).check();
+            const layout = await page.locator('#phase3').evaluate(el => ({ scroll: el.scrollWidth, client: el.clientWidth, viewport: innerWidth }));
+            assert(layout.scroll <= layout.client + 1 && layout.scroll <= layout.viewport + 1, `${product}/${preview} fits at ${width}px: ${JSON.stringify(layout)}`);
+            const gallery = await page.locator('.store-stage').evaluate(el => ({ scroll: el.scrollWidth, client: el.clientWidth }));
+            assert(gallery.scroll <= gallery.client + 1, `${product}/${preview} does not overflow its gallery`);
+            if (textScale === 1 && [390, 1440].includes(width)) {
+              await page.locator('#phase3').evaluate(el => el.scrollTop = 0);
+              await page.screenshot({ path: path.join(os.tmpdir(), `opinion-store-${product}-${preview}-${width}.png`) });
+            }
+          }
         }
       });
     }
@@ -283,7 +353,7 @@ async function main() {
   if (failures.length) {
     console.error('\n' + failures.join('\n\n'));
     process.exitCode = 1;
-  } else console.log('PASS: Store navigation/history, preserved drafts and sharing, all 9 size prices, preview controls, disabled checkout/tampering, daily reset, backend outage, keyboard/reduced motion, and 320–1440px reflow. No production requests or orders.');
+  } else console.log('PASS: Store navigation/history, preserved drafts and sharing, all 13 size prices across two products and the external-store handoff, preview controls, disabled checkout/tampering, daily reset, backend outage, keyboard/reduced motion, and 320–1440px reflow. No production requests or orders.');
 }
 
 main().catch(error => { console.error(error); process.exitCode = 1; });
