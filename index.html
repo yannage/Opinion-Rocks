@@ -1071,45 +1071,54 @@ textarea::placeholder {color:#8a775f;opacity:1;}
     <div><p class="eyebrow">The Opinion Rocks store</p><h1 id="storeHeading" tabindex="-1">Small takes.<br><span>Real keepsakes.</span></h1><p>A little piece of the valley, out in the world.</p></div>
     <div class="store-stamp"><img src="art/cairn.webp" width="90" height="70" alt="" /><span>Store preview</span></div>
   </section>
-  <article class="store-product" aria-labelledby="storeProductTitle">
+  <fieldset class="store-collection-picker"><legend>Meet the Everyday Collection</legend>
+    <label><input type="radio" name="store-product" value="print" checked /><span><strong>Classic Print</strong><small>Natural · From $25</small></span></label>
+    <label><input type="radio" name="store-product" value="embroidery" /><span><strong>Embroidered</strong><small>Moss · From $35</small></span></label>
+  </fieldset>
+  <article class="store-product" data-product="print" aria-labelledby="storeProductTitle">
     <div class="store-gallery">
       <div class="store-stage" aria-describedby="storePreviewNote">
-        <span class="store-sample-label">A small take, made wearable</span>
+        <span class="store-sample-label">Your everyday piece of the valley</span>
         <div id="storeShirtPreview" class="store-shirt-preview">
-          <svg viewBox="0 0 440 450" role="img" aria-label="Illustrative black T-shirt silhouette" class="store-shirt">
-            <defs><linearGradient id="shirtFabric" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#303431"/><stop offset=".5" stop-color="#1b211f"/><stop offset="1" stop-color="#2d322e"/></linearGradient><linearGradient id="shirtFold" x1="0" x2="1"><stop stop-color="#ffffff" stop-opacity=".04"/><stop offset="1" stop-color="#000000" stop-opacity=".2"/></linearGradient></defs>
-            <path d="M150 39 100 54 24 125 75 192 112 165 104 405Q220 422 336 405L328 165 365 192 416 125 340 54 290 39Q220 72 150 39Z" fill="url(#shirtFabric)" stroke="#18201b" stroke-width="3" stroke-linejoin="round"/>
-            <path d="M150 40Q220 103 290 40L279 38Q220 64 161 38Z" fill="#101814" stroke="#414740" stroke-width="2"/>
-            <path d="M102 57 119 150 112 165M338 57 321 150 328 165M35 125l43 55m327-55-43 55M109 392q111 17 222 0" fill="none" stroke="#4c5047" stroke-width="2" opacity=".62"/>
+          <svg viewBox="0 0 440 450" role="img" aria-label="Illustrative Natural T-shirt silhouette" class="store-shirt">
+            <defs><linearGradient id="shirtFabric" x1="0" y1="0" x2="1" y2="1"><stop class="shirt-tone-light"/><stop offset=".5" class="shirt-tone-base"/><stop offset="1" class="shirt-tone-light"/></linearGradient><linearGradient id="shirtFold" x1="0" x2="1"><stop stop-color="#ffffff" stop-opacity=".04"/><stop offset="1" stop-color="#000000" stop-opacity=".08"/></linearGradient></defs>
+            <path d="M150 39 100 54 24 125 75 192 112 165 104 405Q220 422 336 405L328 165 365 192 416 125 340 54 290 39Q220 72 150 39Z" fill="url(#shirtFabric)" class="shirt-outline" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M150 40Q220 103 290 40L279 38Q220 64 161 38Z" class="shirt-collar" stroke-width="2"/>
+            <path d="M102 57 119 150 112 165M338 57 321 150 328 165M35 125l43 55m327-55-43 55M109 392q111 17 222 0" fill="none" class="shirt-seam" stroke-width="2" opacity=".62"/>
             <path d="m120 170-9 217 22-84-2-146m188 13 10 217-23-84 2-146" fill="url(#shirtFold)"/>
           </svg>
-          <img class="store-shirt-art" src="art/middle-seat-design.webp" alt="The Middle Seat artwork placed on the front of the illustrative shirt" width="1254" height="1254" />
+          <img id="storeShirtArt" class="store-shirt-art" src="art/everyday-print.webp" alt="Six-stone Opinion Rocks cairn and wordmark on the illustrative Natural shirt" width="1254" height="1254" />
         </div>
         <div id="storeArtworkPreview" class="store-artwork-preview" hidden>
-          <img src="art/middle-seat-design.webp" alt="The Middle Seat artwork: THE MIDDLE SEAT DESERVES BOTH ARMRESTS" width="1254" height="1254" />
+          <img id="storeArtwork" src="art/everyday-print.webp" alt="Classic Print artwork: six warm-colored stones above the words OPINION ROCKS" width="1254" height="1254" />
+        </div>
+        <div id="storeCollectionPreview" class="store-collection-preview" hidden>
+          <img src="art/everyday-collection.webp" alt="Illustrative Everyday Collection mockup: Moss shirt with a small left-chest logo and Natural shirt with a larger centered front print" width="1536" height="1024" />
         </div>
         <span class="store-stage-pebble store-stage-pebble-one" aria-hidden="true"></span><span class="store-stage-pebble store-stage-pebble-two" aria-hidden="true"></span>
       </div>
-      <fieldset class="store-preview-toggle"><legend class="store-sr-only">Product preview</legend><label><input type="radio" name="store-preview" value="shirt" checked /><span>Shirt preview</span></label><label><input type="radio" name="store-preview" value="artwork" /><span>Artwork</span></label></fieldset>
-      <p id="storePreviewNote" class="store-preview-note">Illustrative placement. Final garment may differ.</p>
+      <fieldset class="store-preview-toggle"><legend class="store-sr-only">Product preview</legend><label><input type="radio" name="store-preview" value="shirt" checked /><span>Shirt</span></label><label><input type="radio" name="store-preview" value="artwork" /><span>Artwork</span></label><label><input type="radio" name="store-preview" value="collection" /><span>Both designs</span></label></fieldset>
+      <p id="storePreviewNote" class="store-preview-note">Illustrative placement, not a product photo. Final garment and print colors may differ.</p>
     </div>
     <div class="store-product-info">
-      <p class="store-status"><span aria-hidden="true"></span>Not open for orders yet</p>
-      <p class="eyebrow store-product-kind">Opinion Rocks original · Sample design</p>
-      <h2 id="storeProductTitle">The Middle Seat</h2>
-      <p class="store-slogan">“THE MIDDLE SEAT DESERVES<br class="store-desktop-break"> BOTH ARMRESTS”</p>
-      <p class="store-product-description">For the person stuck between two very comfortable people. A small hill worth wearing.</p>
-      <div class="store-price-line"><span id="storePrice" aria-live="polite" aria-atomic="true">$29</span><div><span>Planned price · USD</span><small>Shipping and tax not included</small></div></div>
-      <div class="store-color"><span class="store-color-swatch" aria-hidden="true"></span><span>Black <span>· Front print</span></span></div>
-      <fieldset class="store-sizes"><legend>Explore a size <span id="storeSelectedSize">M</span></legend><div class="store-size-options">
-        <label><input type="radio" name="store-size" value="XS" /><span>XS</span></label><label><input type="radio" name="store-size" value="S" /><span>S</span></label><label><input type="radio" name="store-size" value="M" checked /><span>M</span></label><label><input type="radio" name="store-size" value="L" /><span>L</span></label><label><input type="radio" name="store-size" value="XL" /><span>XL</span></label><label><input type="radio" name="store-size" value="2XL" /><span>2XL</span></label><label><input type="radio" name="store-size" value="3XL" /><span>3XL</span></label><label><input type="radio" name="store-size" value="4XL" /><span>4XL</span></label><label><input type="radio" name="store-size" value="5XL" /><span>5XL</span></label>
+      <p class="store-status"><span aria-hidden="true"></span>Coming soon · Preview only</p>
+      <p id="storeProductKind" class="eyebrow store-product-kind">Everyday Collection · Front print</p>
+      <h2 id="storeProductTitle">Everyday Classic Print Tee</h2>
+      <p id="storeSlogan" class="store-slogan">A little valley. A lot of everyday.</p>
+      <p id="storeProductDescription" class="store-product-description">Our six-stone cairn and friendly wordmark, centered on a Natural Gildan 64000. An easy-going brand staple with a plain back.</p>
+      <div class="store-price-line"><span id="storePrice" aria-live="polite" aria-atomic="true">$25</span><div><span>Price · USD</span><small>Shipping and tax not included</small></div></div>
+      <div class="store-color"><span class="store-color-swatch" aria-hidden="true"></span><span id="storeColor">Natural <span>· Front DTG print</span></span></div>
+      <fieldset class="store-sizes"><legend>Explore a size <span id="storeSelectedSize">M</span></legend><div id="storeSizeOptions" class="store-size-options">
+        <label><input type="radio" name="store-size" value="S" /><span>S</span></label><label><input type="radio" name="store-size" value="M" checked /><span>M</span></label><label><input type="radio" name="store-size" value="L" /><span>L</span></label><label><input type="radio" name="store-size" value="XL" /><span>XL</span></label><label><input type="radio" name="store-size" value="2XL" /><span>2XL</span></label><label><input type="radio" name="store-size" value="3XL" /><span>3XL</span></label>
       </div></fieldset>
       <button id="storeOrderBtn" type="button" disabled aria-describedby="storeLaunchNote"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="6" y="10" width="12" height="10" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Not open for orders yet</button>
-      <p id="storeLaunchNote" class="store-launch-note">Just a preview for now. Final product details, sizing and checkout will be available at launch.</p>
+      <p id="storeLaunchNote" class="store-launch-note">We’re getting these ready. Both designs are still hidden in our Printful store while we finish launch and quality checks.</p>
+      <a id="storeExternalLink" class="store-external-link" href="https://opinionrocks.printful.me/" target="_blank" rel="noopener noreferrer" aria-describedby="storeExternalNote">Visit our Printful store <span aria-hidden="true">↗</span></a>
+      <p id="storeExternalNote" class="store-launch-note">Opens Printful in a new tab. No public products are available there yet.</p>
       <div class="store-details">
-        <details><summary>What’s planned for this shirt?<span aria-hidden="true">+</span></summary><p>A black Gildan 64000 with the design printed on the front. Planned prices are $29 for XS–XL, $31 for 2XL, $33 for 3XL, $35 for 4XL and $37 for 5XL, in USD. Shipping and tax are additional. Garment, print and size availability will be confirmed before orders open.</p></details>
-        <details><summary>Is this one of today’s opinions?<span aria-hidden="true">+</span></summary><p>This is original Opinion Rocks sample artwork. This preview is separate from today’s question and doesn’t display saved visitor opinions. The valley still starts fresh each day, with no public archive of previous opinions.</p></details>
-        <details><summary>When can I order?<span aria-hidden="true">+</span></summary><p>We haven’t set a launch date. Orders will open when product details, secure payment and fulfillment are ready. There’s nothing to pay or reserve here.</p></details>
+        <details><summary>About this tee<span aria-hidden="true">+</span></summary><p id="storeProductDetails">Gildan 64000 in Natural, with an approximately 7.5-inch visible front design on an 8-inch artwork canvas. Sizes S–XL are $25, 2XL is $27 and 3XL is $29 USD, before shipping and tax. Final print colors and sample quality are still being checked. Garment and size availability may change.</p></details>
+        <details><summary>Made for every day<span aria-hidden="true">+</span></summary><p>These are original Opinion Rocks brand designs, separate from the daily question. They’re intended as an ongoing collection, subject to garment availability. Today’s visitor opinions still disappear at reset, with no public archive.</p></details>
+        <details><summary>When can I order?<span aria-hidden="true">+</span></summary><p>There’s no launch date yet. Products will become available after store setup and production-quality checks are complete. These are design previews, not manufactured samples. There’s nothing to pay or reserve here.</p></details>
       </div>
     </div>
   </article>

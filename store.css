@@ -37,7 +37,7 @@
 .store-status {display:flex;align-items:center;gap:7px;width:fit-content;background:#e6e6cf;color:#536044;border:1px solid #c1c5a2;border-radius:20px;padding:6px 10px;font:650 11px/1.4 system-ui,sans-serif;margin-bottom:26px;}
 .store-status > span {width:6px;height:6px;background:#7c8a60;border-radius:50%;}
 .store-product-kind {font-size:9px;letter-spacing:.11em;color:#6d5d45;margin-bottom:8px;}
-.store-product-info h2 {font-size:clamp(1.9rem,3vw,2.6rem);line-height:1.1;letter-spacing:-.04em;color:#483b2c;}
+.store-product-info h2 {overflow-wrap:anywhere;font-size:clamp(1.9rem,3vw,2.6rem);line-height:1.1;letter-spacing:-.04em;color:#483b2c;}
 .store-slogan {color:#6e774f;letter-spacing:.015em;font-size:.92rem;line-height:1.5;margin:14px 0 11px;}
 .store-product-description {color:#776751;font:14px/1.65 system-ui,sans-serif;max-width:350px;}
 .store-price-line {display:flex;align-items:center;gap:13px;margin-top:22px;}
@@ -104,7 +104,7 @@
  .store-preview-note {font-size:10px;margin-top:8px;}
  .store-product-info {padding:0;}
  .store-status {margin-bottom:19px;font-size:10px;}
- .store-product-info h2 {font-size:2.25rem;}
+ .store-product-info h2 {overflow-wrap:anywhere;font-size:2.25rem;}
  .store-product-kind {font-size:8px;}
  .store-slogan {font-size:.9rem;margin-top:12px;}
  .store-desktop-break {display:none;}
@@ -122,3 +122,38 @@
 }
 html[data-motion="calm"] .store-size-options label > span,
 html[data-motion="calm"] .store-details summary > span {transition:none;}
+/* Everyday Collection: two evergreen brand designs, always preview-only. */
+.store-collection-picker {width:100%;border:0;display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left;min-width:0;}
+.store-collection-picker legend {font:700 12px/1.5 system-ui,sans-serif;color:#665339;margin-bottom:10px;padding:0;}
+.store-collection-picker label {display:block;position:relative;cursor:pointer;min-width:0;}
+.store-collection-picker input {position:absolute;opacity:0;width:1px;height:1px;}
+.store-collection-picker label > span {display:flex;flex-direction:column;gap:5px;padding:17px 20px;border:2px solid #c5ad84;border-radius:17px 21px 16px 19px;background:#fbf1dc;color:#584a34;box-shadow:0 3px 0 #d3bc94;min-height:76px;}
+.store-collection-picker strong {font-size:1.12rem;line-height:1.25;overflow-wrap:anywhere;}
+.store-collection-picker small {font:12px/1.5 system-ui,sans-serif;}
+.store-collection-picker input:checked + span {background:#e5e8d5;border-color:#596c49;color:#35472b;box-shadow:0 3px 0 #71805b;}
+.store-collection-picker input:focus-visible + span {outline:3px solid #526348;outline-offset:4px;}
+.store-collection-picker label:hover > span {border-color:#596c49;}
+.store-product {--shirt-base:#e7ddc3;--shirt-light:#faf2de;--shirt-dark:#c3b897;--shirt-seam:#b2a581;}
+.store-product[data-product="embroidery"] {--shirt-base:#586348;--shirt-light:#74805c;--shirt-dark:#35422e;--shirt-seam:#87936d;}
+.shirt-tone-light {stop-color:var(--shirt-light);}
+.shirt-tone-base {stop-color:var(--shirt-base);}
+.shirt-outline {stroke:var(--shirt-dark);}
+.shirt-collar {fill:var(--shirt-dark);stroke:var(--shirt-seam);}
+.shirt-seam {stroke:var(--shirt-seam);}
+.store-shirt-art {width:40%;left:30%;top:27%;}
+.store-product[data-product="embroidery"] .store-shirt-art {width:15%;left:54%;top:28%;}
+.store-color-swatch {background:var(--shirt-base);}
+.store-collection-preview {width:100%;padding:43px 12px 45px;}
+.store-collection-preview img {display:block;width:100%;height:auto;border-radius:12px;}
+.store-external-link {display:flex;justify-content:center;align-items:center;gap:8px;text-align:center;min-height:48px;padding:11px 15px;border:1px solid #9fa77d;border-radius:15px 19px 13px 17px;background:#e9ead8;color:#3f5434;font:700 13px/1.5 system-ui,sans-serif;text-decoration:underline;text-underline-offset:3px;}
+.store-external-link:hover {background:#dde2c5;}
+.store-external-link:focus-visible {outline:3px solid #526348;outline-offset:4px;}
+@media(max-width:700px) {
+ .store-collection-picker {gap:9px;}
+ .store-collection-picker label > span {padding:13px 12px;}
+ .store-collection-picker strong {font-size:1rem;}
+ .store-collection-picker small {font-size:11px;}
+ .store-preview-toggle {max-width:100%;width:100%;}
+ .store-preview-toggle label {flex:1;min-width:0;}
+ .store-preview-toggle label > span {padding:8px 6px;text-align:center;}
+}
